@@ -3,793 +3,522 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AfterWoW - Base de Datos 3.3.5a</title>
+    <title>AfterWoW Database - WoW 3.3.5a</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0d0d0d; color: #c4c4c4; min-height: 100vh; }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',Tahoma,sans-serif;background:#0d0d0d;color:#c4c4c4;min-height:100vh}
 
-        .db-header {
-            background: linear-gradient(135deg, #0f1923 0%, #1a1a2e 50%, #0f3460 100%);
-            border-bottom: 3px solid #00d2ff; padding: 20px; text-align: center;
-            position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 30px rgba(0,210,255,0.2);
-        }
-        .db-header .logo { font-size: 2.5em; font-weight: 900; letter-spacing: 2px; }
-        .db-header .logo .after { color: #e94560; }
-        .db-header .logo .wow { color: #00d2ff; }
-        .db-header .logo .db { color: #fbbf24; font-size: 0.5em; vertical-align: super; }
-        .db-header .subtitle { color: #666; font-size: 0.9em; margin-top: 5px; }
+        .header{background:linear-gradient(135deg,#0f1923,#1a1a2e,#0f3460);border-bottom:3px solid #00d2ff;padding:20px;text-align:center;position:sticky;top:0;z-index:1000;box-shadow:0 4px 30px rgba(0,210,255,0.2)}
+        .header .logo{font-size:2.5em;font-weight:900;letter-spacing:2px}
+        .header .after{color:#e94560}.header .wow{color:#00d2ff}.header .db{color:#fbbf24;font-size:0.5em;vertical-align:super}
+        .header p{color:#666;font-size:0.9em;margin-top:5px}
 
-        .db-nav {
-            background: #111; padding: 12px; display: flex; justify-content: center;
-            flex-wrap: wrap; gap: 8px; border-bottom: 1px solid #1a1a1a;
-            position: sticky; top: 80px; z-index: 999;
-        }
-        .db-nav button {
-            padding: 10px 20px; border: 2px solid #222; border-radius: 8px;
-            background: #1a1a1a; color: #888; cursor: pointer; font-size: 0.95em;
-            font-weight: 600; transition: all 0.3s; display: flex; align-items: center; gap: 8px;
-        }
-        .db-nav button:hover { border-color: #00d2ff; color: #00d2ff; background: #0f1923; }
-        .db-nav button.active {
-            background: linear-gradient(135deg, #00d2ff, #0098b3); color: #000;
-            border-color: #00d2ff; box-shadow: 0 0 15px rgba(0,210,255,0.3);
-        }
+        .nav{background:#111;padding:12px;display:flex;justify-content:center;flex-wrap:wrap;gap:8px;border-bottom:1px solid #1a1a1a;position:sticky;top:78px;z-index:999}
+        .nav button{padding:10px 18px;border:2px solid #222;border-radius:8px;background:#1a1a1a;color:#888;cursor:pointer;font-size:0.9em;font-weight:600;transition:all 0.3s;display:flex;align-items:center;gap:6px}
+        .nav button:hover{border-color:#00d2ff;color:#00d2ff}
+        .nav button.active{background:linear-gradient(135deg,#00d2ff,#0098b3);color:#000;border-color:#00d2ff;box-shadow:0 0 15px rgba(0,210,255,0.3)}
 
-        .db-search {
-            background: #0a0a0a; padding: 25px 20px; text-align: center; border-bottom: 1px solid #1a1a1a;
-        }
-        .db-search-wrapper { max-width: 700px; margin: 0 auto; position: relative; }
-        .db-search input {
-            width: 100%; padding: 16px 25px 16px 50px; font-size: 1.1em;
-            border: 2px solid #222; border-radius: 12px; background: #141414;
-            color: #fff; outline: none; transition: all 0.3s;
-        }
-        .db-search input:focus { border-color: #00d2ff; box-shadow: 0 0 20px rgba(0,210,255,0.2); }
-        .db-search input::placeholder { color: #444; }
-        .db-search .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); font-size: 1.2em; color: #444; }
+        .search-bar{background:#0a0a0a;padding:25px 20px;text-align:center;border-bottom:1px solid #1a1a1a}
+        .search-bar .wrap{max-width:700px;margin:0 auto;position:relative}
+        .search-bar input{width:100%;padding:16px 25px 16px 50px;font-size:1.1em;border:2px solid #222;border-radius:12px;background:#141414;color:#fff;outline:none;transition:all 0.3s}
+        .search-bar input:focus{border-color:#00d2ff;box-shadow:0 0 20px rgba(0,210,255,0.2)}
+        .search-bar input::placeholder{color:#444}
+        .search-bar .icon{position:absolute;left:18px;top:50%;transform:translateY(-50%);font-size:1.2em;color:#444}
+        .search-bar .filters{display:flex;justify-content:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+        .search-bar select{padding:8px 12px;border:1px solid #333;border-radius:8px;background:#1a1a1a;color:#aaa;font-size:0.85em;cursor:pointer;outline:none}
+        .search-bar select:focus{border-color:#00d2ff}
+        .search-info{color:#555;margin-top:10px;font-size:0.85em}
 
-        .db-search-filters {
-            display: flex; justify-content: center; gap: 10px; margin-top: 15px; flex-wrap: wrap;
-        }
-        .db-search-filters select {
-            padding: 8px 15px; border: 1px solid #333; border-radius: 8px;
-            background: #1a1a1a; color: #aaa; font-size: 0.9em; cursor: pointer; outline: none;
-        }
-        .db-search-filters select:focus { border-color: #00d2ff; }
-        .search-results-info { color: #555; margin-top: 12px; font-size: 0.9em; }
+        .content{max-width:1200px;margin:0 auto;padding:20px}
+        .tab{display:none}.tab.active{display:block}
 
-        .db-content { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .db-section { display: none; }
-        .db-section.active { display: block; }
+        table{width:100%;border-collapse:collapse;background:#121212;border-radius:12px;overflow:hidden;border:1px solid #1a1a1a}
+        thead th{background:#1a1a2e;padding:13px 14px;text-align:left;color:#00d2ff;font-size:0.82em;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #00d2ff;cursor:pointer;user-select:none}
+        thead th:hover{background:#1f2a4a}
+        tbody tr{border-bottom:1px solid #1a1a1a;transition:all 0.2s;cursor:pointer}
+        tbody tr:hover{background:#1a1a2e}
+        tbody tr.hide{display:none}
+        td{padding:11px 14px;vertical-align:middle}
 
-        .db-results-table {
-            width: 100%; border-collapse: collapse; background: #121212;
-            border-radius: 12px; overflow: hidden; border: 1px solid #1a1a1a;
-        }
-        .db-results-table thead th {
-            background: #1a1a2e; padding: 14px 15px; text-align: left; color: #00d2ff;
-            font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px;
-            border-bottom: 2px solid #00d2ff; cursor: pointer; user-select: none;
-        }
-        .db-results-table thead th:hover { background: #1f2a4a; }
-        .db-results-table tbody tr {
-            border-bottom: 1px solid #1a1a1a; transition: all 0.2s; cursor: pointer;
-        }
-        .db-results-table tbody tr:hover { background: #1a1a2e; }
-        .db-results-table tbody tr.hidden { display: none; }
-        .db-results-table td { padding: 12px 15px; vertical-align: middle; }
+        .ic{display:flex;align-items:center;gap:10px}
+        .ic img{width:32px;height:32px;border-radius:5px;border:2px solid #555;flex-shrink:0;object-fit:cover;background:#0a0a0a}
+        .ic img.r0{border-color:#9d9d9d}.ic img.r1{border-color:#fff}.ic img.r2{border-color:#1eff00}.ic img.r3{border-color:#0070dd}.ic img.r4{border-color:#a335ee;box-shadow:0 0 5px rgba(163,53,238,0.3)}.ic img.r5{border-color:#ff8000;box-shadow:0 0 8px rgba(255,128,0,0.4)}
+        .ic .n{font-weight:600;font-size:0.92em}
+        .t0{color:#9d9d9d!important}.t1{color:#fff!important}.t2{color:#1eff00!important}.t3{color:#0070dd!important}.t4{color:#a335ee!important}.t5{color:#ff8000!important}
 
-        .item-cell { display: flex; align-items: center; gap: 12px; }
-        .item-cell .db-icon {
-            width: 36px; height: 36px; border-radius: 6px; border: 2px solid #555;
-            flex-shrink: 0; object-fit: cover; background: #0a0a0a;
-        }
-        .item-cell .db-icon.q0 { border-color: #9d9d9d; }
-        .item-cell .db-icon.q1 { border-color: #ffffff; }
-        .item-cell .db-icon.q2 { border-color: #1eff00; }
-        .item-cell .db-icon.q3 { border-color: #0070dd; }
-        .item-cell .db-icon.q4 { border-color: #a335ee; box-shadow: 0 0 6px rgba(163,53,238,0.3); }
-        .item-cell .db-icon.q5 { border-color: #ff8000; box-shadow: 0 0 8px rgba(255,128,0,0.4); }
-        .item-cell .db-name { font-weight: 600; font-size: 0.95em; }
+        .cid{font-family:'Courier New',monospace;color:#fbbf24;font-weight:bold;text-align:center;width:75px}
+        .ct{color:#888;font-size:0.83em}.cs{color:#666;font-size:0.83em}.cl{text-align:center;color:#aaa}
 
-        .q0-text { color: #9d9d9d !important; }
-        .q1-text { color: #ffffff !important; }
-        .q2-text { color: #1eff00 !important; }
-        .q3-text { color: #0070dd !important; }
-        .q4-text { color: #a335ee !important; }
-        .q5-text { color: #ff8000 !important; }
+        .cp{background:#1a2a1a;border:1px solid #2d4a2d;color:#4ade80;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:'Courier New',monospace;font-size:0.78em;transition:all 0.2s;white-space:nowrap}
+        .cp:hover{background:#2d4a2d;border-color:#4ade80}.cp.ok{border-color:#4ade80;color:#4ade80}
 
-        .col-id { font-family: 'Courier New', monospace; color: #fbbf24; font-weight: bold; text-align: center; width: 80px; }
-        .col-type { color: #888; font-size: 0.85em; }
-        .col-source { color: #666; font-size: 0.85em; }
-        .col-level { text-align: center; color: #aaa; }
+        .tt{display:none;position:fixed;background:linear-gradient(180deg,#1a1a2e,#111);border:2px solid #555;border-radius:10px;padding:18px;max-width:340px;z-index:10000;box-shadow:0 10px 40px rgba(0,0,0,0.8);pointer-events:none}
+        .tt.vis{display:block}
+        .tt .tn{font-size:1.05em;font-weight:bold;margin-bottom:4px}
+        .tt .tp{color:#888;font-size:0.82em;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #333}
+        .tt .ts{color:#1eff00;font-size:0.88em;line-height:1.5}
+        .tt .td{color:#fbbf24;font-style:italic;font-size:0.82em;margin-top:6px;padding-top:6px;border-top:1px solid #333}
+        .tt .ti{color:#666;font-size:0.78em;margin-top:4px;font-family:'Courier New',monospace}
+        .tt .tc{background:#0a0a0a;color:#4ade80;padding:5px 8px;border-radius:4px;font-family:'Courier New',monospace;font-size:0.78em;margin-top:6px}
 
-        .cmd-copy {
-            background: #1a2a1a; border: 1px solid #2d4a2d; color: #4ade80;
-            padding: 5px 12px; border-radius: 6px; cursor: pointer;
-            font-family: 'Courier New', monospace; font-size: 0.8em;
-            transition: all 0.2s; white-space: nowrap;
-        }
-        .cmd-copy:hover { background: #2d4a2d; border-color: #4ade80; }
-        .cmd-copy.copied { background: #1a3a1a; border-color: #4ade80; color: #4ade80; }
+        .pg{display:flex;justify-content:center;align-items:center;gap:6px;padding:18px;flex-wrap:wrap}
+        .pg button{padding:7px 13px;border:1px solid #333;border-radius:6px;background:#1a1a1a;color:#888;cursor:pointer;font-size:0.85em;transition:all 0.2s}
+        .pg button:hover{border-color:#00d2ff;color:#00d2ff}
+        .pg button.act{background:#00d2ff;color:#000;border-color:#00d2ff}
+        .pg button:disabled{opacity:0.3;cursor:not-allowed}
+        .pg .pi{color:#555;font-size:0.82em}
 
-        .item-tooltip {
-            display: none; position: fixed;
-            background: linear-gradient(180deg, #1a1a2e, #111);
-            border: 2px solid #555; border-radius: 10px; padding: 20px;
-            max-width: 350px; z-index: 10000;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8); pointer-events: none;
-        }
-        .item-tooltip.visible { display: block; }
-        .item-tooltip .tt-name { font-size: 1.1em; font-weight: bold; margin-bottom: 5px; }
-        .item-tooltip .tt-type { color: #888; font-size: 0.85em; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #333; }
-        .item-tooltip .tt-stats { color: #1eff00; font-size: 0.9em; line-height: 1.6; }
-        .item-tooltip .tt-desc { color: #fbbf24; font-style: italic; font-size: 0.85em; margin-top: 8px; padding-top: 8px; border-top: 1px solid #333; }
-        .item-tooltip .tt-id { color: #666; font-size: 0.8em; margin-top: 5px; font-family: 'Courier New', monospace; }
-        .item-tooltip .tt-cmd { background: #0a0a0a; color: #4ade80; padding: 6px 10px; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 0.8em; margin-top: 8px; }
+        .nr{text-align:center;padding:50px 20px;color:#555;font-size:1.2em;display:none}
+        .nr.vis{display:block}.nr span{font-size:2.5em;display:block;margin-bottom:12px}
 
-        .pagination { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 20px; flex-wrap: wrap; }
-        .pagination button {
-            padding: 8px 14px; border: 1px solid #333; border-radius: 6px;
-            background: #1a1a1a; color: #888; cursor: pointer; font-size: 0.9em; transition: all 0.2s;
-        }
-        .pagination button:hover { border-color: #00d2ff; color: #00d2ff; }
-        .pagination button.active { background: #00d2ff; color: #000; border-color: #00d2ff; }
-        .pagination button:disabled { opacity: 0.3; cursor: not-allowed; }
-        .pagination .page-info { color: #555; font-size: 0.85em; }
+        .top{position:fixed;bottom:25px;right:25px;width:45px;height:45px;background:#00d2ff;color:#000;border:none;border-radius:50%;font-size:1.3em;cursor:pointer;display:none;z-index:1000;box-shadow:0 4px 15px rgba(0,210,255,0.4);transition:all 0.3s}
+        .top.vis{display:block}.top:hover{transform:scale(1.1)}
 
-        .no-results { text-align: center; padding: 60px 20px; color: #555; font-size: 1.3em; display: none; }
-        .no-results.visible { display: block; }
-        .no-results span { font-size: 3em; display: block; margin-bottom: 15px; }
+        .home{position:fixed;bottom:25px;left:25px;padding:10px 18px;background:#e94560;color:#fff;border:none;border-radius:20px;font-size:0.85em;cursor:pointer;z-index:1000;box-shadow:0 4px 15px rgba(233,69,96,0.4);text-decoration:none;transition:all 0.3s}
+        .home:hover{transform:scale(1.05);background:#d63851}
 
-        .scroll-top {
-            position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
-            background: #00d2ff; color: #000; border: none; border-radius: 50%;
-            font-size: 1.5em; cursor: pointer; display: none; z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0,210,255,0.4); transition: all 0.3s;
-        }
-        .scroll-top.visible { display: block; }
-        .scroll-top:hover { transform: scale(1.1); }
+        footer{text-align:center;padding:25px;border-top:1px solid #1a1a1a;color:#333;margin-top:40px}
+        footer .fl{font-size:1.2em;font-weight:900;margin-bottom:6px}
 
-        .home-btn {
-            position: fixed; bottom: 30px; left: 30px; padding: 12px 20px;
-            background: #e94560; color: #fff; border: none; border-radius: 25px;
-            font-size: 0.9em; cursor: pointer; z-index: 1000;
-            box-shadow: 0 4px 15px rgba(233,69,96,0.4); text-decoration: none; transition: all 0.3s;
-        }
-        .home-btn:hover { transform: scale(1.05); background: #d63851; }
-
-        footer {
-            text-align: center; padding: 30px; border-top: 1px solid #1a1a1a;
-            color: #333; margin-top: 50px;
-        }
-        footer .footer-logo { font-size: 1.3em; font-weight: 900; margin-bottom: 8px; }
-        footer .after { color: #e94560; }
-        footer .wow { color: #00d2ff; }
-
-        @media (max-width: 768px) {
-            .db-header .logo { font-size: 1.8em; }
-            .db-results-table { font-size: 0.85em; }
-            .db-results-table .col-source { display: none; }
-            .db-results-table .col-level { display: none; }
-            .item-cell .db-icon { width: 28px; height: 28px; }
-            .db-nav button { padding: 8px 12px; font-size: 0.85em; }
-            .db-search-filters { display: none; }
+        @media(max-width:768px){
+            .header .logo{font-size:1.8em}.nav button{padding:8px 10px;font-size:0.8em}
+            .search-bar .filters{display:none}table{font-size:0.82em}
+            .cs,.cl{display:none}.ic img{width:26px;height:26px}
         }
     </style>
 </head>
 <body>
 
-    <div class="db-header">
-        <div class="logo"><span class="after">After</span><span class="wow">WoW</span><span class="db"> DATABASE</span></div>
-        <div class="subtitle">Base de Datos WoW 3.3.5a - Wrath of the Lich King</div>
+<div class="header">
+    <div class="logo"><span class="after">After</span><span class="wow">WoW</span><span class="db"> DATABASE</span></div>
+    <p>Base de Datos WoW 3.3.5a - Wrath of the Lich King</p>
+</div>
+
+<div class="nav" id="nav">
+    <button class="active" onclick="go('items',this)">⚔️ Items</button>
+    <button onclick="go('mounts',this)">🐉 Monturas</button>
+    <button onclick="go('npcs',this)">👹 NPCs</button>
+    <button onclick="go('spells',this)">✨ Hechizos</button>
+    <button onclick="go('quests',this)">📜 Misiones</button>
+    <button onclick="go('sets',this)">🛡️ Sets</button>
+    <button onclick="go('zones',this)">🗺️ Zonas</button>
+</div>
+
+<div class="search-bar">
+    <div class="wrap">
+        <span class="icon">🔍</span>
+        <input type="text" id="q" placeholder="Buscar por nombre o ID...">
     </div>
-
-    <div class="db-nav" id="dbNav">
-        <button class="active" onclick="switchDB('items', this)">⚔️ Items</button>
-        <button onclick="switchDB('npcs', this)">👹 NPCs</button>
-        <button onclick="switchDB('spells', this)">✨ Hechizos</button>
-        <button onclick="switchDB('quests', this)">📜 Misiones</button>
-        <button onclick="switchDB('sets', this)">🛡️ Sets</button>
-        <button onclick="switchDB('zones', this)">🗺️ Zonas</button>
-        <button onclick="switchDB('mounts', this)">🐉 Monturas</button>
+    <div class="filters" id="filters">
+        <select id="fRar" onchange="filter()"><option value="">Todas rarezas</option><option value="5">⭐ Legendario</option><option value="4">🟣 Épico</option><option value="3">🔵 Raro</option><option value="2">🟢 Poco común</option><option value="1">⚪ Común</option></select>
+        <select id="fType" onchange="filter()"><option value="">Todos tipos</option><option value="Arma">⚔️ Armas</option><option value="Armadura">🛡️ Armaduras</option><option value="Consumible">🧪 Consumibles</option><option value="Gema">💎 Gemas</option><option value="Token">🪙 Tokens</option><option value="Bolsa">👜 Bolsas</option><option value="Tabardo">🏳️ Tabardos</option><option value="Misceláneo">🔧 Misc</option></select>
     </div>
+    <div class="search-info" id="info"></div>
+</div>
 
-    <div class="db-search">
-        <div class="db-search-wrapper">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="dbSearch" placeholder="Buscar por nombre o ID...">
-        </div>
-        <div class="db-search-filters" id="searchFilters">
-            <select id="filterRarity" onchange="applyFilters()">
-                <option value="">Todas las rarezas</option>
-                <option value="5">⭐ Legendario</option>
-                <option value="4">🟣 Épico</option>
-                <option value="3">🔵 Raro</option>
-                <option value="2">🟢 Poco común</option>
-                <option value="1">⚪ Común</option>
-            </select>
-            <select id="filterType" onchange="applyFilters()">
-                <option value="">Todos los tipos</option>
-                <option value="Arma">⚔️ Armas</option>
-                <option value="Armadura">🛡️ Armaduras</option>
-                <option value="Consumible">🧪 Consumibles</option>
-                <option value="Montura">🐉 Monturas</option>
-                <option value="Token">🪙 Tokens</option>
-                <option value="Bolsa">👜 Bolsas</option>
-                <option value="Gema">💎 Gemas</option>
-                <option value="Tabardo">🏳️ Tabardos</option>
-                <option value="Misceláneo">🔧 Misceláneo</option>
-            </select>
-        </div>
-        <div class="search-results-info" id="searchResultsInfo"></div>
+<div class="content">
+    <div class="tab active" id="t-items">
+        <table><thead><tr><th style="width:75px" onclick="srt('id')">ID ↕</th><th onclick="srt('name')">Nombre ↕</th><th style="width:100px" onclick="srt('type')">Tipo</th><th style="width:100px">Slot</th><th style="width:55px" onclick="srt('ilvl')">iLvl ↕</th><th style="width:100px">Origen</th><th style="width:130px">Comando</th></tr></thead><tbody id="bItems"></tbody></table>
+        <div class="pg" id="pg"></div>
     </div>
+    <div class="tab" id="t-mounts"><table><thead><tr><th style="width:75px">ID</th><th>Montura</th><th>Origen</th><th style="width:100px">Velocidad</th><th style="width:130px">Comando</th></tr></thead><tbody id="bMounts"></tbody></table></div>
+    <div class="tab" id="t-npcs"><table><thead><tr><th style="width:75px">ID</th><th>Nombre</th><th style="width:110px">Tipo</th><th style="width:55px">Lvl</th><th>Ubicación</th><th style="width:140px">Comando</th></tr></thead><tbody id="bNpcs"></tbody></table></div>
+    <div class="tab" id="t-spells"><table><thead><tr><th style="width:75px">ID</th><th>Hechizo</th><th>Efecto</th><th style="width:90px">Tipo</th><th style="width:130px">Comando</th></tr></thead><tbody id="bSpells"></tbody></table></div>
+    <div class="tab" id="t-quests"><table><thead><tr><th style="width:75px">ID</th><th>Misión</th><th style="width:55px">Lvl</th><th>Zona</th><th style="width:140px">Comando</th></tr></thead><tbody id="bQuests"></tbody></table></div>
+    <div class="tab" id="t-sets"><table><thead><tr><th style="width:75px">Set ID</th><th>Set</th><th style="width:130px">Clase</th><th style="width:75px">Tier</th><th style="width:140px">Comando</th></tr></thead><tbody id="bSets"></tbody></table></div>
+    <div class="tab" id="t-zones"><table><thead><tr><th>Zona</th><th style="width:120px">Continente</th><th style="width:70px">Nivel</th><th style="width:90px">Tipo</th><th style="width:180px">Comando</th></tr></thead><tbody id="bZones"></tbody></table></div>
+    <div class="nr" id="nr"><span>🔍</span>Sin resultados</div>
+</div>
 
-    <div class="db-content">
+<div class="tt" id="tt"></div>
+<button class="top" id="topBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<a class="home" href="index.html">⚔️ Comandos GM</a>
+<footer><div class="fl"><span class="after">After</span><span class="wow">WoW</span></div><p>Base de Datos 3.3.5a | Equipo GM AfterWoW</p></footer>
 
-        <div class="db-section active" id="db-items">
-            <table class="db-results-table" id="itemsTable">
-                <thead><tr>
-                    <th style="width:80px" onclick="sortTable('id')">ID ↕</th>
-                    <th onclick="sortTable('name')">Nombre ↕</th>
-                    <th style="width:110px" onclick="sortTable('type')">Tipo</th>
-                    <th style="width:110px">Slot</th>
-                    <th style="width:60px" onclick="sortTable('ilvl')">iLvl ↕</th>
-                    <th style="width:110px">Origen</th>
-                    <th style="width:140px">Comando GM</th>
-                </tr></thead>
-                <tbody id="itemsBody"></tbody>
-            </table>
-            <div class="pagination" id="itemsPagination"></div>
-        </div>
+<script>
+const I="https://wow.zamimg.com/images/wow/icons/medium/",F="inv_misc_questionmark";
+function ic(n){return I+(n||F)+".jpg"}
 
-        <div class="db-section" id="db-npcs">
-            <table class="db-results-table">
-                <thead><tr>
-                    <th style="width:80px">ID</th><th>Nombre</th>
-                    <th style="width:120px">Tipo</th><th style="width:60px">Nivel</th>
-                    <th>Ubicación</th><th style="width:160px">Comando GM</th>
-                </tr></thead>
-                <tbody id="npcsBody"></tbody>
-            </table>
-        </div>
+const D={
+items:[
+// LEGENDARIAS
+{id:49623,n:"Shadowmourne",t:"Arma",s:"Dos manos",il:284,r:5,o:"ICC Quest",i:"inv_axe_113",tg:"BiS ICC",st:"+223 Fuerza\n+198 Aguante\n+114 Crítico",d:"Hacha legendaria ICC"},
+{id:46017,n:"Val'anyr, Hammer of Ancient Kings",t:"Arma",s:"Mano principal",il:245,r:5,o:"Ulduar",i:"inv_mace_99",tg:"BiS Healer",st:"+105 Intelecto\n+105 Aguante\n+51 Celeridad",d:"Maza legendaria sanación"},
+{id:19019,n:"Thunderfury, Blessed Blade of the Windseeker",t:"Arma",s:"Mano principal",il:80,r:5,o:"Molten Core",i:"inv_sword_39",tg:"Classic",st:"+5 Agilidad\n+8 Aguante\nProc: Cadena Rayos",d:"Espada legendaria"},
+{id:17182,n:"Sulfuras, Hand of Ragnaros",t:"Arma",s:"Dos manos",il:80,r:5,o:"Molten Core",i:"inv_hammer_unique_sulfuras",tg:"Classic",st:"+12 Fuerza\nProc: Bola Fuego",d:"Maza de Ragnaros"},
+{id:32837,n:"Warglaive of Azzinoth (MH)",t:"Arma",s:"Mano principal",il:156,r:5,o:"Black Temple",i:"inv_weapon_glave_01",tg:"TBC Illidan",st:"Daño: 214-398",d:"Guja de Illidan MH"},
+{id:32838,n:"Warglaive of Azzinoth (OH)",t:"Arma",s:"Mano secundaria",il:156,r:5,o:"Black Temple",i:"inv_weapon_glave_02",tg:"TBC Illidan",st:"Daño: 214-398",d:"Guja de Illidan OH"},
+{id:34334,n:"Thori'dal, the Stars' Fury",t:"Arma",s:"A distancia",il:164,r:5,o:"Sunwell",i:"inv_bow_53",tg:"TBC",st:"No requiere munición",d:"Arco de Kil'jaeden"},
+// ICC HC 25
+{id:50730,n:"Glorenzelg, High-Blade of the Silver Hand",t:"Arma",s:"Dos manos",il:284,r:4,o:"LK HC 25",i:"inv_sword_163",tg:"BiS ICC",st:"+198 Fuerza\n+190 Aguante",d:"Espada 2M LK HC"},
+{id:50737,n:"Havoc's Call, Blade of Lordaeron Kings",t:"Arma",s:"Mano principal",il:284,r:4,o:"LK HC 25",i:"inv_sword_162",tg:"BiS ICC",st:"+75 Fuerza\n+67 Aguante",d:"Espada 1M LK HC"},
+{id:50738,n:"Heaven's Fall, Kryss of a Thousand Lies",t:"Arma",s:"Mano principal",il:284,r:4,o:"LK HC 25",i:"inv_knife_1h_stratholme_d_01",tg:"BiS Rogue",st:"+53 Agilidad\n+46 Aguante",d:"Daga LK HC"},
+{id:50735,n:"Windrunner's Heartseeker",t:"Arma",s:"A distancia",il:284,r:4,o:"LK HC 25",i:"inv_weapon_crossbow_38",tg:"BiS Hunter",st:"+33 Agilidad\n+34 Aguante",d:"Ballesta LK HC"},
+{id:50734,n:"Royal Scepter of Terenas II",t:"Arma",s:"Mano principal",il:284,r:4,o:"LK HC 25",i:"inv_mace_115",tg:"BiS Healer",st:"+75 Intelecto\n+67 Aguante",d:"Maza Healer LK HC"},
+{id:50733,n:"Mithrios, Bronzebeard's Legacy",t:"Arma",s:"Mano principal",il:284,r:4,o:"LK HC 25",i:"inv_sword_161",tg:"BiS Tank",st:"+60 Fuerza\n+75 Aguante",d:"Espada Tank LK HC"},
+{id:51943,n:"Bryntroll, the Bone Arbiter (HC)",t:"Arma",s:"Dos manos",il:277,r:4,o:"Marrowgar HC",i:"inv_axe_110",tg:"ICC",st:"+175 Fuerza\nProc: Drena Vida",d:"Hacha 2M Marrowgar HC"},
+{id:50472,n:"Lungbreaker",t:"Arma",s:"Mano principal",il:264,r:4,o:"Marrowgar 25N",i:"inv_mace_111",tg:"ICC",st:"+58 Fuerza\n+54 Aguante",d:"Maza Marrowgar"},
+{id:50471,n:"Frozen Bonespike",t:"Arma",s:"Mano principal",il:264,r:4,o:"Marrowgar 25N",i:"inv_sword_108",tg:"ICC Rogue",st:"+46 Agilidad\n+42 Aguante",d:"Daga Marrowgar"},
+// TRINKETS
+{id:50706,n:"Deathbringer's Will (HC)",t:"Armadura",s:"Abalorio",il:277,r:4,o:"Saurfang HC25",i:"inv_misc_blacksaberonfang",tg:"BiS Melee",st:"+155 ArP\nProc: +600 Stat",d:"BiS Melee DPS"},
+{id:50363,n:"Deathbringer's Will (N)",t:"Armadura",s:"Abalorio",il:264,r:4,o:"Saurfang 25N",i:"inv_misc_blacksaberonfang",tg:"ICC Melee",st:"+155 ArP\nProc: +600 Stat",d:"Melee Trinket"},
+{id:50353,n:"Dislodged Foreign Object (HC)",t:"Armadura",s:"Abalorio",il:277,r:4,o:"Rotface HC25",i:"inv_jewelry_trinket_03",tg:"BiS Caster",st:"+155 SP\nProc: Stack SP",d:"BiS Caster DPS"},
+{id:50360,n:"Phylactery of the Nameless Lich (HC)",t:"Armadura",s:"Abalorio",il:277,r:4,o:"Sindragosa HC25",i:"inv_misc_urn_01",tg:"BiS Caster",st:"+155 Haste\nProc: +1207 SP",d:"BiS Caster Trinket"},
+{id:50361,n:"Sindragosa's Flawless Fang (HC)",t:"Armadura",s:"Abalorio",il:277,r:4,o:"Sindragosa HC25",i:"inv_misc_monsterscales_15",tg:"BiS Healer",st:"+155 MP5\nUso: Escudo",d:"BiS Healer Trinket"},
+{id:50343,n:"Whispering Fanged Skull (HC)",t:"Armadura",s:"Abalorio",il:277,r:4,o:"Deathwhisper HC25",i:"inv_misc_bone_skull_01",tg:"BiS Physical",st:"+155 ArP\nProc: +1100 PA",d:"BiS Physical DPS"},
+{id:50198,n:"Needle-Encrusted Scorpion",t:"Armadura",s:"Abalorio",il:232,r:4,o:"FoS HC",i:"inv_misc_ahnqirajtrinket_01",tg:"Physical",st:"+112 ArP\nProc: +556 Crit",d:"FoS HC Trinket"},
+{id:47303,n:"Death's Choice (HC)",t:"Armadura",s:"Abalorio",il:258,r:4,o:"ToGC 25",i:"inv_jewelry_trinket_11",tg:"Physical ToC",st:"+155 Agi\nProc: +510 AP",d:"Trial HC Trinket"},
+// CONSUMIBLES
+{id:46377,n:"Flask of Endless Rage",t:"Consumible",s:"-",il:80,r:2,o:"Alquimia",i:"inv_alchemy_endlessflask_06",tg:"Frasco Melee",st:"+180 PA / 1 hora",d:"Frasco DPS físico"},
+{id:46376,n:"Flask of the Frost Wyrm",t:"Consumible",s:"-",il:80,r:2,o:"Alquimia",i:"inv_alchemy_endlessflask_04",tg:"Frasco Caster",st:"+125 SP / 1 hora",d:"Frasco caster"},
+{id:46379,n:"Flask of Stoneblood",t:"Consumible",s:"-",il:80,r:2,o:"Alquimia",i:"inv_alchemy_endlessflask_05",tg:"Frasco Tank",st:"+1300 HP / 1 hora",d:"Frasco tanque"},
+{id:46378,n:"Flask of Pure Mojo",t:"Consumible",s:"-",il:80,r:2,o:"Alquimia",i:"inv_alchemy_endlessflask_03",tg:"Frasco Healer",st:"+45 MP5 / 1 hora",d:"Frasco healer"},
+{id:40211,n:"Potion of Speed",t:"Consumible",s:"-",il:80,r:2,o:"Alquimia",i:"inv_alchemy_elixir_04",tg:"Poción",st:"+500 Haste / 15s",d:"Poción combate"},
+{id:40212,n:"Potion of Wild Magic",t:"Consumible",s:"-",il:80,r:2,o:"Alquimia",i:"inv_alchemy_elixir_01",tg:"Poción Caster",st:"+200 Crit +200 SP",d:"Poción caster"},
+{id:33447,n:"Runic Healing Potion",t:"Consumible",s:"-",il:80,r:2,o:"Alquimia",i:"inv_alchemy_elixir_05",tg:"Poción Vida",st:"2700-4500 vida",d:"Poción curación"},
+{id:33448,n:"Runic Mana Potion",t:"Consumible",s:"-",il:80,r:2,o:"Alquimia",i:"inv_alchemy_elixir_02",tg:"Poción Mana",st:"4200-4400 maná",d:"Poción maná"},
+{id:43015,n:"Fish Feast",t:"Consumible",s:"-",il:80,r:2,o:"Cocina",i:"inv_misc_fish_52",tg:"Comida Raid",st:"+80PA/+46SP/+40Agu",d:"Festín grupal"},
+{id:34767,n:"Blackened Dragonfin",t:"Consumible",s:"-",il:80,r:2,o:"Cocina",i:"inv_misc_food_142_fish",tg:"Comida Agi",st:"+40 Agi +40 Sta",d:"Comida Agilidad"},
+{id:34762,n:"Dragonfin Filet",t:"Consumible",s:"-",il:80,r:2,o:"Cocina",i:"inv_misc_food_141_fish",tg:"Comida Str",st:"+40 Str +40 Sta",d:"Comida Fuerza"},
+// GEMAS
+{id:40111,n:"Bold Cardinal Ruby",t:"Gema",s:"Roja",il:80,r:4,o:"JC",i:"inv_jewelcrafting_gem_25",tg:"Str",st:"+20 Fuerza",d:"Gema roja"},
+{id:40112,n:"Delicate Cardinal Ruby",t:"Gema",s:"Roja",il:80,r:4,o:"JC",i:"inv_jewelcrafting_gem_25",tg:"Agi",st:"+20 Agilidad",d:"Gema roja"},
+{id:40113,n:"Runed Cardinal Ruby",t:"Gema",s:"Roja",il:80,r:4,o:"JC",i:"inv_jewelcrafting_gem_25",tg:"SP",st:"+23 Spell Power",d:"Gema roja"},
+{id:40118,n:"Solid Majestic Zircon",t:"Gema",s:"Azul",il:80,r:4,o:"JC",i:"inv_jewelcrafting_gem_31",tg:"Sta",st:"+30 Aguante",d:"Gema azul"},
+{id:40122,n:"Brilliant King's Amber",t:"Gema",s:"Amarilla",il:80,r:4,o:"JC",i:"inv_jewelcrafting_gem_33",tg:"Int",st:"+20 Intelecto",d:"Gema amarilla"},
+{id:40124,n:"Rigid King's Amber",t:"Gema",s:"Amarilla",il:80,r:4,o:"JC",i:"inv_jewelcrafting_gem_33",tg:"Hit",st:"+20 Golpe",d:"Gema amarilla"},
+{id:40126,n:"Quick King's Amber",t:"Gema",s:"Amarilla",il:80,r:4,o:"JC",i:"inv_jewelcrafting_gem_33",tg:"Haste",st:"+20 Celeridad",d:"Gema amarilla"},
+{id:40128,n:"Sovereign Dreadstone",t:"Gema",s:"Morada",il:80,r:4,o:"JC",i:"inv_jewelcrafting_gem_37",tg:"Str Sta",st:"+10 Str +15 Sta",d:"Gema morada"},
+// TOKENS
+{id:49426,n:"Emblem of Frost",t:"Token",s:"-",il:1,r:4,o:"ICC",i:"inv_misc_frostemblem_01",tg:"T10",st:"Equipo T10 iLvl264",d:"Moneda endgame"},
+{id:47241,n:"Emblem of Triumph",t:"Token",s:"-",il:1,r:4,o:"Heroics",i:"spell_holy_summonchampion",tg:"T9",st:"Equipo T9 iLvl245",d:"Moneda anterior"},
+{id:45624,n:"Emblem of Conquest",t:"Token",s:"-",il:1,r:4,o:"Ulduar",i:"spell_holy_championsbond",tg:"T8",st:"Equipo T8 iLvl226",d:"Moneda Ulduar"},
+{id:49908,n:"Primordial Saronite",t:"Token",s:"-",il:1,r:4,o:"ICC/Frost",i:"inv_misc_shadoweternalearth",tg:"Craft",st:"Material ICC",d:"Crafting endgame"},
+// BOLSAS
+{id:41599,n:"Frostweave Bag",t:"Bolsa",s:"-",il:1,r:3,o:"Sastrería",i:"inv_misc_bag_10_blue",tg:"20",st:"20 Espacios",d:"Bolsa WotLK"},
+{id:45773,n:"Glacial Bag",t:"Bolsa",s:"-",il:1,r:4,o:"Sastrería",i:"inv_misc_bag_10_blue",tg:"22",st:"22 Espacios",d:"Mejor bolsa"},
+// TABARDOS
+{id:43154,n:"Tabard of the Argent Crusade",t:"Tabardo",s:"Tabardo",il:1,r:3,o:"Argent",i:"inv_misc_tabard_argentcrusade",tg:"Rep",st:"Rep en Heroics",d:"Tabardo"},
+{id:43157,n:"Tabard of the Kirin Tor",t:"Tabardo",s:"Tabardo",il:1,r:3,o:"Kirin Tor",i:"inv_misc_tabard_kirintor",tg:"Rep",st:"Rep en Heroics",d:"Tabardo"},
+{id:43155,n:"Tabard of the Wyrmrest Accord",t:"Tabardo",s:"Tabardo",il:1,r:3,o:"Wyrmrest",i:"inv_misc_tabard_wyrmrestaccord",tg:"Rep",st:"Rep en Heroics",d:"Tabardo"},
+{id:43156,n:"Tabard of the Ebon Blade",t:"Tabardo",s:"Tabardo",il:1,r:3,o:"Ebon Blade",i:"inv_misc_tabard_ebonblade",tg:"Rep",st:"Rep en Heroics",d:"Tabardo"},
+// MISC
+{id:6948,n:"Hearthstone",t:"Misceláneo",s:"-",il:1,r:1,o:"Inicial",i:"inv_misc_rune_01",tg:"Hogar",st:"TP posada CD:30m",d:"Piedra de Hogar"},
+{id:44606,n:"Toy Train Set",t:"Misceláneo",s:"-",il:1,r:3,o:"Dalaran",i:"inv_misc_toy_02",tg:"Fun",st:"Tren de juguete",d:"Diversión"},
+{id:35275,n:"Orb of the Sin'dorei",t:"Misceláneo",s:"-",il:1,r:3,o:"MgT HC",i:"inv_misc_orb_05",tg:"Fun",st:"Blood Elf 5min",d:"Transformación"},
+],
 
-        <div class="db-section" id="db-spells">
-            <table class="db-results-table">
-                <thead><tr>
-                    <th style="width:80px">ID</th><th>Hechizo</th>
-                    <th>Efecto</th><th style="width:100px">Tipo</th>
-                    <th style="width:160px">Comando GM</th>
-                </tr></thead>
-                <tbody id="spellsBody"></tbody>
-            </table>
-        </div>
+mounts:[
+{id:50818,n:"Invincible's Reins",o:"LK HC 25",sp:"310% Vuelo",r:5,i:"ability_mount_yourmagicmymine"},
+{id:45693,n:"Mimiron's Head",o:"Yogg+0 Ulduar",sp:"310% Vuelo",r:4,i:"inv_misc_enggizmo_01"},
+{id:32458,n:"Ashes of Al'ar",o:"Kael'thas TK",sp:"310% Vuelo",r:4,i:"inv_misc_summerfest_brazierorange"},
+{id:30480,n:"Fiery Warhorse's Reins",o:"Attumen Karazhan",sp:"100% Tierra",r:4,i:"ability_mount_dreadsteed"},
+{id:43986,n:"Reins of the Black Drake",o:"Sartharion 3D 10",sp:"280% Vuelo",r:4,i:"ability_mount_drake_twilight"},
+{id:43954,n:"Reins of the Twilight Drake",o:"Sartharion 3D 25",sp:"280% Vuelo",r:4,i:"ability_mount_drake_twilight"},
+{id:43951,n:"Reins of the Bronze Drake",o:"CoS Timed",sp:"280% Vuelo",r:4,i:"ability_mount_drake_bronze"},
+{id:43952,n:"Reins of the Azure Drake",o:"Malygos",sp:"280% Vuelo",r:4,i:"ability_mount_drake_azure"},
+{id:43953,n:"Reins of the Blue Drake",o:"Malygos",sp:"280% Vuelo",r:4,i:"ability_mount_drake_azure"},
+{id:44151,n:"Reins of the Blue Proto-Drake",o:"Skadi UP HC",sp:"280% Vuelo",r:4,i:"ability_mount_drake_proto"},
+{id:44168,n:"Reins of the Time-Lost Proto-Drake",o:"Rare Storm Peaks",sp:"280% Vuelo",r:4,i:"ability_mount_drake_proto"},
+{id:44707,n:"Reins of the Green Proto-Drake",o:"Mysterious Egg",sp:"280% Vuelo",r:4,i:"ability_mount_drake_proto"},
+{id:44160,n:"Reins of the Red Proto-Drake",o:"Glory of Hero",sp:"280% Vuelo",r:4,i:"ability_mount_drake_proto"},
+{id:44164,n:"Reins of the Black Proto-Drake",o:"Glory Raider 10",sp:"280% Vuelo",r:4,i:"ability_mount_drake_proto"},
+{id:49636,n:"Reins of the Onyxian Drake",o:"Onyxia 25",sp:"280% Vuelo",r:4,i:"ability_mount_drake_onyxia"},
+{id:44083,n:"Grand Black War Mammoth (A)",o:"VoA",sp:"100% 3 asientos",r:4,i:"ability_mount_mammoth_black_3seater"},
+{id:44086,n:"Grand Black War Mammoth (H)",o:"VoA",sp:"100% 3 asientos",r:4,i:"ability_mount_mammoth_black_3seater"},
+{id:44235,n:"Traveler's Tundra Mammoth (A)",o:"Dalaran 20k oro",sp:"100% Vendedores",r:4,i:"ability_mount_mammoth_white_3seater"},
+{id:44234,n:"Traveler's Tundra Mammoth (H)",o:"Dalaran 20k oro",sp:"100% Vendedores",r:4,i:"ability_mount_mammoth_white_3seater"},
+{id:43959,n:"Grand Ice Mammoth (A)",o:"Hodir Exaltado",sp:"100% 3 asientos",r:4,i:"ability_mount_mammoth_white_3seater"},
+{id:43961,n:"Grand Ice Mammoth (H)",o:"Hodir Exaltado",sp:"100% 3 asientos",r:4,i:"ability_mount_mammoth_white_3seater"},
+{id:49096,n:"Crusader's White Warhorse",o:"ToGC (A)",sp:"100% Tierra",r:4,i:"ability_mount_yourmagicmymine"},
+{id:49098,n:"Crusader's Black Warhorse",o:"ToGC (H)",sp:"100% Tierra",r:4,i:"ability_mount_yourmagicmymine"},
+{id:35513,n:"Swift White Hawkstrider",o:"Kael MgT HC",sp:"100% Tierra",r:4,i:"ability_mount_cockatricemountelite_white"},
+{id:13335,n:"Deathcharger's Reins",o:"Baron Stratholme",sp:"100% Tierra",r:4,i:"ability_mount_undeadhorse"},
+{id:43516,n:"Mechano-Hog",o:"Ingeniería (H)",sp:"100% 2 asientos",r:4,i:"ability_mount_mechanostrider"},
+{id:44413,n:"Mekgineer's Chopper",o:"Ingeniería (A)",sp:"100% 2 asientos",r:4,i:"ability_mount_mechanostrider"},
+{id:37012,n:"The Horseman's Reins",o:"Hallow's End",sp:"280% Vuelo",r:4,i:"ability_mount_dreadsteed"},
+{id:33977,n:"Swift Brewfest Ram",o:"Brewfest",sp:"100% Tierra",r:4,i:"ability_mount_mountainram"},
+{id:37828,n:"Great Brewfest Kodo",o:"Brewfest",sp:"100% Tierra",r:4,i:"ability_mount_kodo_03"},
+{id:44178,n:"Reins of the Albino Drake",o:"50 Monturas",sp:"280% Vuelo",r:4,i:"ability_mount_drake_azure"},
+{id:46171,n:"Furious Gladiator's Frost Wyrm",o:"Arena S6",sp:"310% Vuelo",r:4,i:"ability_mount_drake_proto"},
+],
 
-        <div class="db-section" id="db-quests">
-            <table class="db-results-table">
-                <thead><tr>
-                    <th style="width:80px">ID</th><th>Misión</th>
-                    <th style="width:60px">Nivel</th><th>Zona</th>
-                    <th style="width:160px">Comando GM</th>
-                </tr></thead>
-                <tbody id="questsBody"></tbody>
-            </table>
-        </div>
+npcs:[
+{id:36597,n:"The Lich King",tp:"Boss",lv:"??",loc:"ICC - Frozen Throne",i:"achievement_boss_lichking"},
+{id:36612,n:"Lord Marrowgar",tp:"Boss",lv:"??",loc:"ICC - Lower Spire",i:"achievement_boss_lordmarrowgar"},
+{id:36855,n:"Lady Deathwhisper",tp:"Boss",lv:"??",loc:"ICC - Lower Spire",i:"achievement_boss_ladydeathwhisper"},
+{id:37813,n:"Deathbringer Saurfang",tp:"Boss",lv:"??",loc:"ICC - Lower Spire",i:"achievement_boss_saurfang"},
+{id:36626,n:"Festergut",tp:"Boss",lv:"??",loc:"ICC - Plagueworks",i:"achievement_boss_festergut"},
+{id:36627,n:"Rotface",tp:"Boss",lv:"??",loc:"ICC - Plagueworks",i:"achievement_boss_rotface"},
+{id:36678,n:"Professor Putricide",tp:"Boss",lv:"??",loc:"ICC - Plagueworks",i:"achievement_boss_profputricide"},
+{id:37955,n:"Blood-Queen Lana'thel",tp:"Boss",lv:"??",loc:"ICC - Crimson Hall",i:"achievement_boss_lanathel"},
+{id:36853,n:"Sindragosa",tp:"Boss",lv:"??",loc:"ICC - Frostwing",i:"achievement_boss_sindragosa"},
+{id:36789,n:"Valithria Dreamwalker",tp:"Boss",lv:"??",loc:"ICC - Frostwing",i:"achievement_boss_dvl"},
+{id:33288,n:"Yogg-Saron",tp:"Boss",lv:"??",loc:"Ulduar",i:"achievement_boss_yoggsaron_01"},
+{id:32871,n:"Algalon the Observer",tp:"Boss",lv:"??",loc:"Ulduar",i:"achievement_boss_algalon_01"},
+{id:33350,n:"Mimiron",tp:"Boss",lv:"??",loc:"Ulduar",i:"achievement_boss_mimiron_01"},
+{id:15990,n:"Kel'Thuzad",tp:"Boss",lv:"??",loc:"Naxxramas",i:"achievement_boss_kelthuzad"},
+{id:28860,n:"Sartharion",tp:"Boss",lv:"??",loc:"Obsidian Sanctum",i:"achievement_boss_sartharion_01"},
+{id:28859,n:"Malygos",tp:"Boss",lv:"??",loc:"Eye of Eternity",i:"achievement_boss_inthenameofthelight_01"},
+{id:10184,n:"Onyxia",tp:"Boss",lv:"??",loc:"Onyxia's Lair",i:"achievement_boss_onyxia"},
+{id:34564,n:"Anub'arak",tp:"Boss",lv:"??",loc:"Trial of Crusader",i:"achievement_boss_inthenameofthelight_01"},
+{id:38433,n:"Toravon",tp:"Boss",lv:"??",loc:"Vault of Archavon",i:"spell_nature_unrelentingstorm"},
+{id:31125,n:"Archavon",tp:"Boss",lv:"??",loc:"Vault of Archavon",i:"spell_nature_unrelentingstorm"},
+{id:39863,n:"Halion",tp:"Boss",lv:"??",loc:"Ruby Sanctum",i:"spell_shadow_twilight"},
+{id:32216,n:"Training Dummy",tp:"Util",lv:"80",loc:"Capitales",i:"inv_misc_punchcards_yellow"},
+{id:31146,n:"Raider's Dummy",tp:"Util",lv:"83",loc:"Capitales",i:"inv_misc_punchcards_yellow"},
+],
 
-        <div class="db-section" id="db-sets">
-            <table class="db-results-table">
-                <thead><tr>
-                    <th style="width:80px">Set ID</th><th>Nombre del Set</th>
-                    <th style="width:140px">Clase</th><th style="width:80px">Tier</th>
-                    <th style="width:160px">Comando GM</th>
-                </tr></thead>
-                <tbody id="setsBody"></tbody>
-            </table>
-        </div>
+spells:[
+{id:2825,n:"Bloodlust",ef:"+30% velocidad 40s (Horda)",tp:"Buff",i:"spell_nature_bloodlust"},
+{id:32182,n:"Heroism",ef:"+30% velocidad 40s (Alianza)",tp:"Buff",i:"ability_shaman_heroism"},
+{id:29166,n:"Innervate",ef:"Regenera 450% maná 20s",tp:"Buff",i:"spell_nature_lightning"},
+{id:642,n:"Divine Shield",ef:"Invulnerable 12 seg",tp:"Immunity",i:"spell_holy_divineshield"},
+{id:45438,n:"Ice Block",ef:"Inmune a todo 10 seg",tp:"Immunity",i:"spell_frost_frost"},
+{id:31884,n:"Avenging Wrath",ef:"+20% daño y heal 20s",tp:"Buff",i:"spell_holy_avenginewrath"},
+{id:49016,n:"Hysteria",ef:"+20% dmg -1%hp/s 30s",tp:"Buff",i:"spell_deathknight_bladedarmor"},
+{id:47476,n:"Strangulate",ef:"Silencia 5 seg",tp:"CC",i:"spell_shadow_soulleech_3"},
+{id:33786,n:"Cyclone",ef:"Inmune+incapaz 6s",tp:"CC",i:"spell_nature_earthbind"},
+{id:23920,n:"Spell Reflection",ef:"Refleja hechizo",tp:"Buff",i:"ability_warrior_shieldreflection"},
+{id:53563,n:"Beacon of Light",ef:"Copia 100% heal",tp:"Buff",i:"ability_paladin_beaconoflight"},
+{id:48441,n:"Rejuvenation R15",ef:"Cura 1690 en 15s",tp:"HoT",i:"spell_nature_rejuvenation"},
+],
 
-        <div class="db-section" id="db-zones">
-            <table class="db-results-table">
-                <thead><tr>
-                    <th>Zona</th><th style="width:130px">Continente</th>
-                    <th style="width:80px">Nivel</th><th style="width:100px">Tipo</th>
-                    <th style="width:200px">Comando GM</th>
-                </tr></thead>
-                <tbody id="zonesBody"></tbody>
-            </table>
-        </div>
+quests:[
+{id:24545,n:"The Sacred and the Corrupt",lv:80,z:"ICC",d:"1ra Shadowmourne"},
+{id:24743,n:"A Feast of Souls",lv:80,z:"ICC",d:"2da Shadowmourne"},
+{id:24547,n:"Unholy Infusion",lv:80,z:"ICC",d:"SM - Putricide"},
+{id:24548,n:"Blood Infusion",lv:80,z:"ICC",d:"SM - Blood Queen"},
+{id:24549,n:"Frost Infusion",lv:80,z:"ICC",d:"SM - Sindragosa"},
+{id:24749,n:"The Lich King's Last Stand",lv:80,z:"ICC",d:"SM Final"},
+{id:13188,n:"Kalu'ak Fishing Derby",lv:1,z:"Dalaran",d:"Pesca semanal"},
+{id:12906,n:"Betrayal",lv:74,z:"Dragonblight",d:"Wrathgate"},
+],
 
-        <div class="db-section" id="db-mounts">
-            <table class="db-results-table">
-                <thead><tr>
-                    <th style="width:80px">ID</th><th>Nombre</th>
-                    <th>Origen</th><th style="width:100px">Velocidad</th>
-                    <th style="width:160px">Comando GM</th>
-                </tr></thead>
-                <tbody id="mountsBody"></tbody>
-            </table>
-        </div>
+sets:[
+{id:845,n:"Sanctified Lightsworn Plate",c:"Paladín Holy",ti:"T10 HC"},
+{id:846,n:"Sanctified Lightsworn Battlegear",c:"Paladín Ret",ti:"T10 HC"},
+{id:847,n:"Sanctified Lightsworn Garb",c:"Paladín Prot",ti:"T10 HC"},
+{id:866,n:"Sanctified Shadowblade's Battlegear",c:"Pícaro",ti:"T10 HC"},
+{id:868,n:"Sanctified Ymirjar Lord's Battlegear",c:"Guerrero DPS",ti:"T10 HC"},
+{id:869,n:"Sanctified Ymirjar Lord's Plate",c:"Guerrero Tank",ti:"T10 HC"},
+{id:842,n:"Sanctified Dark Coven's Regalia",c:"Brujo",ti:"T10 HC"},
+{id:844,n:"Sanctified Bloodmage's Regalia",c:"Mago",ti:"T10 HC"},
+{id:838,n:"Sanctified Crimson Acolyte's Raiment",c:"Sacerdote Holy",ti:"T10 HC"},
+{id:839,n:"Sanctified Crimson Acolyte's Regalia",c:"Sacerdote Shadow",ti:"T10 HC"},
+{id:863,n:"Sanctified Lasherweave Garb",c:"Druida Resto",ti:"T10 HC"},
+{id:864,n:"Sanctified Lasherweave Battlegear",c:"Druida Feral",ti:"T10 HC"},
+{id:865,n:"Sanctified Lasherweave Regalia",c:"Druida Balance",ti:"T10 HC"},
+{id:860,n:"Sanctified Ahn'Kahar Blood Hunter's",c:"Cazador",ti:"T10 HC"},
+{id:856,n:"Sanctified Scourgelord's Battlegear",c:"DK DPS",ti:"T10 HC"},
+{id:857,n:"Sanctified Scourgelord's Plate",c:"DK Tank",ti:"T10 HC"},
+{id:870,n:"Sanctified Frost Witch's Garb",c:"Chamán Resto",ti:"T10 HC"},
+{id:871,n:"Sanctified Frost Witch's Battlegear",c:"Chamán Mejora",ti:"T10 HC"},
+{id:872,n:"Sanctified Frost Witch's Regalia",c:"Chamán Elemental",ti:"T10 HC"},
+],
 
-        <div class="no-results" id="noResults"><span>🔍</span>No se encontraron resultados.<br><small>Intenta otra búsqueda.</small></div>
-    </div>
+zones:[
+{n:"Dalaran",co:"Rasganorte",lv:"80",tp:"Ciudad",te:".tele Dalaran"},
+{n:"Stormwind",co:"Reinos del Este",lv:"1-80",tp:"Capital",te:".tele Stormwind"},
+{n:"Orgrimmar",co:"Kalimdor",lv:"1-80",tp:"Capital",te:".tele Orgrimmar"},
+{n:"Ironforge",co:"Reinos del Este",lv:"1-80",tp:"Capital",te:".tele Ironforge"},
+{n:"Undercity",co:"Reinos del Este",lv:"1-80",tp:"Capital",te:".tele Undercity"},
+{n:"Thunder Bluff",co:"Kalimdor",lv:"1-80",tp:"Capital",te:".tele ThunderBluff"},
+{n:"Silvermoon",co:"Reinos del Este",lv:"1-80",tp:"Capital",te:".tele Silvermoon"},
+{n:"Darnassus",co:"Kalimdor",lv:"1-80",tp:"Capital",te:".tele Darnassus"},
+{n:"Exodar",co:"Kalimdor",lv:"1-80",tp:"Capital",te:".tele Exodar"},
+{n:"Shattrath",co:"Terrallende",lv:"60-70",tp:"Ciudad",te:".tele Shattrath"},
+{n:"Icecrown Citadel",co:"Rasganorte",lv:"80",tp:"Raid",te:".tele IcecrownCitadel"},
+{n:"Ulduar",co:"Rasganorte",lv:"80",tp:"Raid",te:".tele Ulduar"},
+{n:"Naxxramas",co:"Rasganorte",lv:"80",tp:"Raid",te:".tele Naxxramas"},
+{n:"Trial of the Crusader",co:"Rasganorte",lv:"80",tp:"Raid",te:".tele TrialOfTheCrusader"},
+{n:"Vault of Archavon",co:"Rasganorte",lv:"80",tp:"Raid",te:".tele VaultOfArchavon"},
+{n:"Obsidian Sanctum",co:"Rasganorte",lv:"80",tp:"Raid",te:".tele ObsidianSanctum"},
+{n:"Eye of Eternity",co:"Rasganorte",lv:"80",tp:"Raid",te:".tele EyeOfEternity"},
+{n:"Ruby Sanctum",co:"Rasganorte",lv:"80",tp:"Raid",te:".tele RubySanctum"},
+{n:"Onyxia's Lair",co:"Kalimdor",lv:"80",tp:"Raid",te:".tele OnyxiasLair"},
+{n:"Karazhan",co:"Reinos del Este",lv:"70",tp:"Raid",te:".tele Karazhan"},
+{n:"Black Temple",co:"Terrallende",lv:"70",tp:"Raid",te:".tele BlackTemple"},
+{n:"Sunwell Plateau",co:"Reinos del Este",lv:"70",tp:"Raid",te:".tele SunwellPlateau"},
+{n:"Wintergrasp",co:"Rasganorte",lv:"80",tp:"PvP",te:".tele Wintergrasp"},
+{n:"Argent Tournament",co:"Rasganorte",lv:"80",tp:"Evento",te:".tele ArgentTournament"},
+{n:"Forge of Souls",co:"Rasganorte",lv:"80",tp:"Dungeon",te:".tele ForgeOfSouls"},
+{n:"Pit of Saron",co:"Rasganorte",lv:"80",tp:"Dungeon",te:".tele PitOfSaron"},
+{n:"Halls of Reflection",co:"Rasganorte",lv:"80",tp:"Dungeon",te:".tele HallsOfReflection"},
+]
+};
 
-    <div class="item-tooltip" id="tooltip"></div>
-    <button class="scroll-top" id="scrollTop" onclick="scrollToTop()">↑</button>
-    <a class="home-btn" href="index.html">⚔️ Comandos GM</a>
+// ============ ENGINE ============
+const PP=25;let cp=1,fi=[...D.items],cs='items';
+let sd={};
 
-    <footer>
-        <div class="footer-logo"><span class="after">After</span><span class="wow">WoW</span></div>
-        <p>Base de Datos 3.3.5a | Creado para el equipo GM de AfterWoW</p>
-    </footer>
+function ri(items,p){
+    p=p||1;const b=document.getElementById('bItems');
+    const s=(p-1)*PP,pi=items.slice(s,s+PP);
+    b.innerHTML=pi.map(x=>`<tr onmouseenter="stt(event,${x.id})" onmouseleave="htt()" onmousemove="mtt(event)">
+        <td class="cid">${x.id}</td>
+        <td><div class="ic"><img class="r${x.r}" src="${ic(x.i)}" onerror="this.src='${ic(F)}'"><span class="n t${x.r}">${x.n}</span></div></td>
+        <td class="ct">${x.t}</td><td class="ct">${x.s}</td>
+        <td class="cl">${x.il>1?x.il:'-'}</td><td class="cs">${x.o}</td>
+        <td><button class="cp" onclick="event.stopPropagation();cc('.additem ${x.id}',this)">.additem ${x.id}</button></td>
+    </tr>`).join('');
+    rp(items.length,p);
+}
 
-    <script>
-  
-        // ================================================================
-    // BASE DE DATOS
-    // ================================================================
-    
-    
-        const DB = {
-        items: [
-            // LEGENDARIAS
-            {id:49623,name:"Shadowmourne",type:"Arma",slot:"Dos manos",ilvl:284,rarity:5,source:"ICC Quest",icon:"inv_axe_113",tags:"BiS ICC",stats:"+223 Fuerza\n+198 Aguante\n+114 Crítico\n+114 Penetración",desc:"Hacha legendaria ICC"},
-            {id:46017,name:"Val'anyr, Hammer of Ancient Kings",type:"Arma",slot:"Mano principal",ilvl:245,rarity:5,source:"Ulduar",icon:"inv_mace_99",tags:"BiS Ulduar Healer",stats:"+105 Aguante\n+105 Intelecto\n+45 Crítico\n+51 Celeridad",desc:"Maza legendaria sanación"},
-            {id:19019,name:"Thunderfury, Blessed Blade of the Windseeker",type:"Arma",slot:"Mano principal",ilvl:80,rarity:5,source:"Molten Core",icon:"inv_sword_39",tags:"Classic",stats:"+5 Agilidad\n+8 Aguante\nProc: Cadena Rayos",desc:"Espada legendaria"},
-            {id:17182,name:"Sulfuras, Hand of Ragnaros",type:"Arma",slot:"Dos manos",ilvl:80,rarity:5,source:"Molten Core",icon:"inv_hammer_unique_sulfuras",tags:"Classic",stats:"+12 Fuerza\n+12 Aguante\nProc: Bola Fuego",desc:"Maza de Ragnaros"},
-            {id:32837,name:"Warglaive of Azzinoth (MH)",type:"Arma",slot:"Mano principal",ilvl:156,rarity:5,source:"Black Temple",icon:"inv_weapon_glave_01",tags:"TBC Illidan",stats:"Daño: 214-398\nVelocidad: 2.80",desc:"Guja de Illidan"},
-            {id:32838,name:"Warglaive of Azzinoth (OH)",type:"Arma",slot:"Mano secundaria",ilvl:156,rarity:5,source:"Black Temple",icon:"inv_weapon_glave_02",tags:"TBC Illidan",stats:"Daño: 214-398\nVelocidad: 2.80",desc:"Guja off-hand"},
-            {id:34334,name:"Thori'dal, the Stars' Fury",type:"Arma",slot:"A distancia",ilvl:164,rarity:5,source:"Sunwell",icon:"inv_bow_53",tags:"TBC",stats:"Daño: 201-374\nNo requiere munición",desc:"Arco de Kil'jaeden"},
+function rm(){
+    const b=document.getElementById('bMounts'),q=document.getElementById('q').value.toLowerCase();
+    const m=D.mounts.filter(x=>!q||x.n.toLowerCase().includes(q)||x.id.toString().includes(q));
+    b.innerHTML=m.map(x=>`<tr>
+        <td class="cid">${x.id}</td>
+        <td><div class="ic"><img class="r${x.r}" src="${ic(x.i)}" onerror="this.src='${ic(F)}'"><span class="n t${x.r}">${x.n}</span></div></td>
+        <td class="cs">${x.o}</td><td class="ct">${x.sp}</td>
+        <td><button class="cp" onclick="cc('.additem ${x.id}',this)">.additem ${x.id}</button></td>
+    </tr>`).join('');
+    document.getElementById('nr').classList.toggle('vis',m.length===0&&!!q);
+}
 
-            // ARMAS ICC HC
-            {id:50730,name:"Glorenzelg, High-Blade of the Silver Hand",type:"Arma",slot:"Dos manos",ilvl:284,rarity:4,source:"LK HC 25",icon:"inv_sword_163",tags:"BiS ICC",stats:"+198 Fuerza\n+190 Aguante\n+114 Crítico",desc:"Espada 2M LK HC"},
-            {id:50737,name:"Havoc's Call, Blade of Lordaeron Kings",type:"Arma",slot:"Mano principal",ilvl:284,rarity:4,source:"LK HC 25",icon:"inv_sword_162",tags:"BiS ICC",stats:"+75 Fuerza\n+67 Aguante\n+50 Crítico",desc:"Espada 1M LK HC"},
-            {id:50738,name:"Heaven's Fall, Kryss of a Thousand Lies",type:"Arma",slot:"Mano principal",ilvl:284,rarity:4,source:"LK HC 25",icon:"inv_knife_1h_stratholme_d_01",tags:"BiS ICC Rogue",stats:"+53 Agilidad\n+46 Aguante\n+32 Golpe",desc:"Daga LK HC"},
-            {id:50735,name:"Windrunner's Heartseeker",type:"Arma",slot:"A distancia",ilvl:284,rarity:4,source:"LK HC 25",icon:"inv_weapon_crossbow_38",tags:"BiS ICC Hunter",stats:"+33 Agilidad\n+34 Aguante\n+21 Crítico",desc:"Ballesta LK HC"},
-            {id:50734,name:"Royal Scepter of Terenas II",type:"Arma",slot:"Mano principal",ilvl:284,rarity:4,source:"LK HC 25",icon:"inv_mace_115",tags:"BiS ICC Healer",stats:"+75 Intelecto\n+67 Aguante\n+51 Celeridad",desc:"Maza Healer LK HC"},
-            {id:50733,name:"Mithrios, Bronzebeard's Legacy",type:"Arma",slot:"Mano principal",ilvl:284,rarity:4,source:"LK HC 25",icon:"inv_sword_161",tags:"BiS ICC Tank",stats:"+60 Fuerza\n+75 Aguante\n+42 Defensa",desc:"Espada Tank LK HC"},
-            {id:51943,name:"Bryntroll, the Bone Arbiter (HC)",type:"Arma",slot:"Dos manos",ilvl:277,rarity:4,source:"Marrowgar HC25",icon:"inv_axe_110",tags:"ICC",stats:"+175 Fuerza\n+168 Aguante\nProc: Drena Vida",desc:"Hacha 2M Marrowgar HC"},
-            {id:50472,name:"Lungbreaker",type:"Arma",slot:"Mano principal",ilvl:264,rarity:4,source:"Marrowgar 25N",icon:"inv_mace_111",tags:"ICC",stats:"+58 Fuerza\n+54 Aguante\n+39 Crítico",desc:"Maza Marrowgar 25N"},
-            {id:50471,name:"Frozen Bonespike",type:"Arma",slot:"Mano principal",ilvl:264,rarity:4,source:"Marrowgar 25N",icon:"inv_sword_108",tags:"ICC Rogue",stats:"+46 Agilidad\n+42 Aguante\n+30 Golpe",desc:"Daga Marrowgar 25N"},
+function rn(){
+    const b=document.getElementById('bNpcs'),q=document.getElementById('q').value.toLowerCase();
+    const n=D.npcs.filter(x=>!q||x.n.toLowerCase().includes(q)||x.id.toString().includes(q));
+    b.innerHTML=n.map(x=>`<tr>
+        <td class="cid">${x.id}</td>
+        <td><div class="ic"><img class="r4" src="${ic(x.i)}" onerror="this.src='${ic(F)}'"><span class="n t5">${x.n}</span></div></td>
+        <td class="ct">${x.tp}</td><td class="cl">${x.lv}</td><td class="cs">${x.loc}</td>
+        <td><button class="cp" onclick="cc('.npc add ${x.id}',this)">.npc add ${x.id}</button></td>
+    </tr>`).join('');
+    document.getElementById('nr').classList.toggle('vis',n.length===0&&!!q);
+}
 
-            // TRINKETS
-            {id:50706,name:"Deathbringer's Will (HC)",type:"Armadura",slot:"Abalorio",ilvl:277,rarity:4,source:"Saurfang HC25",icon:"inv_misc_blacksaberonfang",tags:"BiS ICC Melee Trinket",stats:"+155 ArP\nProc: +600 Stat",desc:"BiS Melee DPS"},
-            {id:50363,name:"Deathbringer's Will (N)",type:"Armadura",slot:"Abalorio",ilvl:264,rarity:4,source:"Saurfang 25N",icon:"inv_misc_blacksaberonfang",tags:"ICC Melee Trinket",stats:"+155 ArP\nProc: +600 Stat",desc:"Melee DPS Trinket"},
-            {id:50353,name:"Dislodged Foreign Object (HC)",type:"Armadura",slot:"Abalorio",ilvl:277,rarity:4,source:"Rotface HC25",icon:"inv_jewelry_trinket_03",tags:"BiS ICC Caster",stats:"+155 SP\nProc: Stacking SP",desc:"BiS Caster DPS"},
-            {id:50360,name:"Phylactery of the Nameless Lich (HC)",type:"Armadura",slot:"Abalorio",ilvl:277,rarity:4,source:"Sindragosa HC25",icon:"inv_misc_urn_01",tags:"BiS ICC Caster",stats:"+155 Celeridad\nProc: +1207 SP",desc:"BiS Caster Trinket"},
-            {id:50361,name:"Sindragosa's Flawless Fang (HC)",type:"Armadura",slot:"Abalorio",ilvl:277,rarity:4,source:"Sindragosa HC25",icon:"inv_misc_monsterscales_15",tags:"BiS ICC Healer",stats:"+155 MP5\nUso: Escudo absorción",desc:"BiS Healer Trinket"},
-            {id:50343,name:"Whispering Fanged Skull (HC)",type:"Armadura",slot:"Abalorio",ilvl:277,rarity:4,source:"Deathwhisper HC25",icon:"inv_misc_bone_skull_01",tags:"BiS ICC Physical",stats:"+155 ArP\nProc: +1100 PA",desc:"BiS Physical DPS"},
-            {id:50198,name:"Needle-Encrusted Scorpion",type:"Armadura",slot:"Abalorio",ilvl:232,rarity:4,source:"FoS HC",icon:"inv_misc_ahnqirajtrinket_01",tags:"Physical Trinket",stats:"+112 ArP\nProc: +556 Crit",desc:"Forge of Souls HC"},
-            {id:47303,name:"Death's Choice (HC)",type:"Armadura",slot:"Abalorio",ilvl:258,rarity:4,source:"ToGC 25",icon:"inv_jewelry_trinket_11",tags:"Physical ToC",stats:"+155 Agilidad\nProc: +510 AP",desc:"Trial HC"},
+function rsp(){
+    const b=document.getElementById('bSpells'),q=document.getElementById('q').value.toLowerCase();
+    const s=D.spells.filter(x=>!q||x.n.toLowerCase().includes(q)||x.id.toString().includes(q));
+    b.innerHTML=s.map(x=>`<tr>
+        <td class="cid">${x.id}</td>
+        <td><div class="ic"><img class="r3" src="${ic(x.i)}" onerror="this.src='${ic(F)}'"><span class="n t3">${x.n}</span></div></td>
+        <td>${x.ef}</td><td class="ct">${x.tp}</td>
+        <td><button class="cp" onclick="cc('.cast ${x.id}',this)">.cast ${x.id}</button></td>
+    </tr>`).join('');
+}
 
-            // CONSUMIBLES
-            {id:46377,name:"Flask of Endless Rage",type:"Consumible",slot:"-",ilvl:80,rarity:2,source:"Alquimia",icon:"inv_alchemy_endlessflask_06",tags:"Frasco Melee",stats:"+180 PA / 1 hora",desc:"Frasco DPS físico"},
-            {id:46376,name:"Flask of the Frost Wyrm",type:"Consumible",slot:"-",ilvl:80,rarity:2,source:"Alquimia",icon:"inv_alchemy_endlessflask_04",tags:"Frasco Caster",stats:"+125 SP / 1 hora",desc:"Frasco caster"},
-            {id:46379,name:"Flask of Stoneblood",type:"Consumible",slot:"-",ilvl:80,rarity:2,source:"Alquimia",icon:"inv_alchemy_endlessflask_05",tags:"Frasco Tank",stats:"+1300 HP / 1 hora",desc:"Frasco tanque"},
-            {id:46378,name:"Flask of Pure Mojo",type:"Consumible",slot:"-",ilvl:80,rarity:2,source:"Alquimia",icon:"inv_alchemy_endlessflask_03",tags:"Frasco Healer",stats:"+45 MP5 / 1 hora",desc:"Frasco healer"},
-            {id:40211,name:"Potion of Speed",type:"Consumible",slot:"-",ilvl:80,rarity:2,source:"Alquimia",icon:"inv_alchemy_elixir_04",tags:"Poción Haste",stats:"+500 Celeridad / 15 seg",desc:"Poción combate"},
-            {id:40212,name:"Potion of Wild Magic",type:"Consumible",slot:"-",ilvl:80,rarity:2,source:"Alquimia",icon:"inv_alchemy_elixir_01",tags:"Poción Caster",stats:"+200 Crit +200 SP / 15s",desc:"Poción caster"},
-            {id:33447,name:"Runic Healing Potion",type:"Consumible",slot:"-",ilvl:80,rarity:2,source:"Alquimia",icon:"inv_alchemy_elixir_05",tags:"Poción Vida",stats:"Restaura 2700-4500 vida",desc:"Poción curación"},
-            {id:33448,name:"Runic Mana Potion",type:"Consumible",slot:"-",ilvl:80,rarity:2,source:"Alquimia",icon:"inv_alchemy_elixir_02",tags:"Poción Mana",stats:"Restaura 4200-4400 maná",desc:"Poción maná"},
-            {id:43015,name:"Fish Feast",type:"Consumible",slot:"-",ilvl:80,rarity:2,source:"Cocina",icon:"inv_misc_fish_52",tags:"Comida Raid",stats:"+80PA/+46SP/+40Agu",desc:"Festín grupal"},
-            {id:34767,name:"Blackened Dragonfin",type:"Consumible",slot:"-",ilvl:80,rarity:2,source:"Cocina",icon:"inv_misc_food_142_fish",tags:"Comida Agilidad",stats:"+40 Agilidad +40 Agu",desc:"Comida Agi"},
-            {id:34762,name:"Dragonfin Filet",type:"Consumible",slot:"-",ilvl:80,rarity:2,source:"Cocina",icon:"inv_misc_food_141_fish",tags:"Comida Fuerza",stats:"+40 Fuerza +40 Agu",desc:"Comida Str"},
-            {id:42999,name:"Firecracker Salmon",type:"Consumible",slot:"-",ilvl:80,rarity:2,source:"Cocina",icon:"inv_misc_food_140_fish",tags:"Comida SP",stats:"+46 SP +40 Agu",desc:"Comida SP"},
+function rq(){
+    const b=document.getElementById('bQuests'),q=document.getElementById('q').value.toLowerCase();
+    const qs=D.quests.filter(x=>!q||x.n.toLowerCase().includes(q)||x.id.toString().includes(q));
+    b.innerHTML=qs.map(x=>`<tr>
+        <td class="cid">${x.id}</td>
+        <td><span class="t3">${x.n}</span><br><small style="color:#666">${x.d}</small></td>
+        <td class="cl">${x.lv}</td><td class="cs">${x.z}</td>
+        <td><button class="cp" onclick="cc('.quest add ${x.id}',this)">.quest add ${x.id}</button></td>
+    </tr>`).join('');
+}
 
-            // GEMAS
-            {id:40111,name:"Bold Cardinal Ruby",type:"Gema",slot:"Roja",ilvl:80,rarity:4,source:"JC",icon:"inv_jewelcrafting_gem_25",tags:"Fuerza",stats:"+20 Fuerza",desc:"Gema roja"},
-            {id:40112,name:"Delicate Cardinal Ruby",type:"Gema",slot:"Roja",ilvl:80,rarity:4,source:"JC",icon:"inv_jewelcrafting_gem_25",tags:"Agilidad",stats:"+20 Agilidad",desc:"Gema roja"},
-            {id:40113,name:"Runed Cardinal Ruby",type:"Gema",slot:"Roja",ilvl:80,rarity:4,source:"JC",icon:"inv_jewelcrafting_gem_25",tags:"SP",stats:"+23 Poder Hechizos",desc:"Gema roja"},
-            {id:40118,name:"Solid Majestic Zircon",type:"Gema",slot:"Azul",ilvl:80,rarity:4,source:"JC",icon:"inv_jewelcrafting_gem_31",tags:"Aguante",stats:"+30 Aguante",desc:"Gema azul"},
-            {id:40122,name:"Brilliant King's Amber",type:"Gema",slot:"Amarilla",ilvl:80,rarity:4,source:"JC",icon:"inv_jewelcrafting_gem_33",tags:"Intelecto",stats:"+20 Intelecto",desc:"Gema amarilla"},
-            {id:40124,name:"Rigid King's Amber",type:"Gema",slot:"Amarilla",ilvl:80,rarity:4,source:"JC",icon:"inv_jewelcrafting_gem_33",tags:"Hit",stats:"+20 Golpe",desc:"Gema amarilla"},
-            {id:40126,name:"Quick King's Amber",type:"Gema",slot:"Amarilla",ilvl:80,rarity:4,source:"JC",icon:"inv_jewelcrafting_gem_33",tags:"Haste",stats:"+20 Celeridad",desc:"Gema amarilla"},
-            {id:40128,name:"Sovereign Dreadstone",type:"Gema",slot:"Morada",ilvl:80,rarity:4,source:"JC",icon:"inv_jewelcrafting_gem_37",tags:"Str Sta",stats:"+10 Fuerza +15 Agu",desc:"Gema morada"},
+function rs(){
+    const b=document.getElementById('bSets'),q=document.getElementById('q').value.toLowerCase();
+    const s=D.sets.filter(x=>!q||x.n.toLowerCase().includes(q)||x.c.toLowerCase().includes(q));
+    b.innerHTML=s.map(x=>`<tr>
+        <td class="cid">${x.id}</td><td><span class="t4">${x.n}</span></td>
+        <td class="ct">${x.c}</td><td class="cl">${x.ti}</td>
+        <td><button class="cp" onclick="cc('.additemset ${x.id}',this)">.additemset ${x.id}</button></td>
+    </tr>`).join('');
+}
 
-            // TOKENS
-            {id:49426,name:"Emblem of Frost",type:"Token",slot:"-",ilvl:1,rarity:4,source:"ICC",icon:"inv_misc_frostemblem_01",tags:"Emblema T10",stats:"Equipo T10 iLvl 264",desc:"Moneda endgame"},
-            {id:47241,name:"Emblem of Triumph",type:"Token",slot:"-",ilvl:1,rarity:4,source:"Heroics/ToC",icon:"spell_holy_summonchampion",tags:"Emblema T9",stats:"Equipo T9 iLvl 245",desc:"Moneda previo ICC"},
-            {id:45624,name:"Emblem of Conquest",type:"Token",slot:"-",ilvl:1,rarity:4,source:"Ulduar",icon:"spell_holy_championsbond",tags:"Emblema T8",stats:"Equipo T8.5 iLvl 226",desc:"Moneda Ulduar"},
-            {id:49908,name:"Primordial Saronite",type:"Token",slot:"-",ilvl:1,rarity:4,source:"ICC/Frost",icon:"inv_misc_shadoweternalearth",tags:"Crafting",stats:"Material ICC/Shadowmourne",desc:"Material endgame"},
+function rz(){
+    const b=document.getElementById('bZones'),q=document.getElementById('q').value.toLowerCase();
+    const z=D.zones.filter(x=>!q||x.n.toLowerCase().includes(q));
+    b.innerHTML=z.map(x=>`<tr>
+        <td><span class="t3">${x.n}</span></td><td class="ct">${x.co}</td>
+        <td class="cl">${x.lv}</td><td class="ct">${x.tp}</td>
+        <td><button class="cp" onclick="cc('${x.te}',this)">${x.te}</button></td>
+    </tr>`).join('');
+}
 
-            // BOLSAS
-            {id:41599,name:"Frostweave Bag",type:"Bolsa",slot:"-",ilvl:1,rarity:3,source:"Sastrería",icon:"inv_misc_bag_10_blue",tags:"20 espacios",stats:"20 Espacios",desc:"Bolsa WotLK"},
-            {id:45773,name:"Glacial Bag",type:"Bolsa",slot:"-",ilvl:1,rarity:4,source:"Sastrería",icon:"inv_misc_bag_10_blue",tags:"22 espacios",stats:"22 Espacios",desc:"Mejor bolsa craft"},
+function rp(tot,p){
+    const pages=Math.ceil(tot/PP),c=document.getElementById('pg');
+    if(pages<=1){c.innerHTML='';return;}
+    let h=`<button onclick="gp(1)" ${p===1?'disabled':''}>«</button><button onclick="gp(${p-1})" ${p===1?'disabled':''}>‹</button>`;
+    for(let i=Math.max(1,p-2);i<=Math.min(pages,p+2);i++) h+=`<button class="${i===p?'act':''}" onclick="gp(${i})">${i}</button>`;
+    h+=`<button onclick="gp(${p+1})" ${p===pages?'disabled':''}>›</button><button onclick="gp(${pages})" ${p===pages?'disabled':''}>»</button>`;
+    h+=`<span class="pi">${tot} items | Pág ${p}/${pages}</span>`;
+    c.innerHTML=h;
+}
+function gp(p){cp=p;ri(fi,p);window.scrollTo({top:200,behavior:'smooth'});}
 
-            // TABARDOS
-            {id:43154,name:"Tabard of the Argent Crusade",type:"Tabardo",slot:"Tabardo",ilvl:1,rarity:3,source:"Argent Crusade",icon:"inv_misc_tabard_argentcrusade",tags:"Reputación",stats:"Rep en Heroics",desc:"Tabardo facción"},
-            {id:43157,name:"Tabard of the Kirin Tor",type:"Tabardo",slot:"Tabardo",ilvl:1,rarity:3,source:"Kirin Tor",icon:"inv_misc_tabard_kirintor",tags:"Reputación",stats:"Rep en Heroics",desc:"Tabardo facción"},
-            {id:43155,name:"Tabard of the Wyrmrest Accord",type:"Tabardo",slot:"Tabardo",ilvl:1,rarity:3,source:"Wyrmrest",icon:"inv_misc_tabard_wyrmrestaccord",tags:"Reputación",stats:"Rep en Heroics",desc:"Tabardo facción"},
-            {id:43156,name:"Tabard of the Ebon Blade",type:"Tabardo",slot:"Tabardo",ilvl:1,rarity:3,source:"Ebon Blade",icon:"inv_misc_tabard_ebonblade",tags:"Reputación",stats:"Rep en Heroics",desc:"Tabardo facción"},
+// TOOLTIP
+function stt(e,id){
+    const x=D.items.find(a=>a.id===id);if(!x)return;
+    const t=document.getElementById('tt');
+    const rn={0:'Pobre',1:'Común',2:'Poco común',3:'Raro',4:'Épico',5:'Legendario'};
+    t.innerHTML=`<div class="tn t${x.r}">${x.n}</div>
+        <div class="tp">${x.t} - ${x.s} | iLvl ${x.il} | ${rn[x.r]}</div>
+        <div class="ts">${(x.st||'').replace(/\n/g,'<br>')}</div>
+        ${x.d?`<div class="td">"${x.d}"</div>`:''}
+        <div class="ti">ID: ${x.id}</div><div class="tc">.additem ${x.id}</div>`;
+    t.classList.add('vis');mtt(e);
+}
+function mtt(e){const t=document.getElementById('tt');let x=e.clientX+15,y=e.clientY+15;if(x+340>window.innerWidth)x=e.clientX-355;if(y+250>window.innerHeight)y=e.clientY-260;t.style.left=x+'px';t.style.top=y+'px';}
+function htt(){document.getElementById('tt').classList.remove('vis');}
 
-            // MISC
-            {id:6948,name:"Hearthstone",type:"Misceláneo",slot:"-",ilvl:1,rarity:1,source:"Inicial",icon:"inv_misc_rune_01",tags:"Piedra Hogar",stats:"TP a posada CD: 30min",desc:"Piedra de Hogar"},
-            {id:44606,name:"Toy Train Set",type:"Misceláneo",slot:"-",ilvl:1,rarity:3,source:"Dalaran",icon:"inv_misc_toy_02",tags:"Fun",stats:"Tren de juguete",desc:"Item diversión"},
-            {id:35275,name:"Orb of the Sin'dorei",type:"Misceláneo",slot:"-",ilvl:1,rarity:3,source:"MgT HC",icon:"inv_misc_orb_05",tags:"Transformación",stats:"Blood Elf 5min",desc:"Transformación"},
-            {id:43499,name:"Iron Boot Flask",type:"Misceláneo",slot:"-",ilvl:1,rarity:3,source:"Storm Peaks",icon:"inv_potion_90",tags:"Transformación",stats:"Iron Dwarf",desc:"Transformación"},
-        ],
-
-        mounts: [
-            {id:50818,name:"Invincible's Reins",source:"LK HC 25",speed:"310% Vuelo",rarity:5,icon:"ability_mount_yourmagicmymine"},
-            {id:45693,name:"Mimiron's Head",source:"Yogg+0 Ulduar 25",speed:"310% Vuelo",rarity:4,icon:"inv_misc_enggizmo_01"},
-            {id:32458,name:"Ashes of Al'ar",source:"Kael'thas TK",speed:"310% Vuelo",rarity:4,icon:"inv_misc_summerfest_brazierorange"},
-            {id:30480,name:"Fiery Warhorse's Reins",source:"Attumen Karazhan",speed:"100% Tierra",rarity:4,icon:"ability_mount_dreadsteed"},
-            {id:43986,name:"Reins of the Black Drake",source:"Sartharion 3D 10",speed:"280% Vuelo",rarity:4,icon:"ability_mount_drake_twilight"},
-            {id:43954,name:"Reins of the Twilight Drake",source:"Sartharion 3D 25",speed:"280% Vuelo",rarity:4,icon:"ability_mount_drake_twilight"},
-            {id:43951,name:"Reins of the Bronze Drake",source:"CoS Timed Run",speed:"280% Vuelo",rarity:4,icon:"ability_mount_drake_bronze"},
-            {id:43952,name:"Reins of the Azure Drake",source:"Malygos 10/25",speed:"280% Vuelo",rarity:4,icon:"ability_mount_drake_azure"},
-            {id:43953,name:"Reins of the Blue Drake",source:"Malygos 10/25",speed:"280% Vuelo",rarity:4,icon:"ability_mount_drake_azure"},
-            {id:44151,name:"Reins of the Blue Proto-Drake",source:"Skadi UP HC",speed:"280% Vuelo",rarity:4,icon:"ability_mount_drake_proto"},
-            {id:44168,name:"Reins of the Time-Lost Proto-Drake",source:"Rare Storm Peaks",speed:"280% Vuelo",rarity:4,icon:"ability_mount_drake_proto"},
-            {id:44707,name:"Reins of the Green Proto-Drake",source:"Mysterious Egg",speed:"280% Vuelo",rarity:4,icon:"ability_mount_drake_proto"},
-            {id:44160,name:"Reins of the Red Proto-Drake",source:"Glory of the Hero",speed:"280% Vuelo",rarity:4,icon:"ability_mount_drake_proto"},
-            {id:44164,name:"Reins of the Black Proto-Drake",source:"Glory Raider 10",speed:"280% Vuelo",rarity:4,icon:"ability_mount_drake_proto"},
-            {id:49636,name:"Reins of the Onyxian Drake",source:"Onyxia 25",speed:"280% Vuelo",rarity:4,icon:"ability_mount_drake_onyxia"},
-            {id:44083,name:"Grand Black War Mammoth (A)",source:"VoA Bosses",speed:"100% Tierra 3p",rarity:4,icon:"ability_mount_mammoth_black_3seater"},
-            {id:44086,name:"Grand Black War Mammoth (H)",source:"VoA Bosses",speed:"100% Tierra 3p",rarity:4,icon:"ability_mount_mammoth_black_3seater"},
-            {id:44235,name:"Traveler's Tundra Mammoth (A)",source:"Dalaran 20k oro",speed:"100% Tierra",rarity:4,icon:"ability_mount_mammoth_white_3seater"},
-            {id:44234,name:"Traveler's Tundra Mammoth (H)",source:"Dalaran 20k oro",speed:"100% Tierra",rarity:4,icon:"ability_mount_mammoth_white_3seater"},
-            {id:43959,name:"Grand Ice Mammoth (A)",source:"Hodir Exaltado",speed:"100% Tierra 3p",rarity:4,icon:"ability_mount_mammoth_white_3seater"},
-            {id:43961,name:"Grand Ice Mammoth (H)",source:"Hodir Exaltado",speed:"100% Tierra 3p",rarity:4,icon:"ability_mount_mammoth_white_3seater"},
-            {id:49096,name:"Crusader's White Warhorse",source:"ToGC Achieve (A)",speed:"100% Tierra",rarity:4,icon:"ability_mount_yourmagicmymine"},
-            {id:49098,name:"Crusader's Black Warhorse",source:"ToGC Achieve (H)",speed:"100% Tierra",rarity:4,icon:"ability_mount_yourmagicmymine"},
-            {id:35513,name:"Swift White Hawkstrider",source:"Kael MgT HC",speed:"100% Tierra",rarity:4,icon:"ability_mount_cockatricemountelite_white"},
-            {id:13335,name:"Deathcharger's Reins",source:"Baron Stratholme",speed:"100% Tierra",rarity:4,icon:"ability_mount_undeadhorse"},
-            {id:43516,name:"Mechano-Hog",source:"Ingeniería (H)",speed:"100% Tierra 2p",rarity:4,icon:"ability_mount_mechanostrider"},
-            {id:44413,name:"Mekgineer's Chopper",source:"Ingeniería (A)",speed:"100% Tierra 2p",rarity:4,icon:"ability_mount_mechanostrider"},
-            {id:37012,name:"The Horseman's Reins",source:"Hallow's End",speed:"280% Vuelo",rarity:4,icon:"ability_mount_dreadsteed"},
-            {id:33977,name:"Swift Brewfest Ram",source:"Brewfest",speed:"100% Tierra",rarity:4,icon:"ability_mount_mountainram"},
-            {id:37828,name:"Great Brewfest Kodo",source:"Brewfest",speed:"100% Tierra",rarity:4,icon:"ability_mount_kodo_03"},
-            {id:44178,name:"Reins of the Albino Drake",source:"50 Monturas",speed:"280% Vuelo",rarity:4,icon:"ability_mount_drake_azure"},
-            {id:46171,name:"Furious Gladiator's Frost Wyrm",source:"Arena S6",speed:"310% Vuelo",rarity:4,icon:"ability_mount_drake_proto"},
-        ],
-
-        npcs: [
-            {id:36597,name:"The Lich King",type:"Boss Raid",level:"??",location:"ICC - Frozen Throne",icon:"achievement_boss_lichking"},
-            {id:36612,name:"Lord Marrowgar",type:"Boss Raid",level:"??",location:"ICC - Lower Spire",icon:"achievement_boss_lordmarrowgar"},
-            {id:36855,name:"Lady Deathwhisper",type:"Boss Raid",level:"??",location:"ICC - Lower Spire",icon:"achievement_boss_ladydeathwhisper"},
-            {id:37813,name:"Deathbringer Saurfang",type:"Boss Raid",level:"??",location:"ICC - Lower Spire",icon:"achievement_boss_saurfang"},
-            {id:36626,name:"Festergut",type:"Boss Raid",level:"??",location:"ICC - Plagueworks",icon:"achievement_boss_festergut"},
-            {id:36627,name:"Rotface",type:"Boss Raid",level:"??",location:"ICC - Plagueworks",icon:"achievement_boss_rotface"},
-            {id:36678,name:"Professor Putricide",type:"Boss Raid",level:"??",location:"ICC - Plagueworks",icon:"achievement_boss_profputricide"},
-            {id:37955,name:"Blood-Queen Lana'thel",type:"Boss Raid",level:"??",location:"ICC - Crimson Hall",icon:"achievement_boss_lanathel"},
-            {id:36853,name:"Sindragosa",type:"Boss Raid",level:"??",location:"ICC - Frostwing Halls",icon:"achievement_boss_sindragosa"},
-            {id:36789,name:"Valithria Dreamwalker",type:"Boss Raid",level:"??",location:"ICC - Frostwing Halls",icon:"achievement_boss_dvl"},
-            {id:33288,name:"Yogg-Saron",type:"Boss Raid",level:"??",location:"Ulduar - Prison",icon:"achievement_boss_yoggsaron_01"},
-            {id:32871,name:"Algalon the Observer",type:"Boss Raid",level:"??",location:"Ulduar - Celestial",icon:"achievement_boss_algalon_01"},
-            {id:33350,name:"Mimiron",type:"Boss Raid",level:"??",location:"Ulduar - Keepers",icon:"achievement_boss_mimiron_01"},
-            {id:15990,name:"Kel'Thuzad",type:"Boss Raid",level:"??",location:"Naxxramas",icon:"achievement_boss_kelthuzad"},
-            {id:28860,name:"Sartharion",type:"Boss Raid",level:"??",location:"Obsidian Sanctum",icon:"achievement_boss_sartharion_01"},
-            {id:28859,name:"Malygos",type:"Boss Raid",level:"??",location:"Eye of Eternity",icon:"achievement_boss_inthenameofthelight_01"},
-            {id:10184,name:"Onyxia",type:"Boss Raid",level:"??",location:"Onyxia's Lair",icon:"achievement_boss_onyxia"},
-            {id:34564,name:"Anub'arak",type:"Boss Raid",level:"??",location:"Trial of Crusader",icon:"achievement_boss_inthenameofthelight_01"},
-            {id:38433,name:"Toravon",type:"Boss Raid",level:"??",location:"Vault of Archavon",icon:"spell_nature_unrelentingstorm"},
-            {id:31125,name:"Archavon",type:"Boss Raid",level:"??",location:"Vault of Archavon",icon:"spell_nature_unrelentingstorm"},
-            {id:39863,name:"Halion",type:"Boss Raid",level:"??",location:"Ruby Sanctum",icon:"spell_shadow_twilight"},
-            {id:32216,name:"Training Dummy (80)",type:"Utilidad",level:"80",location:"Capitales",icon:"inv_misc_punchcards_yellow"},
-            {id:31146,name:"Raider's Training Dummy",type:"Utilidad",level:"83",location:"Capitales",icon:"inv_misc_punchcards_yellow"},
-        ],
-
-        spells: [
-            {id:2825,name:"Bloodlust",effect:"+30% velocidad 40s (Horda)",type:"Buff",icon:"spell_nature_bloodlust"},
-            {id:32182,name:"Heroism",effect:"+30% velocidad 40s (Alianza)",type:"Buff",icon:"ability_shaman_heroism"},
-            {id:29166,name:"Innervate",effect:"Regenera 450% maná base 20s",type:"Buff",icon:"spell_nature_lightning"},
-            {id:642,name:"Divine Shield",effect:"Invulnerable 12 seg",type:"Immunity",icon:"spell_holy_divineshield"},
-            {id:45438,name:"Ice Block",effect:"Inmune a todo 10 seg",type:"Immunity",icon:"spell_frost_frost"},
-            {id:31884,name:"Avenging Wrath",effect:"+20% daño y sanación 20s",type:"Buff",icon:"spell_holy_avenginewrath"},
-            {id:49016,name:"Hysteria",effect:"+20% daño físico -1%hp/s 30s",type:"Buff",icon:"spell_deathknight_bladedarmor"},
-            {id:47476,name:"Strangulate",effect:"Silencia 5 seg",type:"CC",icon:"spell_shadow_soulleech_3"},
-            {id:33786,name:"Cyclone",effect:"Invulnerable+incapacitado 6s",type:"CC",icon:"spell_nature_earthbind"},
-            {id:23920,name:"Spell Reflection",effect:"Refleja próximo hechizo",type:"Buff",icon:"ability_warrior_shieldreflection"},
-            {id:53563,name:"Beacon of Light",effect:"Copia 100% sanación",type:"Buff",icon:"ability_paladin_beaconoflight"},
-            {id:48441,name:"Rejuvenation (R15)",effect:"Cura 1690 en 15s",type:"HoT",icon:"spell_nature_rejuvenation"},
-        ],
-
-        quests: [
-            {id:24545,name:"The Sacred and the Corrupt",level:80,zone:"ICC",desc:"1ra quest Shadowmourne"},
-            {id:24743,name:"A Feast of Souls",level:80,zone:"ICC",desc:"2da quest Shadowmourne"},
-            {id:24547,name:"Unholy Infusion",level:80,zone:"ICC",desc:"Shadowmourne - Putricide"},
-            {id:24548,name:"Blood Infusion",level:80,zone:"ICC",desc:"Shadowmourne - Blood Queen"},
-            {id:24549,name:"Frost Infusion",level:80,zone:"ICC",desc:"Shadowmourne - Sindragosa"},
-            {id:24749,name:"The Lich King's Last Stand",level:80,zone:"ICC",desc:"Quest final Shadowmourne"},
-            {id:13188,name:"Kalu'ak Fishing Derby",level:1,zone:"Dalaran",desc:"Torneo pesca semanal"},
-            {id:12906,name:"Betrayal",level:74,zone:"Dragonblight",desc:"Wrathgate"},
-        ],
-
-        sets: [
-            {id:845,name:"Sanctified Lightsworn Plate",cls:"Paladín Holy",tier:"T10 HC"},
-            {id:846,name:"Sanctified Lightsworn Battlegear",cls:"Paladín Ret",tier:"T10 HC"},
-            {id:847,name:"Sanctified Lightsworn Garb",cls:"Paladín Prot",tier:"T10 HC"},
-            {id:866,name:"Sanctified Shadowblade's Battlegear",cls:"Pícaro",tier:"T10 HC"},
-            {id:868,name:"Sanctified Ymirjar Lord's Battlegear",cls:"Guerrero DPS",tier:"T10 HC"},
-            {id:869,name:"Sanctified Ymirjar Lord's Plate",cls:"Guerrero Tank",tier:"T10 HC"},
-            {id:842,name:"Sanctified Dark Coven's Regalia",cls:"Brujo",tier:"T10 HC"},
-            {id:844,name:"Sanctified Bloodmage's Regalia",cls:"Mago",tier:"T10 HC"},
-            {id:838,name:"Sanctified Crimson Acolyte's Raiment",cls:"Sacerdote Holy",tier:"T10 HC"},
-            {id:839,name:"Sanctified Crimson Acolyte's Regalia",cls:"Sacerdote Shadow",tier:"T10 HC"},
-            {id:863,name:"Sanctified Lasherweave Garb",cls:"Druida Resto",tier:"T10 HC"},
-            {id:864,name:"Sanctified Lasherweave Battlegear",cls:"Druida Feral",tier:"T10 HC"},
-            {id:865,name:"Sanctified Lasherweave Regalia",cls:"Druida Balance",tier:"T10 HC"},
-            {id:860,name:"Sanctified Ahn'Kahar Blood Hunter's",cls:"Cazador",tier:"T10 HC"},
-            {id:856,name:"Sanctified Scourgelord's Battlegear",cls:"DK DPS",tier:"T10 HC"},
-            {id:857,name:"Sanctified Scourgelord's Plate",cls:"DK Tank",tier:"T10 HC"},
-            {id:870,name:"Sanctified Frost Witch's Garb",cls:"Chamán Resto",tier:"T10 HC"},
-            {id:871,name:"Sanctified Frost Witch's Battlegear",cls:"Chamán Mejora",tier:"T10 HC"},
-            {id:872,name:"Sanctified Frost Witch's Regalia",cls:"Chamán Elemental",tier:"T10 HC"},
-        ],
-
-        zones: [
-            {name:"Dalaran",continent:"Rasganorte",level:"80",type:"Ciudad",tele:".tele Dalaran"},
-            {name:"Stormwind",continent:"Reinos del Este",level:"1-80",type:"Capital",tele:".tele Stormwind"},
-            {name:"Orgrimmar",continent:"Kalimdor",level:"1-80",type:"Capital",tele:".tele Orgrimmar"},
-            {name:"Ironforge",continent:"Reinos del Este",level:"1-80",type:"Capital",tele:".tele Ironforge"},
-            {name:"Undercity",continent:"Reinos del Este",level:"1-80",type:"Capital",tele:".tele Undercity"},
-            {name:"Thunder Bluff",continent:"Kalimdor",level:"1-80",type:"Capital",tele:".tele ThunderBluff"},
-            {name:"Silvermoon",continent:"Reinos del Este",level:"1-80",type:"Capital",tele:".tele Silvermoon"},
-            {name:"Darnassus",continent:"Kalimdor",level:"1-80",type:"Capital",tele:".tele Darnassus"},
-            {name:"Exodar",continent:"Kalimdor",level:"1-80",type:"Capital",tele:".tele Exodar"},
-            {name:"Shattrath",continent:"Terrallende",level:"60-70",type:"Ciudad",tele:".tele Shattrath"},
-            {name:"Icecrown Citadel",continent:"Rasganorte",level:"80",type:"Raid",tele:".tele IcecrownCitadel"},
-            {name:"Ulduar",continent:"Rasganorte",level:"80",type:"Raid",tele:".tele Ulduar"},
-            {name:"Naxxramas",continent:"Rasganorte",level:"80",type:"Raid",tele:".tele Naxxramas"},
-            {name:"Trial of the Crusader",continent:"Rasganorte",level:"80",type:"Raid",tele:".tele TrialOfTheCrusader"},
-            {name:"Vault of Archavon",continent:"Rasganorte",level:"80",type:"Raid",tele:".tele VaultOfArchavon"},
-            {name:"Obsidian Sanctum",continent:"Rasganorte",level:"80",type:"Raid",tele:".tele ObsidianSanctum"},
-            {name:"Eye of Eternity",continent:"Rasganorte",level:"80",type:"Raid",tele:".tele EyeOfEternity"},
-            {name:"Ruby Sanctum",continent:"Rasganorte",level:"80",type:"Raid",tele:".tele RubySanctum"},
-            {name:"Onyxia's Lair",continent:"Kalimdor",level:"80",type:"Raid",tele:".tele OnyxiasLair"},
-            {name:"Karazhan",continent:"Reinos del Este",level:"70",type:"Raid",tele:".tele Karazhan"},
-            {name:"Black Temple",continent:"Terrallende",level:"70",type:"Raid",tele:".tele BlackTemple"},
-            {name:"Sunwell Plateau",continent:"Reinos del Este",level:"70",type:"Raid",tele:".tele SunwellPlateau"},
-            {name:"Wintergrasp",continent:"Rasganorte",level:"80",type:"PvP",tele:".tele Wintergrasp"},
-            {name:"Argent Tournament",continent:"Rasganorte",level:"80",type:"Evento",tele:".tele ArgentTournament"},
-            {name:"Forge of Souls",continent:"Rasganorte",level:"80",type:"Dungeon",tele:".tele ForgeOfSouls"},
-            {name:"Pit of Saron",continent:"Rasganorte",level:"80",type:"Dungeon",tele:".tele PitOfSaron"},
-            {name:"Halls of Reflection",continent:"Rasganorte",level:"80",type:"Dungeon",tele:".tele HallsOfReflection"},
-        ]
-    };
-
-    // ================================================================
-    // FUNCIONES
-    // ================================================================
-    const PER_PAGE = 25;
-    let currentPage = 1;
-    let filtered = [...DB.items];
-    let currentSection = 'items';
-
-    function getIcon(name) {
-        return `https://wow.zamimg.com/images/wow/icons/medium/${name}.jpg`;
-    }
-    function getFallback() {
-        return `https://wow.zamimg.com/images/wow/icons/medium/inv_misc_questionmark.jpg`;
-    }
-
-    function renderItems(items, page) {
-        page = page || 1;
-        const tbody = document.getElementById('itemsBody');
-        const start = (page-1)*PER_PAGE;
-        const pageItems = items.slice(start, start+PER_PAGE);
-        tbody.innerHTML = pageItems.map(i => `
-            <tr onmouseenter="showTT(event,${i.id})" onmouseleave="hideTT()" onmousemove="moveTT(event)">
-                <td class="col-id">${i.id}</td>
-                <td><div class="item-cell">
-                    <img class="db-icon q${i.rarity}" src="${getIcon(i.icon)}" onerror="this.src='${getFallback()}'">
-                    <span class="db-name q${i.rarity}-text">${i.name}</span>
-                </div></td>
-                <td class="col-type">${i.type}</td>
-                <td class="col-type">${i.slot}</td>
-                <td class="col-level">${i.ilvl>1?i.ilvl:'-'}</td>
-                <td class="col-source">${i.source}</td>
-                <td><button class="cmd-copy" onclick="event.stopPropagation();copyCmd('.additem ${i.id}',this)">.additem ${i.id}</button></td>
-            </tr>`).join('');
-        renderPagination(items.length, page);
-    }
-
-    function renderMounts() {
-        const tbody = document.getElementById('mountsBody');
-        const term = document.getElementById('dbSearch').value.toLowerCase();
-        const mounts = DB.mounts.filter(m => !term || m.name.toLowerCase().includes(term) || m.id.toString().includes(term));
-        tbody.innerHTML = mounts.map(m => `
-            <tr>
-                <td class="col-id">${m.id}</td>
-                <td><div class="item-cell">
-                    <img class="db-icon q${m.rarity}" src="${getIcon(m.icon)}" onerror="this.src='${getFallback()}'">
-                    <span class="db-name q${m.rarity}-text">${m.name}</span>
-                </div></td>
-                <td class="col-source">${m.source}</td>
-                <td class="col-type">${m.speed}</td>
-                <td><button class="cmd-copy" onclick="copyCmd('.additem ${m.id}',this)">.additem ${m.id}</button></td>
-            </tr>`).join('');
-        document.getElementById('noResults').classList.toggle('visible', mounts.length===0 && !!term);
-    }
-
-    function renderNpcs() {
-        const tbody = document.getElementById('npcsBody');
-        const term = document.getElementById('dbSearch').value.toLowerCase();
-        const npcs = DB.npcs.filter(n => !term || n.name.toLowerCase().includes(term) || n.id.toString().includes(term));
-        tbody.innerHTML = npcs.map(n => `
-            <tr>
-                <td class="col-id">${n.id}</td>
-                <td><div class="item-cell">
-                    <img class="db-icon q4" src="${getIcon(n.icon)}" onerror="this.src='${getFallback()}'">
-                    <span class="db-name q5-text">${n.name}</span>
-                </div></td>
-                <td class="col-type">${n.type}</td>
-                <td class="col-level">${n.level}</td>
-                <td class="col-source">${n.location}</td>
-                <td><button class="cmd-copy" onclick="copyCmd('.npc add ${n.id}',this)">.npc add ${n.id}</button></td>
-            </tr>`).join('');
-        document.getElementById('noResults').classList.toggle('visible', npcs.length===0 && !!term);
-    }
-
-    function renderSpells() {
-        const tbody = document.getElementById('spellsBody');
-        const term = document.getElementById('dbSearch').value.toLowerCase();
-        const spells = DB.spells.filter(s => !term || s.name.toLowerCase().includes(term) || s.id.toString().includes(term));
-        tbody.innerHTML = spells.map(s => `
-            <tr>
-                <td class="col-id">${s.id}</td>
-                <td><div class="item-cell">
-                    <img class="db-icon q3" src="${getIcon(s.icon)}" onerror="this.src='${getFallback()}'">
-                    <span class="db-name q3-text">${s.name}</span>
-                </div></td>
-                <td>${s.effect}</td>
-                <td class="col-type">${s.type}</td>
-                <td><button class="cmd-copy" onclick="copyCmd('.cast ${s.id}',this)">.cast ${s.id}</button></td>
-            </tr>`).join('');
-    }
-
-    function renderQuests() {
-        const tbody = document.getElementById('questsBody');
-        const term = document.getElementById('dbSearch').value.toLowerCase();
-        const quests = DB.quests.filter(q => !term || q.name.toLowerCase().includes(term) || q.id.toString().includes(term));
-        tbody.innerHTML = quests.map(q => `
-            <tr>
-                <td class="col-id">${q.id}</td>
-                <td><span class="q3-text">${q.name}</span><br><small style="color:#666">${q.desc}</small></td>
-                <td class="col-level">${q.level}</td>
-                <td class="col-source">${q.zone}</td>
-                <td><button class="cmd-copy" onclick="copyCmd('.quest add ${q.id}',this)">.quest add ${q.id}</button></td>
-            </tr>`).join('');
-    }
-
-    function renderSets() {
-        const tbody = document.getElementById('setsBody');
-        const term = document.getElementById('dbSearch').value.toLowerCase();
-        const sets = DB.sets.filter(s => !term || s.name.toLowerCase().includes(term) || s.cls.toLowerCase().includes(term));
-        tbody.innerHTML = sets.map(s => `
-            <tr>
-                <td class="col-id">${s.id}</td>
-                <td><span class="q4-text">${s.name}</span></td>
-                <td class="col-type">${s.cls}</td>
-                <td class="col-level">${s.tier}</td>
-                <td><button class="cmd-copy" onclick="copyCmd('.additemset ${s.id}',this)">.additemset ${s.id}</button></td>
-            </tr>`).join('');
-    }
-
-    function renderZones() {
-        const tbody = document.getElementById('zonesBody');
-        const term = document.getElementById('dbSearch').value.toLowerCase();
-        const zones = DB.zones.filter(z => !term || z.name.toLowerCase().includes(term));
-        tbody.innerHTML = zones.map(z => `
-            <tr>
-                <td><span class="q3-text">${z.name}</span></td>
-                <td class="col-type">${z.continent}</td>
-                <td class="col-level">${z.level}</td>
-                <td class="col-type">${z.type}</td>
-                <td><button class="cmd-copy" onclick="copyCmd('${z.tele}',this)">${z.tele}</button></td>
-            </tr>`).join('');
-    }
-
-    function renderPagination(total, page) {
-        const pages = Math.ceil(total/PER_PAGE);
-        const c = document.getElementById('itemsPagination');
-        if(pages<=1){c.innerHTML='';return;}
-        let h=`<button onclick="goPage(1)" ${page===1?'disabled':''}>«</button>`;
-        h+=`<button onclick="goPage(${page-1})" ${page===1?'disabled':''}>‹</button>`;
-        for(let i=Math.max(1,page-2);i<=Math.min(pages,page+2);i++)
-            h+=`<button class="${i===page?'active':''}" onclick="goPage(${i})">${i}</button>`;
-        h+=`<button onclick="goPage(${page+1})" ${page===pages?'disabled':''}>›</button>`;
-        h+=`<button onclick="goPage(${pages})" ${page===pages?'disabled':''}>»</button>`;
-        h+=`<span class="page-info">${total} items | Pág ${page}/${pages}</span>`;
-        c.innerHTML=h;
-    }
-
-    function goPage(p){currentPage=p;renderItems(filtered,p);window.scrollTo({top:200,behavior:'smooth'});}
-
-    // TOOLTIP
-    function showTT(e,id){
-        const i=DB.items.find(x=>x.id===id);if(!i)return;
-        const t=document.getElementById('tooltip');
-        const rn={0:'Pobre',1:'Común',2:'Poco común',3:'Raro',4:'Épico',5:'Legendario'};
-        t.innerHTML=`<div class="tt-name q${i.rarity}-text">${i.name}</div>
-            <div class="tt-type">${i.type} - ${i.slot} | iLvl ${i.ilvl} | ${rn[i.rarity]}</div>
-            <div class="tt-stats">${(i.stats||'').replace(/\n/g,'<br>')}</div>
-            ${i.desc?`<div class="tt-desc">"${i.desc}"</div>`:''}
-            <div class="tt-id">ID: ${i.id}</div>
-            <div class="tt-cmd">.additem ${i.id}</div>`;
-        t.classList.add('visible');moveTT(e);
-    }
-    function moveTT(e){
-        const t=document.getElementById('tooltip');
-        let x=e.clientX+15,y=e.clientY+15;
-        if(x+350>window.innerWidth)x=e.clientX-365;
-        if(y+300>window.innerHeight)y=e.clientY-300;
-        t.style.left=x+'px';t.style.top=y+'px';
-    }
-    function hideTT(){document.getElementById('tooltip').classList.remove('visible');}
-
-    // SEARCH & FILTERS
-    document.getElementById('dbSearch').addEventListener('input',applyFilters);
-
-    function applyFilters(){
-        const term=document.getElementById('dbSearch').value.toLowerCase().trim();
-        const rarity=document.getElementById('filterRarity').value;
-        const type=document.getElementById('filterType').value;
-
-        if(currentSection==='items'){
-            filtered=DB.items.filter(i=>{
-                const ms=!term||i.name.toLowerCase().includes(term)||i.id.toString().includes(term)||(i.tags||'').toLowerCase().includes(term);
-                const mr=!rarity||i.rarity===parseInt(rarity);
-                const mt=!type||i.type===type;
-                return ms&&mr&&mt;
-            });
-            currentPage=1;
-            renderItems(filtered,1);
-            document.getElementById('noResults').classList.toggle('visible',filtered.length===0&&!!term);
-            document.getElementById('searchResultsInfo').textContent=term||rarity||type?`${filtered.length} resultado(s)`:'';
-        } else if(currentSection==='npcs') renderNpcs();
-        else if(currentSection==='spells') renderSpells();
-        else if(currentSection==='quests') renderQuests();
-        else if(currentSection==='sets') renderSets();
-        else if(currentSection==='zones') renderZones();
-        else if(currentSection==='mounts') renderMounts();
-    }
-
-    // NAVIGATION
-    function switchDB(section,btn){
-        currentSection=section;
-        document.querySelectorAll('.db-section').forEach(s=>s.classList.remove('active'));
-        document.querySelectorAll('.db-nav button').forEach(b=>b.classList.remove('active'));
-        document.getElementById('db-'+section).classList.add('active');
-        btn.classList.add('active');
-        document.getElementById('dbSearch').value='';
-        document.getElementById('filterRarity').value='';
-        document.getElementById('filterType').value='';
-        document.getElementById('searchFilters').style.display=section==='items'?'flex':'none';
-        document.getElementById('searchResultsInfo').textContent='';
-        document.getElementById('noResults').classList.remove('visible');
-
-        if(section==='items'){filtered=[...DB.items];renderItems(filtered,1);}
-        else if(section==='npcs')renderNpcs();
-        else if(section==='spells')renderSpells();
-        else if(section==='quests')renderQuests();
-        else if(section==='sets')renderSets();
-        else if(section==='zones')renderZones();
-        else if(section==='mounts')renderMounts();
-    }
-
-    // SORT
-    let sortDir={};
-    function sortTable(col){
-        const d=sortDir[col]=!sortDir[col];
-        filtered.sort((a,b)=>{
-            let va=a[col]||'',vb=b[col]||'';
-            if(typeof va==='number')return d?va-vb:vb-va;
-            return d?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va));
+// SEARCH
+document.getElementById('q').addEventListener('input',filter);
+function filter(){
+    const q=document.getElementById('q').value.toLowerCase().trim();
+    const r=document.getElementById('fRar').value;
+    const t=document.getElementById('fType').value;
+    if(cs==='items'){
+        fi=D.items.filter(x=>{
+            const mq=!q||x.n.toLowerCase().includes(q)||x.id.toString().includes(q)||(x.tg||'').toLowerCase().includes(q);
+            const mr=!r||x.r===parseInt(r);const mt=!t||x.t===t;
+            return mq&&mr&&mt;
         });
-        currentPage=1;renderItems(filtered,1);
-    }
+        cp=1;ri(fi,1);
+        document.getElementById('nr').classList.toggle('vis',fi.length===0&&!!q);
+        document.getElementById('info').textContent=q||r||t?fi.length+' resultado(s)':'';
+    }else if(cs==='mounts')rm();
+    else if(cs==='npcs')rn();
+    else if(cs==='spells')rsp();
+    else if(cs==='quests')rq();
+    else if(cs==='sets')rs();
+    else if(cs==='zones')rz();
+}
 
-    // UTILS
-    function copyCmd(cmd,btn){
-        navigator.clipboard.writeText(cmd).then(()=>{
-            const o=btn.textContent;btn.textContent='✅ Copiado!';btn.classList.add('copied');
-            setTimeout(()=>{btn.textContent=o;btn.classList.remove('copied');},1500);
-        });
-    }
-    function scrollToTop(){window.scrollTo({top:0,behavior:'smooth'});}
-    window.addEventListener('scroll',()=>{
-        document.getElementById('scrollTop').classList.toggle('visible',window.scrollY>500);
+// NAV
+function go(sec,btn){
+    cs=sec;
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+    document.getElementById('t-'+sec).classList.add('active');
+    btn.classList.add('active');
+    document.getElementById('q').value='';
+    document.getElementById('fRar').value='';document.getElementById('fType').value='';
+    document.getElementById('filters').style.display=sec==='items'?'flex':'none';
+    document.getElementById('info').textContent='';
+    document.getElementById('nr').classList.remove('vis');
+    if(sec==='items'){fi=[...D.items];ri(fi,1);}
+    else if(sec==='mounts')rm();
+    else if(sec==='npcs')rn();
+    else if(sec==='spells')rsp();
+    else if(sec==='quests')rq();
+    else if(sec==='sets')rs();
+    else if(sec==='zones')rz();
+}
+
+// SORT
+function srt(col){
+    const d=sd[col]=!sd[col];
+    fi.sort((a,b)=>{let va=a[col]||'',vb=b[col]||'';
+        if(typeof va==='number')return d?va-vb:vb-va;
+        return d?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va));
+    });cp=1;ri(fi,1);
+}
+
+// UTILS
+function cc(cmd,btn){
+    navigator.clipboard.writeText(cmd).then(()=>{
+        const o=btn.textContent;btn.textContent='✅ Copiado!';btn.classList.add('ok');
+        setTimeout(()=>{btn.textContent=o;btn.classList.remove('ok');},1500);
     });
-
-    // INIT
-    window.addEventListener('load',()=>{renderItems(DB.items,1);});
+}
+window.addEventListener('scroll',()=>{document.getElementById('topBtn').classList.toggle('vis',window.scrollY>500);});
+window.addEventListener('load',()=>{ri(D.items,1);});
+</script>
+</body>
+</html>
