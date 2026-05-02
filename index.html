@@ -1,0 +1,2096 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Comandos GM - WoW 3.3.5a</title>
+    <style>
+        /* ============ RESET Y BASE ============ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #c4c4c4;
+            min-height: 100vh;
+        }
+
+        /* ============ HEADER ============ */
+        header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            border-bottom: 3px solid #e94560;
+            padding: 20px 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(233, 69, 96, 0.3);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            color: #e94560;
+            text-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+            margin-bottom: 5px;
+        }
+
+        header h1 span {
+            color: #00d2ff;
+        }
+
+        header p {
+            color: #888;
+            font-size: 1.1em;
+        }
+
+        /* ============ BUSCADOR ============ */
+        .search-container {
+            text-align: center;
+            padding: 25px 20px;
+            background: #111;
+            border-bottom: 1px solid #222;
+        }
+
+        .search-container input {
+            width: 90%;
+            max-width: 600px;
+            padding: 15px 25px;
+            font-size: 1.1em;
+            border: 2px solid #333;
+            border-radius: 50px;
+            background: #1a1a1a;
+            color: #fff;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-container input:focus {
+            border-color: #e94560;
+            box-shadow: 0 0 15px rgba(233, 69, 96, 0.3);
+        }
+
+        .search-container input::placeholder {
+            color: #555;
+        }
+
+        .search-stats {
+            color: #666;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        /* ============ NAVEGACIÓN DE CATEGORÍAS ============ */
+        .category-nav {
+            background: #111;
+            padding: 15px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            border-bottom: 1px solid #222;
+            position: sticky;
+            top: 95px;
+            z-index: 999;
+        }
+
+        .category-nav button {
+            padding: 8px 16px;
+            border: 1px solid #333;
+            border-radius: 20px;
+            background: #1a1a1a;
+            color: #888;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+        }
+
+        .category-nav button:hover,
+        .category-nav button.active {
+            background: #e94560;
+            color: #fff;
+            border-color: #e94560;
+            box-shadow: 0 0 10px rgba(233, 69, 96, 0.3);
+        }
+
+        /* ============ CONTENIDO PRINCIPAL ============ */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* ============ CATEGORÍA ============ */
+        .category {
+            margin-bottom: 30px;
+            border: 1px solid #222;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #121212;
+            transition: all 0.3s ease;
+        }
+
+        .category:hover {
+            border-color: #333;
+        }
+
+        .category-header {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 18px 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .category-header:hover {
+            background: linear-gradient(135deg, #1f1f3a, #1b2849);
+        }
+
+        .category-header h2 {
+            font-size: 1.3em;
+            color: #00d2ff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .category-header .icon {
+            font-size: 1.4em;
+        }
+
+        .category-header .toggle {
+            font-size: 1.5em;
+            color: #e94560;
+            transition: transform 0.3s ease;
+        }
+
+        .category-header .toggle.open {
+            transform: rotate(180deg);
+        }
+
+        .category-header .cmd-count {
+            background: #e94560;
+            color: #fff;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            margin-left: 10px;
+        }
+
+        /* ============ CONTENIDO DE CATEGORÍA ============ */
+        .category-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .category-content.open {
+            max-height: 5000px;
+        }
+
+        /* ============ TABLA DE COMANDOS ============ */
+        .cmd-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cmd-table thead th {
+            background: #1a1a1a;
+            padding: 12px 20px;
+            text-align: left;
+            color: #e94560;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #e94560;
+        }
+
+        .cmd-table tbody tr {
+            border-bottom: 1px solid #1a1a1a;
+            transition: all 0.2s ease;
+        }
+
+        .cmd-table tbody tr:hover {
+            background: #1a1a2e;
+        }
+
+        .cmd-table tbody tr.hidden {
+            display: none;
+        }
+
+        .cmd-table td {
+            padding: 12px 20px;
+            vertical-align: top;
+        }
+
+        .cmd-table td:first-child {
+            font-family: 'Courier New', monospace;
+            color: #4ade80;
+            font-weight: bold;
+            white-space: nowrap;
+            font-size: 0.95em;
+        }
+
+        .cmd-table td:nth-child(2) {
+            color: #aaa;
+            line-height: 1.5;
+        }
+
+        .cmd-table td:nth-child(3) {
+            color: #e94560;
+            font-weight: bold;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        /* ============ NIVEL GM BADGES ============ */
+        .gm-level {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+
+        .gm-level.gm1 {
+            background: #1b4332;
+            color: #4ade80;
+        }
+
+        .gm-level.gm2 {
+            background: #1e3a5f;
+            color: #60a5fa;
+        }
+
+        .gm-level.gm3 {
+            background: #5c1a1a;
+            color: #f87171;
+        }
+
+        /* ============ NIVELES INFO ============ */
+        .gm-levels-info {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .gm-levels-info h2 {
+            color: #e94560;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            text-align: center;
+        }
+
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .level-card {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .level-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .level-card .level-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .level-card .level-title {
+            font-size: 1.2em;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .level-card .level-desc {
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .level-0 .level-number { color: #888; }
+        .level-1 .level-number { color: #4ade80; }
+        .level-2 .level-number { color: #60a5fa; }
+        .level-3 .level-number { color: #f87171; }
+
+        /* ============ FOOTER ============ */
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: #0a0a0a;
+            border-top: 1px solid #222;
+            color: #444;
+            margin-top: 50px;
+        }
+
+        footer a {
+            color: #e94560;
+            text-decoration: none;
+        }
+
+        /* ============ SCROLL TO TOP ============ */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #e94560;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5em;
+            cursor: pointer;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .scroll-top:hover {
+            transform: scale(1.1);
+            background: #d63851;
+        }
+
+        .scroll-top.visible {
+            display: block;
+        }
+
+        /* ============ NO RESULTS ============ */
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #555;
+            font-size: 1.3em;
+            display: none;
+        }
+
+        .no-results.visible {
+            display: block;
+        }
+
+        .no-results span {
+            font-size: 3em;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        /* ============ COPY BUTTON ============ */
+        .copy-btn {
+            background: none;
+            border: 1px solid #333;
+            color: #888;
+            padding: 3px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.75em;
+            margin-left: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            border-color: #4ade80;
+            color: #4ade80;
+        }
+
+        .copy-btn.copied {
+            border-color: #4ade80;
+            color: #4ade80;
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.6em;
+            }
+
+            .category-header h2 {
+                font-size: 1em;
+            }
+
+            .cmd-table td {
+                padding: 8px 12px;
+                font-size: 0.85em;
+            }
+
+            .cmd-table td:first-child {
+                font-size: 0.8em;
+            }
+
+            .category-nav {
+                position: relative;
+                top: 0;
+            }
+
+            .cmd-table thead {
+                display: none;
+            }
+
+            .cmd-table tbody tr {
+                display: block;
+                padding: 12px;
+                border-bottom: 1px solid #222;
+            }
+
+            .cmd-table td {
+                display: block;
+                padding: 4px 12px;
+            }
+
+            .cmd-table td:first-child {
+                color: #4ade80;
+                font-size: 0.9em;
+                padding-bottom: 5px;
+            }
+
+            .cmd-table td:nth-child(3) {
+                text-align: left;
+                padding-top: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <h1>⚔️ <span>GM</span> Commands Panel</h1>
+        <p>World of Warcraft 3.3.5a - Wrath of the Lich King</p>
+    </header>
+
+    <!-- BUSCADOR -->
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="🔍 Buscar comando... (ej: teleport, ban, item, npc...)">
+        <div class="search-stats" id="searchStats">Mostrando todos los comandos</div>
+    </div>
+
+    <!-- NAVEGACIÓN DE CATEGORÍAS -->
+    <div class="category-nav" id="categoryNav">
+        <button class="active" onclick="filterCategory('all', this)">📋 Todos</button>
+        <button onclick="filterCategory('cuenta', this)">👤 Cuenta</button>
+        <button onclick="filterCategory('teleport', this)">🌀 Teleport</button>
+        <button onclick="filterCategory('modificar', this)">⚡ Modificar</button>
+        <button onclick="filterCategory('items', this)">🎒 Items</button>
+        <button onclick="filterCategory('npc', this)">👾 NPCs</button>
+        <button onclick="filterCategory('gobject', this)">🏗️ Objetos</button>
+        <button onclick="filterCategory('auras', this)">✨ Auras</button>
+        <button onclick="filterCategory('eventos', this)">🎪 Eventos</button>
+        <button onclick="filterCategory('server', this)">🖥️ Server</button>
+        <button onclick="filterCategory('gm', this)">🛡️ Modo GM</button>
+        <button onclick="filterCategory('lookup', this)">🔎 Lookup</button>
+        <button onclick="filterCategory('quest', this)">📜 Quests</button>
+        <button onclick="filterCategory('honor', this)">🏆 Honor/Arena</button>
+        <button onclick="filterCategory('learn', this)">📚 Learn</button>
+        <button onclick="filterCategory('reset', this)">🔄 Reset</button>
+        <button onclick="filterCategory('ticket', this)">🎫 Tickets</button>
+        <button onclick="filterCategory('guild', this)">🏰 Guild</button>
+        <button onclick="filterCategory('character', this)">🧙 Character</button>
+        <button onclick="filterCategory('misc', this)">🔧 Misc</button>
+    </div>
+
+    <div class="container">
+
+        <!-- NIVELES GM -->
+        <div class="gm-levels-info">
+            <h2>🔐 Niveles de Acceso GM</h2>
+            <div class="levels-grid">
+                <div class="level-card level-0">
+                    <div class="level-number">0</div>
+                    <div class="level-title">Jugador</div>
+                    <div class="level-desc">Sin privilegios especiales. Usuario normal del servidor.</div>
+                </div>
+                <div class="level-card level-1">
+                    <div class="level-number">1</div>
+                    <div class="level-title">Moderador</div>
+                    <div class="level-desc">Comandos básicos: kick, mute, tickets, announce.</div>
+                </div>
+                <div class="level-card level-2">
+                    <div class="level-number">2</div>
+                    <div class="level-title">Game Master</div>
+                    <div class="level-desc">Comandos intermedios: teleport, spawn, items, NPCs.</div>
+                </div>
+                <div class="level-card level-3">
+                    <div class="level-number">3</div>
+                    <div class="level-title">Administrador</div>
+                    <div class="level-desc">Acceso total: server, accounts, ban, reload, shutdown.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: CUENTA/JUGADOR ==================== -->
+        <div class="category" data-category="cuenta">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">👤</span> Cuenta y Jugador <span class="cmd-count">15</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.account set gmlevel [cuenta] [nivel] [realmID]</td>
+                            <td>Asigna nivel de GM a una cuenta. Niveles: 0 (jugador), 1 (mod), 2 (GM), 3 (admin)</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.account set password [cuenta] [pass] [pass]</td>
+                            <td>Cambia la contraseña de una cuenta</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.account create [cuenta] [password]</td>
+                            <td>Crea una nueva cuenta en el servidor</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.account delete [cuenta]</td>
+                            <td>Elimina una cuenta del servidor permanentemente</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.ban account [nombre] [tiempo] [razón]</td>
+                            <td>Banea una cuenta. Tiempo: 1d, 1h, 1m, 0 = permanente</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.ban character [nombre] [tiempo] [razón]</td>
+                            <td>Banea un personaje específico por nombre</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.ban ip [IP] [tiempo] [razón]</td>
+                            <td>Banea una dirección IP del servidor</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.unban account [nombre]</td>
+                            <td>Quita el ban de una cuenta</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.unban character [nombre]</td>
+                            <td>Quita el ban de un personaje</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.unban ip [IP]</td>
+                            <td>Quita el ban de una dirección IP</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.baninfo account [nombre]</td>
+                            <td>Muestra información de ban de una cuenta</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.banlist account [patrón]</td>
+                            <td>Lista todas las cuentas baneadas que coincidan con el patrón</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.kick [nombre] [razón]</td>
+                            <td>Expulsa a un jugador del servidor</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.mute [nombre] [minutos] [razón]</td>
+                            <td>Silencia a un jugador por X minutos</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.unmute [nombre]</td>
+                            <td>Quita el silencio de un jugador</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: TELEPORT ==================== -->
+        <div class="category" data-category="teleport">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">🌀</span> Teletransporte <span class="cmd-count">12</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.tele [ubicación]</td>
+                            <td>Te teletransporta a una ubicación predefinida guardada en la base de datos</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.tele add [nombre]</td>
+                            <td>Guarda tu ubicación actual como un punto de teletransporte con el nombre indicado</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.tele del [nombre]</td>
+                            <td>Elimina un punto de teletransporte guardado</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.tele name [jugador] [ubicación]</td>
+                            <td>Teletransporta a un jugador específico a una ubicación</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.tele group [ubicación]</td>
+                            <td>Teletransporta a todo tu grupo a una ubicación</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.appear [nombre]</td>
+                            <td>Te teletransporta hacia donde está el jugador indicado</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.summon [nombre]</td>
+                            <td>Invoca/trae a un jugador a tu ubicación actual</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.go xyz [x] [y] [z] [mapID]</td>
+                            <td>Te teletransporta a coordenadas específicas en un mapa</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.go creature [GUID/nombre]</td>
+                            <td>Te teletransporta a la ubicación de una criatura</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.go object [GUID]</td>
+                            <td>Te teletransporta a la ubicación de un game object</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.gps</td>
+                            <td>Muestra tus coordenadas actuales (X, Y, Z, mapa, zona)</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.go trigger [triggerID]</td>
+                            <td>Te teletransporta a un area trigger específico</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: MODIFICAR ==================== -->
+        <div class="category" data-category="modificar">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">⚡</span> Modificar Personaje <span class="cmd-count">18</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.modify hp [cantidad]</td>
+                            <td>Modifica la vida máxima del personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.modify mana [cantidad]</td>
+                            <td>Modifica el maná máximo del personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.modify energy [cantidad]</td>
+                            <td>Modifica la energía del personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.modify rage [cantidad]</td>
+                            <td>Modifica la ira del personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.modify runicpower [cantidad]</td>
+                            <td>Modifica el poder rúnico del personaje (DK)</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.modify speed [multiplicador]</td>
+                            <td>Modifica la velocidad general. Ejemplo: 2 = doble velocidad</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.modify aspeed [multiplicador]</td>
+                            <td>Modifica todas las velocidades (correr, nadar, volar)</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.modify swim [multiplicador]</td>
+                            <td>Modifica la velocidad de nado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.modify fly [multiplicador]</td>
+                            <td>Modifica la velocidad de vuelo</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.modify bwalk [multiplicador]</td>
+                            <td>Modifica la velocidad de caminar hacia atrás</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.modify scale [valor]</td>
+                            <td>Modifica el tamaño del personaje. 1 = normal, 2 = doble</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.modify money [cantidad]</td>
+                            <td>Añade dinero (en cobres). 10000 = 1 oro. Negativo para quitar</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.modify honor [cantidad]</td>
+                            <td>Modifica los puntos de honor del personaje</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.modify arena [cantidad]</td>
+                            <td>Modifica los puntos de arena del personaje</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.modify level [nivel]</td>
+                            <td>Establece el nivel del personaje (1-80)</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.modify faction [factionID] [reputación] [bandera] [npcflag]</td>
+                            <td>Modifica la facción de la criatura seleccionada</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.modify rep [factionID] [cantidad]</td>
+                            <td>Modifica la reputación con una facción específica</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.levelup [cantidad]</td>
+                            <td>Sube la cantidad de niveles indicada al personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: ITEMS ==================== -->
+        <div class="category" data-category="items">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">🎒</span> Items y Objetos <span class="cmd-count">8</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.additem [itemID] [cantidad]</td>
+                            <td>Añade un objeto al inventario del personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.additemset [setID]</td>
+                            <td>Añade un set completo de equipo al inventario</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.bank</td>
+                            <td>Abre la ventana del banco sin necesidad de estar en uno</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.mailbox</td>
+                            <td>Abre la ventana del buzón de correo sin necesidad de estar en uno</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.repairitems</td>
+                            <td>Repara todos los objetos del personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.send items [jugador] "asunto" "texto" [itemID:cantidad]</td>
+                            <td>Envía items por correo a un jugador</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.send money [jugador] "asunto" "texto" [cantidad]</td>
+                            <td>Envía dinero por correo a un jugador</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.send message [jugador] "asunto" "texto"</td>
+                            <td>Envía un mensaje por correo a un jugador</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: NPCs ==================== -->
+        <div class="category" data-category="npc">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">👾</span> NPCs / Criaturas <span class="cmd-count">18</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.npc add [creatureID]</td>
+                            <td>Crea/spawnea una criatura en tu ubicación actual</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.npc add temp [creatureID]</td>
+                            <td>Crea una criatura temporal que desaparece al reiniciar el servidor</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.npc delete [GUID]</td>
+                            <td>Elimina la criatura seleccionada o por GUID</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.npc move [GUID]</td>
+                            <td>Mueve la criatura seleccionada a tu posición actual</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.npc set level [nivel]</td>
+                            <td>Cambia el nivel de la criatura seleccionada</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.npc set model [modelID]</td>
+                            <td>Cambia el modelo/apariencia visual de la criatura</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.npc set faction [factionID]</td>
+                            <td>Cambia la facción de la criatura (amistosa, hostil, etc.)</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.npc set flag [flag]</td>
+                            <td>Establece los flags del NPC (vendedor, reparador, etc.)</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.npc set movetype [tipo]</td>
+                            <td>Cambia el tipo de movimiento: 0=idle, 1=random, 2=waypoint</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.npc set spawndist [distancia]</td>
+                            <td>Establece la distancia de spawn/movimiento aleatorio</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.npc set spawntime [segundos]</td>
+                            <td>Establece el tiempo de respawn de la criatura</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.npc say [texto]</td>
+                            <td>Hace que la criatura seleccionada diga un texto</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.npc yell [texto]</td>
+                            <td>Hace que la criatura seleccionada grite un texto</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.npc whisper [playerGUID] [texto]</td>
+                            <td>Hace que la criatura susurre un texto a un jugador</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.npc info</td>
+                            <td>Muestra información detallada de la criatura seleccionada</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.npc near [distancia]</td>
+                            <td>Lista todas las criaturas cercanas dentro de la distancia</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.npc follow</td>
+                            <td>Hace que la criatura seleccionada te siga</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.npc follow stop</td>
+                            <td>Detiene el seguimiento de la criatura</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: GAME OBJECTS ==================== -->
+        <div class="category" data-category="gobject">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">🏗️</span> Game Objects <span class="cmd-count">10</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.gobject add [objectID]</td>
+                            <td>Crea un game object en tu posición actual</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.gobject add temp [objectID]</td>
+                            <td>Crea un game object temporal (desaparece al reiniciar)</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.gobject delete [GUID]</td>
+                            <td>Elimina un game object por su GUID</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.gobject move [GUID]</td>
+                            <td>Mueve un game object a tu posición actual</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.gobject turn [GUID] [orientación]</td>
+                            <td>Rota un game object (orientación en radianes)</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.gobject near [distancia]</td>
+                            <td>Lista todos los game objects cercanos</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.gobject info [GUID]</td>
+                            <td>Muestra información del game object</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.gobject activate [GUID]</td>
+                            <td>Activa/usa un game object (abrir puerta, cofre, etc.)</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.gobject set phase [GUID] [phase]</td>
+                            <td>Cambia la fase del game object</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.gobject set state [GUID] [state]</td>
+                            <td>Cambia el estado del game object (0=activo, 1=inactivo)</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: AURAS/BUFFS ==================== -->
+        <div class="category" data-category="auras">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">✨</span> Auras, Buffs y Hechizos <span class="cmd-count">8</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.aura [spellID]</td>
+                            <td>Aplica un aura/buff permanente al personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.unaura [spellID]</td>
+                            <td>Quita un aura/buff específico del personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.unaura all</td>
+                            <td>Quita todas las auras del personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.cast [spellID]</td>
+                            <td>Lanza un hechizo sobre el objetivo seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.cast back [spellID]</td>
+                            <td>El objetivo seleccionado te lanza el hechizo a ti</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.cast self [spellID]</td>
+                            <td>El objetivo se lanza el hechizo a sí mismo</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.cast dist [spellID] [distancia]</td>
+                            <td>Lanza un hechizo a una distancia específica</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.cooldown</td>
+                            <td>Resetea todos los cooldowns del personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: EVENTOS ==================== -->
+        <div class="category" data-category="eventos">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">🎪</span> Eventos <span class="cmd-count">4</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.event activelist</td>
+                            <td>Muestra todos los eventos actualmente activos en el servidor</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.event start [eventID]</td>
+                            <td>Inicia un evento del juego manualmente</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.event stop [eventID]</td>
+                            <td>Detiene un evento del juego</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.event info [eventID]</td>
+                            <td>Muestra información detallada de un evento</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: SERVER ==================== -->
+        <div class="category" data-category="server">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">🖥️</span> Servidor <span class="cmd-count">12</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.server info</td>
+                            <td>Muestra información del servidor (uptime, jugadores, versión)</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.server restart [segundos]</td>
+                            <td>Reinicia el servidor después de X segundos</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.server shutdown [segundos]</td>
+                            <td>Apaga el servidor después de X segundos</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.server shutdown cancel</td>
+                            <td>Cancela un reinicio o apagado programado</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.server set motd [mensaje]</td>
+                            <td>Establece el mensaje del día del servidor</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.announce [mensaje]</td>
+                            <td>Envía un anuncio global a todos los jugadores</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.gmannounce [mensaje]</td>
+                            <td>Envía un anuncio solo visible para los GMs online</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.notify [mensaje]</td>
+                            <td>Envía una notificación en el centro de la pantalla a todos</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.reload all</td>
+                            <td>Recarga todas las tablas de la base de datos</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.reload creature_template</td>
+                            <td>Recarga la tabla de criaturas</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.reload gameobject_template</td>
+                            <td>Recarga la tabla de game objects</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.saveall</td>
+                            <td>Guarda todos los personajes conectados a la base de datos</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: MODO GM ==================== -->
+        <div class="category" data-category="gm">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">🛡️</span> Modo GM y Utilidades <span class="cmd-count">16</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.gm on</td>
+                            <td>Activa el modo GM (icono visible, inmune a daño)</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.gm off</td>
+                            <td>Desactiva el modo GM</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.gm visible on</td>
+                            <td>Te hace visible para todos los jugadores</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.gm visible off</td>
+                            <td>Te hace invisible para los jugadores normales</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.gm fly on</td>
+                            <td>Activa el modo vuelo libre (volar sin montura)</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.gm fly off</td>
+                            <td>Desactiva el modo vuelo libre</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.gm chat on</td>
+                            <td>Activa el tag [GM] en tus mensajes de chat</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.gm chat off</td>
+                            <td>Desactiva el tag [GM] en tus mensajes</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.die</td>
+                            <td>Mata instantáneamente al personaje/criatura seleccionada</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.revive</td>
+                            <td>Revive al personaje seleccionado con vida completa</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.combatstop [nombre]</td>
+                            <td>Detiene el combate del personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.freeze [nombre]</td>
+                            <td>Congela a un jugador (no puede moverse ni actuar)</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.unfreeze [nombre]</td>
+                            <td>Descongela a un jugador previamente congelado</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.god on</td>
+                            <td>Activa el modo dios (invulnerable a todo daño)</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.god off</td>
+                            <td>Desactiva el modo dios</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.damage [cantidad]</td>
+                            <td>Causa una cantidad específica de daño al objetivo</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: LOOKUP ==================== -->
+        <div class="category" data-category="lookup">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">🔎</span> Búsqueda (Lookup) <span class="cmd-count">12</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.lookup item [nombre]</td>
+                            <td>Busca un item por nombre y muestra su ID</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.lookup spell [nombre]</td>
+                            <td>Busca un hechizo por nombre y muestra su ID</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.lookup creature [nombre]</td>
+                            <td>Busca una criatura/NPC por nombre y muestra su ID</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.lookup object [nombre]</td>
+                            <td>Busca un game object por nombre y muestra su ID</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.lookup quest [nombre]</td>
+                            <td>Busca una misión/quest por nombre y muestra su ID</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.lookup area [nombre]</td>
+                            <td>Busca una zona/área por nombre y muestra su ID</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.lookup tele [nombre]</td>
+                            <td>Busca ubicaciones de teletransporte guardadas</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.lookup skill [nombre]</td>
+                            <td>Busca una habilidad/profesión por nombre</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.lookup map [nombre]</td>
+                            <td>Busca un mapa por nombre y muestra su ID</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.lookup event [nombre]</td>
+                            <td>Busca un evento por nombre</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.lookup faction [nombre]</td>
+                            <td>Busca una facción por nombre y muestra su ID</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.lookup title [nombre]</td>
+                            <td>Busca un título por nombre y muestra su ID</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: QUESTS ==================== -->
+        <div class="category" data-category="quest">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">📜</span> Misiones (Quests) <span class="cmd-count">6</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.quest add [questID]</td>
+                            <td>Añade una misión al log del personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.quest remove [questID]</td>
+                            <td>Quita una misión del log del personaje</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.quest complete [questID]</td>
+                            <td>Completa una misión para el personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.quest reward [questID]</td>
+                            <td>Da la recompensa de una misión sin necesidad de completarla</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.quest status [questID]</td>
+                            <td>Muestra el estado de una misión para el personaje</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.quest explore [questID]</td>
+                            <td>Marca como explorada una misión de exploración</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: HONOR/ARENA ==================== -->
+        <div class="category" data-category="honor">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">🏆</span> Honor y Arena <span class="cmd-count">5</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.honor add [cantidad]</td>
+                            <td>Añade puntos de honor al personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.honor add kill</td>
+                            <td>Añade honor equivalente a una kill honorable</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.honor update</td>
+                            <td>Fuerza la actualización de honor del personaje</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.reset honor [nombre]</td>
+                            <td>Resetea todos los puntos de honor de un personaje</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.reset arena [nombre]</td>
+                            <td>Resetea los puntos de arena de un personaje</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: LEARN ==================== -->
+        <div class="category" data-category="learn">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">📚</span> Aprender Hechizos (Learn) <span class="cmd-count">10</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.learn [spellID]</td>
+                            <td>Enseña un hechizo específico al personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.learn all</td>
+                            <td>Aprende todos los hechizos disponibles</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.learn all_crafts</td>
+                            <td>Aprende todas las recetas de profesiones</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.learn all_gm</td>
+                            <td>Aprende todos los hechizos especiales de GM</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.learn all_myclass</td>
+                            <td>Aprende todos los hechizos y talentos de tu clase</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.learn all_myspells</td>
+                            <td>Aprende todos los hechizos disponibles para tu clase</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.learn all_mytalents</td>
+                            <td>Aprende todos los talentos de tu clase</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.learn all_recipes [profesión]</td>
+                            <td>Aprende todas las recetas de una profesión específica</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.unlearn [spellID]</td>
+                            <td>Hace olvidar un hechizo al personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.learn all_lang</td>
+                            <td>Aprende todos los idiomas del juego</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: RESET ==================== -->
+        <div class="category" data-category="reset">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">🔄</span> Reset <span class="cmd-count">8</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.reset all</td>
+                            <td>Resetea todo del personaje (hechizos, talentos, etc.)</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.reset honor [nombre]</td>
+                            <td>Resetea el honor del personaje</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.reset level [nombre]</td>
+                            <td>Resetea el nivel del personaje a 1</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.reset spells [nombre]</td>
+                            <td>Resetea todos los hechizos aprendidos</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.reset stats [nombre]</td>
+                            <td>Resetea las estadísticas del personaje</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.reset talents [nombre]</td>
+                            <td>Resetea los puntos de talento del personaje</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.reset achievements [nombre]</td>
+                            <td>Resetea todos los logros del personaje</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.instance unbind all</td>
+                            <td>Resetea todas las instancias/mazmorras del personaje</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: TICKETS ==================== -->
+        <div class="category" data-category="ticket">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">🎫</span> Tickets de Soporte <span class="cmd-count">7</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.ticket list</td>
+                            <td>Lista todos los tickets de soporte abiertos</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.ticket viewid [ticketID]</td>
+                            <td>Muestra el contenido de un ticket específico</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.ticket close [ticketID]</td>
+                            <td>Cierra un ticket de soporte</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.ticket delete [ticketID]</td>
+                            <td>Elimina un ticket permanentemente</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.ticket assign [ticketID] [GM]</td>
+                            <td>Asigna un ticket a un GM específico</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.ticket unassign [ticketID]</td>
+                            <td>Desasigna un ticket de un GM</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.ticket comment [ticketID] [comentario]</td>
+                            <td>Añade un comentario interno a un ticket</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: GUILD ==================== -->
+        <div class="category" data-category="guild">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">🏰</span> Hermandad (Guild) <span class="cmd-count">6</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.guild create [líder] [nombre]</td>
+                            <td>Crea una nueva hermandad con el líder y nombre indicados</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.guild delete [nombre]</td>
+                            <td>Elimina una hermandad del servidor</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.guild invite [jugador] [guild]</td>
+                            <td>Invita a un jugador a una hermandad</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.guild uninvite [jugador]</td>
+                            <td>Expulsa a un jugador de su hermandad</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.guild rank [jugador] [rango]</td>
+                            <td>Cambia el rango de un jugador dentro de su hermandad</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.guild rename [nombre antiguo] [nombre nuevo]</td>
+                            <td>Renombra una hermandad existente</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: CHARACTER ==================== -->
+        <div class="category" data-category="character">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">🧙</span> Character (Personaje Avanzado) <span class="cmd-count">12</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.character rename [nombre]</td>
+                            <td>Fuerza el cambio de nombre del personaje en el próximo login</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.character customize [nombre]</td>
+                            <td>Permite al jugador personalizar su personaje en el próximo login</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.character changefaction [nombre]</td>
+                            <td>Permite cambio de facción en el próximo login</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.character changerace [nombre]</td>
+                            <td>Permite cambio de raza en el próximo login</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.character level [nombre] [nivel]</td>
+                            <td>Establece el nivel de un personaje (incluso offline)</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.character deleted list</td>
+                            <td>Lista todos los personajes eliminados que pueden restaurarse</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.character deleted restore [GUID] [nombre] [cuenta]</td>
+                            <td>Restaura un personaje eliminado</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.character deleted delete [GUID]</td>
+                            <td>Elimina permanentemente un personaje borrado</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.character erase [nombre]</td>
+                            <td>Elimina un personaje completamente de la base de datos</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.pinfo [nombre]</td>
+                            <td>Muestra información detallada de un jugador (cuenta, IP, última conexión, etc.)</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.character reputation [nombre]</td>
+                            <td>Muestra todas las reputaciones del personaje</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.maxskill</td>
+                            <td>Sube todas las habilidades al máximo del personaje</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ==================== CATEGORÍA: MISC ==================== -->
+        <div class="category" data-category="misc">
+            <div class="category-header" onclick="toggleCategory(this)">
+                <h2><span class="icon">🔧</span> Misceláneos <span class="cmd-count">15</span></h2>
+                <span class="toggle">▼</span>
+            </div>
+            <div class="category-content">
+                <table class="cmd-table">
+                    <thead>
+                        <tr>
+                            <th>Comando</th>
+                            <th>Descripción</th>
+                            <th>Nivel GM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>.morph [displayID]</td>
+                            <td>Cambia tu apariencia visual a otro modelo</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.demorph</td>
+                            <td>Restaura tu apariencia original</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.dismount</td>
+                            <td>Desmonta al personaje seleccionado</td>
+                            <td><span class="gm-level gm1">Nivel 1</span></td>
+                        </tr>
+                        <tr>
+                            <td>.dev on/off</td>
+                            <td>Activa/desactiva el modo desarrollador</td>
+                            <td><span class="gm-level gm3">Nivel 3</span></td>
+                        </tr>
+                        <tr>
+                            <td>.explorecheat 1/0</td>
+                            <td>Revela/oculta todo el mapa del personaje</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.taxicheat on/off</td>
+                            <td>Desbloquea/bloquea todos los puntos de vuelo</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.waterwalk on/off</td>
+                            <td>Activa/desactiva caminar sobre el agua</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.titles add [titleID]</td>
+                            <td>Añade un título al personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.titles remove [titleID]</td>
+                            <td>Quita un título del personaje</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.achievement add [achievementID]</td>
+                            <td>Otorga un logro al personaje seleccionado</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.pet create</td>
+                            <td>Crea una mascota para el personaje (Cazador/Brujo)</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.pet learn [spellID]</td>
+                            <td>Enseña un hechizo a la mascota activa</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.list creature [creatureID]</td>
+                            <td>Lista todas las criaturas spawneadas con ese ID</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.list item [itemID]</td>
+                            <td>Lista todos los jugadores que tienen ese item</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                        <tr>
+                            <td>.list object [objectID]</td>
+                            <td>Lista todos los game objects spawneados con ese ID</td>
+                            <td><span class="gm-level gm2">Nivel 2</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- NO RESULTS -->
+        <div class="no-results" id="noResults">
+            <span>🔍</span>
+            No se encontraron comandos con ese término.<br>
+            <small>Intenta con otra palabra clave.</small>
+        </div>
+
+    </div>
+
+    <!-- SCROLL TO TOP -->
+    <button class="scroll-top" id="scrollTop" onclick="scrollToTop()">↑</button>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>⚔️ Panel de Comandos GM - WoW 3.3.5a Wrath of the Lich King</p>
+        <p style="margin-top: 8px;">Creado para el equipo de Game Masters del servidor</p>
+        <p style="margin-top: 5px; font-size: 0.85em;">Basado en <a href="#">TrinityCore / AzerothCore</a> | Última actualización: 2024</p>
+    </footer>
+
+    <!-- JAVASCRIPT -->
+    <script>
+        // ============ TOGGLE CATEGORÍAS ============
+        function toggleCategory(header) {
+            const content = header.nextElementSibling;
+            const toggle = header.querySelector('.toggle');
+            content.classList.toggle('open');
+            toggle.classList.toggle('open');
+        }
+
+        // ============ FILTRAR POR CATEGORÍA ============
+        function filterCategory(category, btn) {
+            // Actualizar botones activos
+            document.querySelectorAll('.category-nav button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const categories = document.querySelectorAll('.category');
+            
+            if (category === 'all') {
+                categories.forEach(cat => {
+                    cat.style.display = 'block';
+                });
+            } else {
+                categories.forEach(cat => {
+                    if (cat.dataset.category === category) {
+                        cat.style.display = 'block';
+                        // Abrir automáticamente
+                        cat.querySelector('.category-content').classList.add('open');
+                        cat.querySelector('.toggle').classList.add('open');
+                    } else {
+                        cat.style.display = 'none';
+                    }
+                });
+            }
+
+            // Limpiar búsqueda
+            document.getElementById('searchInput').value = '';
+            updateSearchStats();
+        }
+
+        // ============ BUSCADOR EN TIEMPO REAL ============
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            const categories = document.querySelectorAll('.category');
+            let totalVisible = 0;
+            let categoriesVisible = 0;
+
+            // Reset category nav
+            document.querySelectorAll('.category-nav button').forEach(b => b.classList.remove('active'));
+            if (searchTerm === '') {
+                document.querySelector('.category-nav button').classList.add('active');
+            }
+
+            categories.forEach(cat => {
+                const rows = cat.querySelectorAll('.cmd-table tbody tr');
+                let categoryHasResults = false;
+
+                rows.forEach(row => {
+                    const command = row.cells[0].textContent.toLowerCase();
+                    const description = row.cells[1].textContent.toLowerCase();
+
+                    if (searchTerm === '' || command.includes(searchTerm) || description.includes(searchTerm)) {
+                        row.classList.remove('hidden');
+                        categoryHasResults = true;
+                        totalVisible++;
+                    } else {
+                        row.classList.add('hidden');
+                    }
+                });
+
+                if (categoryHasResults || searchTerm === '') {
+                    cat.style.display = 'block';
+                    categoriesVisible++;
+                    if (searchTerm !== '') {
+                        cat.querySelector('.category-content').classList.add('open');
+                        cat.querySelector('.toggle').classList.add('open');
+                    }
+                } else {
+                    cat.style.display = 'none';
+                }
+            });
+
+            // No results
+            const noResults = document.getElementById('noResults');
+            if (totalVisible === 0 && searchTerm !== '') {
+                noResults.classList.add('visible');
+            } else {
+                noResults.classList.remove('visible');
+            }
+
+            updateSearchStats(searchTerm, totalVisible);
+        });
+
+        // ============ ACTUALIZAR ESTADÍSTICAS DE BÚSQUEDA ============
+        function updateSearchStats(term, count) {
+            const stats = document.getElementById('searchStats');
+            if (!term || term === '') {
+                const total = document.querySelectorAll('.cmd-table tbody tr').length;
+                stats.textContent = `Mostrando todos los comandos (${total} comandos disponibles)`;
+            } else {
+                stats.textContent = `Se encontraron ${count} comando(s) para "${term}"`;
+            }
+        }
+
+        // ============ SCROLL TO TOP ============
+        window.addEventListener('scroll', function() {
+            const btn = document.getElementById('scrollTop');
+            if (window.scrollY > 500) {
+                btn.classList.add('visible');
+            } else {
+                btn.classList.remove('visible');
+            }
+        });
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ============ INICIALIZACIÓN ============
+        window.addEventListener('load', function() {
+            updateSearchStats();
+            // Abrir primera categoría por defecto
+            const firstCategory = document.querySelector('.category .category-content');
+            if (firstCategory) {
+                firstCategory.classList.add('open');
+                firstCategory.previousElementSibling.querySelector('.toggle').classList.add('open');
+            }
+        });
+    </script>
+
+</body>
+</html>
