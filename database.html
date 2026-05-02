@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AfterWoW - Base de Datos 3.3.5a</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0d0d0d;
+            color: #c4c4c4;
+            min-height: 100vh;
+        }
+
+        /* ============ HEADER ============ */
+        .db-header {
+            background: linear-gradient(135deg, #0f1923 0%, #1a1a2e 50%, #0f3460 100%);
+            border-bottom: 3px solid #00d2ff;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 30px rgba(0, 210, 255, 0.2);
+        }
+
+        .db-header .logo {
+            font-size: 2.5em;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .db-header .logo .after { color: #e94560; }
+        .db-header .logo .wow { color: #00d2ff; }
+        .db-header .logo .db { color: #fbbf24; font-size: 0.6em; vertical-align: super; }
+
+        .db-header .subtitle { color: #666; font-size: 0.9em; margin-top: 5px; }
+
+        /* ============ NAVEGACIÓN PRINCIPAL DB ============ */
+        .db-nav {
+            background: #111;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            border-bottom: 1px solid #1a1a1a;
+            position: sticky;
+            top: 85px;
+            z-index: 999;
+        }
+
+        .db-nav button {
+            padding: 10px 20px;
+            border: 2px solid #222;
+            border-radius: 8px;
+            background: #1a1a1a;
+            color: #888;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .db-nav button:hover {
+            border-color: #00d2ff;
+            color: #00d2ff;
+            background: #0f1923;
+        }
+
+        .db-nav button.active {
+            background: linear-gradient(135deg, #00d2ff, #0098b3);
+            color: #000;
+            border-color: #00d2ff;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+        }
+
+        .db-nav button .nav-icon { font-size: 1.2em; }
+        .db-nav button .nav-count {
+            background: rgba(0,0,0,0.3);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75em;
+        }
+
+        /* ============ BUSCADOR PRINCIPAL ============ */
+        .db-search {
+            background: #0a0a0a;
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .db-search-wrapper {
+            max-width: 700px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .db-search input {
+            width: 100%;
+            padding: 16px 25px 16px 50px;
+            font-size: 1.1em;
+            border: 2px solid #222;
+            border-radius: 12px;
+            background: #141414;
+            color: #fff;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .db-search input:focus {
+            border-color: #00d2ff;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+        }
+
+        .db-search input::placeholder { color: #444; }
+
+        .db-search .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+            color: #444;
+        }
+
+        .db-search-filters {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .db-search-filters select {
+            padding: 8px 15px;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background: #1a1a1a;
+            color: #aaa;
+            font-size: 0.9em;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .db-search-filters select:focus { border-color: #00d2ff; }
+
+        .search-results-info {
+            color: #555;
+            margin-top: 12px;
+            font-size: 0.9em;
+        }
+
+        /* ============ CONTENIDO DB ============ */
+        .db-content {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .db-section { display: none; }
+        .db-section.active { display: block; }
+
+        /* ============ TABLA DE RESULTADOS ============ */
+        .db-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #121212;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #1a1a1a;
+        }
+
+        .db-results-table thead th {
+            background: #1a1a2e;
+            padding: 14px 15px;
+            text-align: left;
+            color: #00d2ff;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #00d2ff;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        .db-results-table thead th:hover { background: #1f2a4a; }
+        .db-results-table thead th .sort-arrow { margin-left: 5px; font-size: 0.7em; }
+
+        .db-results-table tbody tr {
+            border-bottom: 1px solid #1a1a1a;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .db-results-table tbody tr:hover { background: #1a1a2e; }
+        .db-results-table tbody tr.hidden { display: none; }
+
+        .db-results-table td {
+            padding: 12px 15px;
+            vertical-align: middle;
+        }
+
+        /* Columna de icono + nombre */
+        .item-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .item-cell .db-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            border: 2px solid #555;
+            flex-shrink: 0;
+            object-fit: cover;
+            background: #0a0a0a;
+        }
+
+        .item-cell .db-icon.q0 { border-color: #9d9d9d; }
+        .item-cell .db-icon.q1 { border-color: #ffffff; }
+        .item-cell .db-icon.q2 { border-color: #1eff00; }
+        .item-cell .db-icon.q3 { border-color: #0070dd; }
+        .item-cell .db-icon.q4 { border-color: #a335ee; }
+        .item-cell .db-icon.q5 { border-color: #ff8000; box-shadow: 0 0 8px rgba(255,128,0,0.3); }
+
+        .item-cell .db-name { font-weight: 600; font-size: 0.95em; }
+
+        .q0-text { color: #9d9d9d !important; }
+        .q1-text { color: #ffffff !important; }
+        .q2-text { color: #1eff00 !important; }
+        .q3-text { color: #0070dd !important; }
+        .q4-text { color: #a335ee !important; }
+        .q5-text { color: #ff8000 !important; }
+
+        .db-results-table .col-id {
+            font-family: 'Courier New', monospace;
+            color: #fbbf24;
+            font-weight: bold;
+            text-align: center;
+            width: 80px;
+        }
+
+        .db-results-table .col-type {
+            color: #888;
+            font-size: 0.85em;
+        }
+
+        .db-results-table .col-source {
+            color: #666;
+            font-size: 0.85em;
+        }
+
+        .db-results-table .col-level {
+            text-align: center;
+            color: #aaa;
+        }
+
+        .db-results-table .col-cmd {
+            text-align: center;
+        }
+
+        .cmd-copy {
+            background: #1a2a1a;
+            border: 1px solid #2d4a2d;
+            color: #4ade80;
+            padding: 5px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .cmd-copy:hover {
+            background: #2d4a2d;
+            border-color: #4ade80;
+        }
+
+        .cmd-copy.copied {
+            background: #1a3a1a;
+            border-color: #4ade80;
+            color: #4ade80;
+        }
+
+        /* ============ TOOLTIP / DETALLE ============ */
+        .item-tooltip {
+            display: none;
+            position: fixed;
+            background: linear-gradient(180deg, #1a1a2e, #111);
+            border: 2px solid #555;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 350px;
+            z-index: 10000;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            pointer-events: none;
+        }
+
+        .item-tooltip.visible { display: block; }
+
+        .item-tooltip .tt-name {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .item-tooltip .tt-type {
+            color: #888;
+            font-size: 0.85em;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #333;
+        }
+
+        .item-tooltip .tt-stats {
+            color: #1eff00;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .item-tooltip .tt-desc {
+            color: #fbbf24;
+            font-style: italic;
+            font-size: 0.85em;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #333;
+        }
+
+        .item-tooltip .tt-id {
+            color: #666;
+            font-size: 0.8em;
+            margin-top: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .item-tooltip .tt-cmd {
+            background: #0a0a0a;
+            color: #4ade80;
+            padding: 6px 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+            margin-top: 8px;
+        }
+
+        /* ============ ESTADÍSTICAS HEADER ============ */
+        .db-stats-bar {
+            background: #0a0a0a;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .db-stat {
+            text-align: center;
+        }
+
+        .db-stat .stat-number {
+            font-size: 1.5em;
+            font-weight: 900;
+            color: #00d2ff;
+        }
+
+        .db-stat .stat-label {
+            font-size: 0.75em;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ============ PAGINACIÓN ============ */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pagination button {
+            padding: 8px 14px;
+            border: 1px solid #333;
+            border-radius: 6px;
+            background: #1a1a1a;
+            color: #888;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+
+        .pagination button:hover { border-color: #00d2ff; color: #00d2ff; }
+        .pagination button.active { background: #00d2ff; color: #000; border-color: #00d2ff; }
+        .pagination button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .pagination .page-info { color: #555; font-size: 0.85em; }
+
+        /* ============ CATEGORÍA LATERAL ============ */
+        .db-layout {
+            display: flex;
+            gap: 20px;
+        }
+
+        .db-sidebar {
+            width: 250px;
+            flex-shrink: 0;
+        }
+
+        .db-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sidebar-section {
+            background: #121212;
+            border: 1px solid #1a1a1a;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .sidebar-title {
+            background: #1a1a2e;
+            padding: 12px 15px;
+            color: #00d2ff;
+            font-weight: bold;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-list { list-style: none; }
+
+        .sidebar-list li {
+            padding: 10px 15px;
+            border-bottom: 1px solid #1a1a1a;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+        }
+
+        .sidebar-list li:hover { background: #1a1a2e; color: #fff; }
+        .sidebar-list li.active { background: #1a1a2e; color: #00d2ff; border-left: 3px solid #00d2ff; }
+
+        .sidebar-list li .count {
+            background: #222;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            color: #555;
+        }
+
+        /* ============ QUICK ACTIONS ============ */
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .quick-action {
+            padding: 6px 14px;
+            border: 1px solid #333;
+            border-radius: 20px;
+            background: #1a1a1a;
+            color: #888;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: all 0.2s;
+        }
+
+        .quick-action:hover { border-color: #00d2ff; color: #00d2ff; }
+        .quick-action.active { background: #00d2ff; color: #000; border-color: #00d2ff; }
+
+        /* ============ BACK TO TOP / HOME ============ */
+        .scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #00d2ff;
+            color: #000;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5em;
+            cursor: pointer;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,210,255,0.4);
+            transition: all 0.3s;
+        }
+
+        .scroll-top.visible { display: block; }
+        .scroll-top:hover { transform: scale(1.1); }
+
+        .home-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            padding: 12px 20px;
+            background: #e94560;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            font-size: 0.9em;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(233,69,96,0.4);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .home-btn:hover { transform: scale(1.05); background: #d63851; }
+
+        /* ============ FOOTER ============ */
+        footer {
+            text-align: center;
+            padding: 30px;
+            border-top: 1px solid #1a1a1a;
+            color: #333;
+            margin-top: 50px;
+        }
+
+        footer .footer-logo { font-size: 1.3em; font-weight: 900; margin-bottom: 8px; }
+        footer .after { color: #e94560; }
+        footer .wow { color: #00d2ff; }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 900px) {
+            .db-layout { flex-direction: column; }
+            .db-sidebar { width: 100%; }
+            .db-nav button span.nav-text { display: none; }
+            .db-nav button .nav-count { display: none; }
+            .db-header .logo { font-size: 1.8em; }
+            .db-results-table { font-size: 0.85em; }
+            .db-results-table .col-source { display: none; }
+            .db-results-table .col-level { display: none; }
+            .item-cell .db-icon { width: 28px; height: 28px; }
+        }
+
+        @media (max-width: 600px) {
+            .db-results-table thead { display: none; }
+            .db-results-table tbody tr {
+                display: block;
+                padding: 12px;
+                border-bottom: 1px solid #222;
+            }
+            .db-results-table td {
+                display: block;
+                padding: 4px 0;
+            }
+            .db-results-table .col-id { text-align: left; }
+            .db-results-table .col-cmd { text-align: left; margin-top: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="db-header">
+        <div class="logo">
+            <span class="after">After</span><span class="wow">WoW</span>
+            <span class="db">DATABASE</span>
+        </div>
+        <div class="subtitle">Base de Datos WoW 3.3.5a - Wrath of the Lich King</div>
+    </div>
+
+    <!-- STATS BAR -->
+    <div class="db-stats-bar">
+        <div class="db-stat">
+            <div class="stat-number" id="totalItems">0</div>
+            <div class="stat-label">Items</div>
+        </div>
+        <div class="db-stat">
+            <div class="stat-number" id="totalNpcs">0</div>
+            <div class="stat-label">NPCs</div>
+        </div>
+        <div class="db-stat">
+            <div class="stat-number" id="totalSpells">0</div>
+            <div class="stat-label">Hechizos</div>
+        </div>
+        <div class="db-stat">
+            <div class="stat-number" id="totalQuests">0</div>
+            <div class="stat-label">Misiones</div>
+        </div>
+        <div class="db-stat">
+            <div class="stat-number" id="totalSets">0</div>
+            <div class="stat-label">Sets</div>
+        </div>
+    </div>
+
+    <!-- NAV -->
+    <div class="db-nav">
+        <button class="active" onclick="switchDB('items', this)">
+            <span class="nav-icon">⚔️</span>
+            <span class="nav-text">Items</span>
+        </button>
+        <button onclick="switchDB('npcs', this)">
+            <span class="nav-icon">👹</span>
+            <span class="nav-text">NPCs</span>
+        </button>
+        <button onclick="switchDB('spells', this)">
+            <span class="nav-icon">✨</span>
+            <span class="nav-text">Hechizos</span>
+        </button>
+        <button onclick="switchDB('quests', this)">
+            <span class="nav-icon">📜</span>
+            <span class="nav-text">Misiones</span>
+        </button>
+        <button onclick="switchDB('sets', this)">
+            <span class="nav-icon">🛡️</span>
+            <span class="nav-text">Sets</span>
+        </button>
+        <button onclick="switchDB('zones', this)">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-text">Zonas</span>
+        </button>
+        <button onclick="switchDB('mounts', this)">
+            <span class="nav-icon">🐉</span>
+            <span class="nav-text">Monturas</span>
+        </button>
+    </div>
+
+    <!-- BUSCADOR -->
+    <div class="db-search">
+        <div class="db-search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="dbSearch" placeholder="Buscar por nombre o ID...">
+        </div>
+        <div class="db-search-filters" id="searchFilters">
+            <select id="filterRarity" onchange="applyFilters()">
+                <option value="">Todas las rarezas</option>
+                <option value="5">⭐ Legendario</option>
+                <option value="4">🟣 Épico</option>
+                <option value="3">🔵 Raro</option>
+                <option value="2">🟢 Poco común</option>
+                <option value="1">⚪ Común</option>
+                <option value="0">⚫ Pobre</option>
+            </select>
+            <select id="filterType" onchange="applyFilters()">
+                <option value="">Todos los tipos</option>
+                <option value="Arma">⚔️ Armas</option>
+                <option value="Armadura">🛡️ Armaduras</option>
+                <option value="Consumible">🧪 Consumibles</option>
+                <option value="Montura">🐉 Monturas</option>
+                <option value="Token">🪙 Tokens</option>
+                <option value="Bolsa">👜 Bolsas</option>
+                <option value="Misceláneo">🔧 Misceláneo</option>
+                <option value="Gema">💎 Gemas</option>
+                <option value="Tabardo">🏳️ Tabardos</option>
+            </select>
+            <select id="filterSlot" onchange="applyFilters()">
+                <option value="">Todos los slots</option>
+                <option value="Cabeza">Cabeza</option>
+                <option value="Cuello">Cuello</option>
+                <option value="Hombros">Hombros</option>
+                <option value="Pecho">Pecho</option>
+                <option value="Cintura">Cintura</option>
+                <option value="Piernas">Piernas</option>
+                <option value="Pies">Pies</option>
+                <option value="Muñecas">Muñecas</option>
+                <option value="Manos">Manos</option>
+                <option value="Dedo">Dedo</option>
+                <option value="Abalorio">Abalorio</option>
+                <option value="Mano principal">Mano principal</option>
+                <option value="Mano secundaria">Mano secundaria</option>
+                <option value="A distancia">A distancia</option>
+                <option value="Espalda">Espalda</option>
+                <option value="Dos manos">Dos manos</option>
+            </select>
+        </div>
+        <div class="search-results-info" id="searchResultsInfo"></div>
+    </div>
+
+    <!-- CONTENIDO -->
+    <div class="db-content">
+
+        <!-- ===================== SECCIÓN ITEMS ===================== -->
+        <div class="db-section active" id="db-items">
+            <div class="db-layout">
+                <div class="db-sidebar">
+                    <div class="sidebar-section">
+                        <div class="sidebar-title">📂 Categorías</div>
+                        <ul class="sidebar-list" id="itemCategories">
+                            <li class="active" onclick="filterByCategory('all', this)">Todos <span class="count" id="countAll">0</span></li>
+                            <li onclick="filterByCategory('Arma', this)">⚔️ Armas <span class="count" id="countArma">0</span></li>
+                            <li onclick="filterByCategory('Armadura', this)">🛡️ Armaduras <span class="count" id="countArmadura">0</span></li>
+                            <li onclick="filterByCategory('Consumible', this)">🧪 Consumibles <span class="count" id="countConsumible">0</span></li>
+                            <li onclick="filterByCategory('Gema', this)">💎 Gemas <span class="count" id="countGema">0</span></li>
+                            <li onclick="filterByCategory('Montura', this)">🐉 Monturas <span class="count" id="countMontura">0</span></li>
+                            <li onclick="filterByCategory('Token', this)">🪙 Tokens <span class="count" id="countToken">0</span></li>
+                            <li onclick="filterByCategory('Bolsa', this)">👜 Bolsas <span class="count" id="countBolsa">0</span></li>
+                            <li onclick="filterByCategory('Tabardo', this)">🏳️ Tabardos <span class="count" id="countTabardo">0</span></li>
+                            <li onclick="filterByCategory('Misceláneo', this)">🔧 Misceláneo <span class="count" id="countMisceláneo">0</span></li>
+                        </ul>
+                    </div>
+                    <div class="sidebar-section">
+                        <div class="sidebar-title">⭐ Rarezas</div>
+                        <ul class="sidebar-list">
+                            <li onclick="filterByRarity(5, this)"><span class="q5-text">Legendario</span></li>
+                            <li onclick="filterByRarity(4, this)"><span class="q4-text">Épico</span></li>
+                            <li onclick="filterByRarity(3, this)"><span class="q3-text">Raro</span></li>
+                            <li onclick="filterByRarity(2, this)"><span class="q2-text">Poco común</span></li>
+                            <li onclick="filterByRarity(1, this)"><span class="q1-text">Común</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="db-main">
+                    <div class="quick-actions" id="quickActions">
+                        <button class="quick-action active" onclick="quickFilter('all', this)">Todos</button>
+                        <button class="quick-action" onclick="quickFilter('BiS', this)">🏆 BiS</button>
+                        <button class="quick-action" onclick="quickFilter('ICC', this)">🏰 ICC</button>
+                        <button class="quick-action" onclick="quickFilter('Ulduar', this)">⚡ Ulduar</button>
+                        <button class="quick-action" onclick="quickFilter('PvP', this)">⚔️ PvP</button>
+                        <button class="quick-action" onclick="quickFilter('Legendario', this)">⭐ Legendarias</button>
+                    </div>
+
+                    <table class="db-results-table" id="itemsTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('id')" style="width:80px">ID <span class="sort-arrow">↕</span></th>
+                                <th onclick="sortTable('name')">Nombre <span class="sort-arrow">↕</span></th>
+                                <th onclick="sortTable('type')" style="width:120px">Tipo</th>
+                                <th onclick="sortTable('slot')" style="width:120px">Slot</th>
+                                <th onclick="sortTable('ilvl')" style="width:60px">iLvl</th>
+                                <th style="width:100px">Origen</th>
+                                <th style="width:140px">Comando GM</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsBody"></tbody>
+                    </table>
+
+                    <div class="pagination" id="itemsPagination"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== SECCIÓN NPCs ===================== -->
+        <div class="db-section" id="db-npcs">
+            <div class="db-layout">
+                <div class="db-sidebar">
+                    <div class="sidebar-section">
+                        <div class="sidebar-title">📂 Categorías</div>
+                        <ul class="sidebar-list">
+                            <li class="active" onclick="filterNpcCategory('all', this)">Todos</li>
+                            <li onclick="filterNpcCategory('Boss Raid', this)">👹 Bosses Raid</li>
+                            <li onclick="filterNpcCategory('Boss Dungeon', this)">💀 Bosses Dungeon</li>
+                            <li onclick="filterNpcCategory('Vendedor', this)">🏪 Vendedores</li>
+                            <li onclick="filterNpcCategory('Entrenador', this)">📚 Entrenadores</li>
+                            <li onclick="filterNpcCategory('Utilidad', this)">🔧 Utilidad</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="db-main">
+                    <table class="db-results-table" id="npcsTable">
+                        <thead>
+                            <tr>
+                                <th style="width:80px">ID</th>
+                                <th>Nombre</th>
+                                <th style="width:120px">Tipo</th>
+                                <th style="width:60px">Nivel</th>
+                                <th>Ubicación</th>
+                                <th style="width:160px">Comando GM</th>
+                            </tr>
+                        </thead>
+                        <tbody id="npcsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================== SECCIÓN SPELLS ===================== -->
+        <div class="db-section" id="db-spells">
+            <div class="db-main">
+                <table class="db-results-table" id="spellsTable">
+                    <thead>
+                        <tr>
+                            <th style="width:80px">ID</th>
+                            <th>Nombre del Hechizo</th>
+                            <th>Efecto</th>
+                            <th style="width:100px">Tipo</th>
+                            <th style="width:160px">Comando GM</th>
+                        </tr>
+                    </thead>
+                    <tbody id="spellsBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===================== SECCIÓN QUESTS ===================== -->
+        <div class="db-section" id="db-quests">
+            <div class="db-main">
+                <table class="db-results-table" id="questsTable">
+                    <thead>
+                        <tr>
+                            <th style="width:80px">ID</th>
+                            <th>Nombre de la Misión</th>
+                            <th style="width:80px">Nivel</th>
+                            <th>Zona</th>
+                            <th style="width:160px">Comando GM</th>
+                        </tr>
+                    </thead>
+                    <tbody id="questsBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===================== SECCIÓN SETS ===================== -->
+        <div class="db-section" id="db-sets">
+            <div class="db-main">
+                <table class="db-results-table" id="setsTable">
+                    <thead>
+                        <tr>
+                            <th style="width:80px">Set ID</th>
+                            <th>Nombre del Set</th>
+                            <th style="width:120px">Clase</th>
+                            <th style="width:80px">Tier</th>
+                            <th style="width:100px">Piezas</th>
+                            <th style="width:160px">Comando GM</th>
+                        </tr>
+                    </thead>
+                    <tbody id="setsBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===================== SECCIÓN ZONAS ===================== -->
+        <div class="db-section" id="db-zones">
+            <div class="db-main">
+                <table class="db-results-table" id="zonesTable">
+                    <thead>
+                        <tr>
+                            <th>Zona</th>
+                            <th style="width:120px">Continente</th>
+                            <th style="width:100px">Nivel</th>
+                            <th style="width:100px">Tipo</th>
+                            <th style="width:200px">Comando GM</th>
+                        </tr>
+                    </thead>
+                    <tbody id="zonesBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ===================== SECCIÓN MONTURAS ===================== -->
+        <div class="db-section" id="db-mounts">
+            <div class="db-main">
+                <table class="db-results-table" id="mountsTable">
+                    <thead>
+                        <tr>
+                            <th style="width:80px">Item ID</th>
+                            <th>Nombre</th>
+                            <th>Origen</th>
+                            <th style="width:80px">Tipo</th>
+                            <th style="width:160px">Comando GM</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mountsBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TOOLTIP -->
+    <div class="item-tooltip" id="tooltip"></div>
+
+    <!-- BOTONES FIJOS -->
+    <button class="scroll-top" id="scrollTop" onclick="scrollToTop()">↑</button>
+    <a class="home-btn" href="index.html">⚔️ Comandos GM</a>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-logo"><span class="after">After</span><span class="wow">WoW</span></div>
+        <p>Base de Datos 3.3.5a - Wrath of the Lich King</p>
+        <p style="margin-top:8px;font-size:0.8em;">IDs verificados para TrinityCore / AzerothCore | 2024</p>
+    </footer>
+
+    <script>
+    // ================================================================
+    // BASE DE DATOS COMPLETA
+    // ================================================================
+
+    const DATABASE = {
+        items: [
+            // ARMAS LEGENDARIAS
+            { id: 49623, name: "Shadowmourne", type: "Arma", slot: "Dos manos", ilvl: 284, rarity: 5, source: "ICC Quest", icon: "inv_axe_113", tags: "BiS ICC Legendario", stats: "+223 Fuerza\n+198 Aguante\n+114 Índice de Crítico\n+114 Penetración de Armadura", desc: "Hacha de dos manos legendaria forjada en la Ciudadela de la Corona de Hielo" },
+            { id: 46017, name: "Val'anyr, Hammer of Ancient Kings", type: "Arma", slot: "Mano principal", ilvl: 245, rarity: 5, source: "Ulduar Quest", icon: "inv_mace_99", tags: "BiS Ulduar Legendario Healer", stats: "+105 Aguante\n+105 Intelecto\n+45 Índice de Crítico\n+51 Celeridad", desc: "Maza legendaria de sanación de Ulduar" },
+            { id: 19019, name: "Thunderfury, Blessed Blade of the Windseeker", type: "Arma", slot: "Mano principal", ilvl: 80, rarity: 5, source: "Molten Core", icon: "inv_sword_39", tags: "Legendario Classic", stats: "+5 Agilidad\n+8 Aguante\n+Proc Cadena de Rayos", desc: "Espada legendaria del Guardián del Viento" },
+            { id: 17182, name: "Sulfuras, Hand of Ragnaros", type: "Arma", slot: "Dos manos", ilvl: 80, rarity: 5, source: "Molten Core", icon: "inv_hammer_unique_sulfuras", tags: "Legendario Classic Ragnaros", stats: "+12 Fuerza\n+12 Aguante\n+Proc Bola de Fuego", desc: "Maza legendaria de Ragnaros" },
+            { id: 32837, name: "Warglaive of Azzinoth (MH)", type: "Arma", slot: "Mano principal", ilvl: 156, rarity: 5, source: "Black Temple", icon: "inv_weapon_glave_01", tags: "Legendario TBC Illidan", stats: "+Proc Caos\nDaño: 214-398\nVelocidad: 2.80", desc: "Guja de Azzinoth - Black Temple (Illidan)" },
+            { id: 32838, name: "Warglaive of Azzinoth (OH)", type: "Arma", slot: "Mano secundaria", ilvl: 156, rarity: 5, source: "Black Temple", icon: "inv_weapon_glave_02", tags: "Legendario TBC Illidan", stats: "+Proc Caos\nDaño: 214-398\nVelocidad: 2.80", desc: "Guja de Azzinoth off-hand - Black Temple" },
+            { id: 34334, name: "Thori'dal, the Stars' Fury", type: "Arma", slot: "A distancia", ilvl: 164, rarity: 5, source: "Sunwell", icon: "inv_bow_53", tags: "Legendario TBC Kil'jaeden", stats: "Daño: 201-374\nVelocidad: 3.00\nNo requiere munición", desc: "Arco legendario del Sunwell - Kil'jaeden" },
+
+            // ARMAS ICC HC 25
+            { id: 50730, name: "Glorenzelg, High-Blade of the Silver Hand", type: "Arma", slot: "Dos manos", ilvl: 284, rarity: 4, source: "ICC LK HC25", icon: "inv_sword_163", tags: "BiS ICC", stats: "+198 Fuerza\n+190 Aguante\n+114 Crítico\n+114 Celeridad", desc: "Espada 2M - The Lich King 25HC" },
+            { id: 50737, name: "Havoc's Call, Blade of Lordaeron Kings", type: "Arma", slot: "Mano principal", ilvl: 284, rarity: 4, source: "ICC LK HC25", icon: "inv_sword_162", tags: "BiS ICC", stats: "+75 Fuerza\n+67 Aguante\n+50 Crítico\n+50 Pericia", desc: "Espada 1M - The Lich King 25HC" },
+            { id: 50738, name: "Heaven's Fall, Kryss of a Thousand Lies", type: "Arma", slot: "Mano principal", ilvl: 284, rarity: 4, source: "ICC LK HC25", icon: "inv_knife_1h_stratholme_d_01", tags: "BiS ICC Rogue", stats: "+53 Agilidad\n+46 Aguante\n+32 Golpe\n+38 Pericia", desc: "Daga - The Lich King 25HC" },
+            { id: 50735, name: "Windrunner's Heartseeker", type: "Arma", slot: "A distancia", ilvl: 284, rarity: 4, source: "ICC LK HC25", icon: "inv_weapon_crossbow_38", tags: "BiS ICC Hunter", stats: "+33 Agilidad\n+34 Aguante\n+21 Crítico\n+21 Penetración", desc: "Ballesta - The Lich King 25HC" },
+
+            // TRINKETS BiS
+            { id: 50706, name: "Deathbringer's Will (HC)", type: "Armadura", slot: "Abalorio", ilvl: 277, rarity: 4, source: "ICC Saurfang HC25", icon: "inv_misc_blacksaberonfang", tags: "BiS ICC Melee Trinket", stats: "+155 Penetración de Armadura\nProc: +600 Stat aleatoria", desc: "BiS Melee DPS Trinket" },
+            { id: 50363, name: "Deathbringer's Will (N)", type: "Armadura", slot: "Abalorio", ilvl: 264, rarity: 4, source: "ICC Saurfang 25N", icon: "inv_misc_blacksaberonfang", tags: "ICC Melee Trinket", stats: "+155 Penetración de Armadura\nProc: +600 Stat aleatoria", desc: "Melee DPS Trinket" },
+            { id: 50353, name: "Dislodged Foreign Object (HC)", type: "Armadura", slot: "Abalorio", ilvl: 277, rarity: 4, source: "ICC Rotface HC25", icon: "inv_misc_trinketfly_01", tags: "BiS ICC Caster Trinket", stats: "+155 Poder con Hechizos\nProc: +Stacking SP", desc: "BiS Caster DPS Trinket" },
+            { id: 50360, name: "Phylactery of the Nameless Lich (HC)", type: "Armadura", slot: "Abalorio", ilvl: 277, rarity: 4, source: "ICC Sindragosa HC25", icon: "inv_misc_urn_01", tags: "BiS ICC Caster Trinket", stats: "+155 Celeridad\nProc: +1207 Poder con Hechizos", desc: "BiS Caster Trinket" },
+
+            // CONSUMIBLES
+            { id: 46377, name: "Flask of Endless Rage", type: "Consumible", slot: "-", ilvl: 80, rarity: 2, source: "Alquimia", icon: "inv_alchemy_endlessflask_06", tags: "Frasco DPS Melee", stats: "+180 Poder de Ataque\nDuración: 1 hora\nPersiste al morir", desc: "Frasco de DPS físico" },
+            { id: 46376, name: "Flask of the Frost Wyrm", type: "Consumible", slot: "-", ilvl: 80, rarity: 2, source: "Alquimia", icon: "inv_alchemy_endlessflask_04", tags: "Frasco DPS Caster", stats: "+125 Poder con Hechizos\nDuración: 1 hora\nPersiste al morir", desc: "Frasco de DPS caster" },
+            { id: 46379, name: "Flask of Stoneblood", type: "Consumible", slot: "-", ilvl: 80, rarity: 2, source: "Alquimia", icon: "inv_alchemy_endlessflask_05", tags: "Frasco Tank", stats: "+1300 Vida\nDuración: 1 hora\nPersiste al morir", desc: "Frasco de tanque" },
+            { id: 40211, name: "Potion of Speed", type: "Consumible", slot: "-", ilvl: 80, rarity: 2, source: "Alquimia", icon: "inv_alchemy_elixir_04", tags: "Poción Haste", stats: "+500 Celeridad\nDuración: 15 seg", desc: "Poción de combate" },
+            { id: 40212, name: "Potion of Wild Magic", type: "Consumible", slot: "-", ilvl: 80, rarity: 2, source: "Alquimia", icon: "inv_alchemy_elixir_01", tags: "Poción Caster", stats: "+200 Crítico\n+200 Poder con Hechizos\n15 seg", desc: "Poción de combate caster" },
+            { id: 33447, name: "Runic Healing Potion", type: "Consumible", slot: "-", ilvl: 80, rarity: 2, source: "Alquimia", icon: "inv_alchemy_elixir_05", tags: "Poción Vida", stats: "Restaura 2700-4500 vida", desc: "Poción de curación" },
+            { id: 43015, name: "Fish Feast", type: "Consumible", slot: "-", ilvl: 80, rarity: 2, source: "Cocina", icon: "inv_misc_fish_52", tags: "Comida Buff Raid", stats: "+80 PA / +46 SP / +40 Aguante\nWell Fed 1 hora", desc: "Festín grupal" },
+
+            // GEMAS
+            { id: 40111, name: "Bold Cardinal Ruby", type: "Gema", slot: "Roja", ilvl: 80, rarity: 4, source: "JC / Comercio", icon: "inv_jewelcrafting_gem_38", tags: "Gema Fuerza Roja", stats: "+20 Fuerza", desc: "Gema roja épica" },
+            { id: 40112, name: "Delicate Cardinal Ruby", type: "Gema", slot: "Roja", ilvl: 80, rarity: 4, source: "JC / Comercio", icon: "inv_jewelcrafting_gem_38", tags: "Gema Agilidad Roja", stats: "+20 Agilidad", desc: "Gema roja épica" },
+            { id: 40113, name: "Runed Cardinal Ruby", type: "Gema", slot: "Roja", ilvl: 80, rarity: 4, source: "JC / Comercio", icon: "inv_jewelcrafting_gem_38", tags: "Gema Spell Power Roja", stats: "+23 Poder con Hechizos", desc: "Gema roja épica" },
+            { id: 40118, name: "Solid Majestic Zircon", type: "Gema", slot: "Azul", ilvl: 80, rarity: 4, source: "JC / Comercio", icon: "inv_jewelcrafting_gem_42", tags: "Gema Aguante Azul", stats: "+30 Aguante", desc: "Gema azul épica" },
+            { id: 40122, name: "Brilliant King's Amber", type: "Gema", slot: "Amarilla", ilvl: 80, rarity: 4, source: "JC / Comercio", icon: "inv_jewelcrafting_gem_40", tags: "Gema Intelecto Amarilla", stats: "+20 Intelecto", desc: "Gema amarilla épica" },
+            { id: 40124, name: "Rigid King's Amber", type: "Gema", slot: "Amarilla", ilvl: 80, rarity: 4, source: "JC / Comercio", icon: "inv_jewelcrafting_gem_40", tags: "Gema Hit Amarilla", stats: "+20 Índice de Golpe", desc: "Gema amarilla épica" },
+
+            // TOKENS
+            { id: 49426, name: "Emblem of Frost", type: "Token", slot: "-", ilvl: 1, rarity: 4, source: "ICC / Weekly", icon: "inv_misc_frostemblem_01", tags: "Emblema T10", stats: "Se intercambia por equipo T10\ny objetos iLvl 264", desc: "Moneda principal de WotLK endgame" },
+            { id: 47241, name: "Emblem of Triumph", type: "Token", slot: "-", ilvl: 1, rarity: 4, source: "Heroics / ToC", icon: "inv_misc_emblem_triumph", tags: "Emblema T9", stats: "Se intercambia por equipo T9\ny objetos iLvl 245", desc: "Moneda de contenido previo a ICC" },
+            { id: 45624, name: "Emblem of Conquest", type: "Token", slot: "-", ilvl: 1, rarity: 4, source: "Ulduar", icon: "spell_holy_summonchampion", tags: "Emblema T8", stats: "Se intercambia por equipo T8.5\ny objetos iLvl 226", desc: "Moneda de Ulduar" },
+
+            // MONTURAS
+            { id: 50818, name: "Invincible's Reins", type: "Montura", slot: "-", ilvl: 1, rarity: 5, source: "ICC LK HC25", icon: "ability_mount_yourmagicmymine", tags: "Montura Legendaria ICC", stats: "Montura voladora\nVelocidad: 310%", desc: "La montura del Rey Exánime" },
+            { id: 45693, name: "Mimiron's Head", type: "Montura", slot: "-", ilvl: 1, rarity: 4, source: "Ulduar Yogg+0", icon: "inv_misc_enggizmo_01", tags: "Montura Ulduar", stats: "Montura voladora\nVelocidad: 310%", desc: "Cabeza de Mimiron - Muy rara" },
+            { id: 32458, name: "Ashes of Al'ar", type: "Montura", slot: "-", ilvl: 1, rarity: 4, source: "Tempest Keep", icon: "inv_misc_summerfest_brazierorange", tags: "Montura TBC Fénix", stats: "Montura voladora\nVelocidad: 310%", desc: "Cenizas de Al'ar - Kael'thas" },
+            { id: 43954, name: "Reins of the Twilight Drake", type: "Montura", slot: "-", ilvl: 1, rarity: 4, source: "OS 25 3D", icon: "ability_mount_drake_twilight", tags: "Montura Draco", stats: "Montura voladora\nVelocidad: 280%", desc: "Sartharion con 3 drakes" },
+            { id: 44151, name: "Reins of the Blue Proto-Drake", type: "Montura", slot: "-", ilvl: 1, rarity: 4, source: "Utgarde Pinnacle HC", icon: "ability_mount_drake_proto", tags: "Montura Proto-Draco", stats: "Montura voladora\nVelocidad: 280%", desc: "Drop de Skadi" },
+            { id: 13335, name: "Deathcharger's Reins", type: "Montura", slot: "-", ilvl: 1, rarity: 4, source: "Stratholme", icon: "ability_mount_undeadhorse", tags: "Montura Classic", stats: "Montura terrestre\nVelocidad: 100%", desc: "Baron Rivendare - Stratholme" },
+
+            // BOLSAS
+            { id: 41599, name: "Frostweave Bag", type: "Bolsa", slot: "-", ilvl: 1, rarity: 3, source: "Sastrería", icon: "inv_misc_bag_10_blue", tags: "Bolsa 20", stats: "20 Espacios", desc: "Bolsa estándar WotLK" },
+            { id: 45773, name: "Glacial Bag", type: "Bolsa", slot: "-", ilvl: 1, rarity: 4, source: "Sastrería", icon: "inv_misc_bag_10_blue", tags: "Bolsa 22", stats: "22 Espacios", desc: "Mejor bolsa crafteable" },
+
+            // TABARDOS
+            { id: 43154, name: "Tabard of the Argent Crusade", type: "Tabardo", slot: "Tabardo", ilvl: 1, rarity: 3, source: "Cruzada Argenta", icon: "inv_chest_cloth_68", tags: "Tabardo Reputación", stats: "Representa a la Cruzada Argenta\nGana reputación en Heroics", desc: "Tabardo de facción" },
+            { id: 43157, name: "Tabard of the Kirin Tor", type: "Tabardo", slot: "Tabardo", ilvl: 1, rarity: 3, source: "Kirin Tor", icon: "inv_chest_cloth_68", tags: "Tabardo Reputación Dalaran", stats: "Representa al Kirin Tor\nGana reputación en Heroics", desc: "Tabardo de facción" },
+
+            // MISC
+            { id: 6948, name: "Hearthstone", type: "Misceláneo", slot: "-", ilvl: 1, rarity: 1, source: "Inicial", icon: "inv_misc_rune_01", tags: "Piedra Hogar", stats: "Teletransporta a tu posada\nTiempo: 30 min cooldown", desc: "Piedra de Hogar" },
+            { id: 44606, name: "Toy Train Set", type: "Misceláneo", slot: "-", ilvl: 1, rarity: 3, source: "Dalaran Shop", icon: "inv_misc_toy_02", tags: "Juguete Fun", stats: "Coloca un tren de juguete\nDuración: 3 min", desc: "Item de diversión" },
+            { id: 35275, name: "Orb of the Sin'dorei", type: "Misceláneo", slot: "-", ilvl: 1, rarity: 3, source: "MgT HC", icon: "inv_misc_orb_05", tags: "Transformación Fun", stats: "Te transforma en Elfo de Sangre\nDuración: 5 min, CD: 30 min", desc: "Item de transformación" },
+        ],
+
+        npcs: [
+            { id: 36597, name: "The Lich King", type: "Boss Raid", level: "??", location: "ICC - Frozen Throne", icon: "achievement_boss_lichking" },
+            { id: 36612, name: "Lord Marrowgar", type: "Boss Raid", level: "??", location: "ICC - The Lower Spire", icon: "achievement_boss_lordmarrowgar" },
+            { id: 36855, name: "Lady Deathwhisper", type: "Boss Raid", level: "??", location: "ICC - The Lower Spire", icon: "achievement_boss_ladydeathwhisper" },
+            { id: 37813, name: "Deathbringer Saurfang", type: "Boss Raid", level: "??", location: "ICC - The Lower Spire", icon: "achievement_boss_saurfang" },
+            { id: 36626, name: "Festergut", type: "Boss Raid", level: "??", location: "ICC - Plagueworks", icon: "achievement_boss_festergut" },
+            { id: 36627, name: "Rotface", type: "Boss Raid", level: "??", location: "ICC - Plagueworks", icon: "achievement_boss_rotface" },
+            { id: 36678, name: "Professor Putricide", type: "Boss Raid", level: "??", location: "ICC - Plagueworks", icon: "achievement_boss_profputricide" },
+            { id: 37955, name: "Blood-Queen Lana'thel", type: "Boss Raid", level: "??", location: "ICC - Crimson Hall", icon: "achievement_boss_lanathel" },
+            { id: 36853, name: "Sindragosa", type: "Boss Raid", level: "??", location: "ICC - Frostwing Halls", icon: "achievement_boss_sindragosa" },
+            { id: 36789, name: "Valithria Dreamwalker", type: "Boss Raid", level: "??", location: "ICC - Frostwing Halls", icon: "achievement_boss_dvl" },
+            { id: 33288, name: "Yogg-Saron", type: "Boss Raid", level: "??", location: "Ulduar - Prison of Yogg-Saron", icon: "achievement_boss_yoggsaron_01" },
+            { id: 32871, name: "Algalon the Observer", type: "Boss Raid", level: "??", location: "Ulduar - Celestial Planetarium", icon: "achievement_boss_algalon_01" },
+            { id: 33350, name: "Mimiron", type: "Boss Raid", level: "??", location: "Ulduar - Spark of Imagination", icon: "achievement_boss_mimiron_01" },
+            { id: 15990, name: "Kel'Thuzad", type: "Boss Raid", level: "??", location: "Naxxramas", icon: "achievement_boss_kelthuzad" },
+            { id: 28860, name: "Sartharion", type: "Boss Raid", level: "??", location: "Obsidian Sanctum", icon: "achievement_boss_sartharion_01" },
+            { id: 28859, name: "Malygos", type: "Boss Raid", level: "??", location: "Eye of Eternity", icon: "achievement_boss_malygos_01" },
+            { id: 10184, name: "Onyxia", type: "Boss Raid", level: "??", location: "Onyxia's Lair", icon: "achievement_boss_onyxia" },
+            { id: 34564, name: "Anub'arak", type: "Boss Raid", level: "??", location: "Trial of the Crusader", icon: "achievement_boss_anubarak" },
+            { id: 38433, name: "Toravon the Ice Watcher", type: "Boss Raid", level: "??", location: "Vault of Archavon", icon: "spell_frost_frozenorb" },
+            { id: 31125, name: "Archavon the Stone Watcher", type: "Boss Raid", level: "??", location: "Vault of Archavon", icon: "spell_nature_unrelentingstorm" },
+            { id: 32216, name: "Training Dummy (lvl 80)", type: "Utilidad", level: "80", location: "Capitales", icon: "inv_misc_punchcards_yellow" },
+            { id: 31146, name: "Raider's Training Dummy", type: "Utilidad", level: "83", location: "Capitales", icon: "inv_misc_punchcards_yellow" },
+        ],
+
+        spells: [
+            { id: 33786, name: "Cyclone", effect: "Hace al objetivo invulnerable pero incapacitado 6 seg", type: "CC", icon: "spell_nature_earthbind" },
+            { id: 48441, name: "Rejuvenation (Rank 15)", effect: "Cura al objetivo por 1690 durante 15 seg", type: "HoT", icon: "spell_nature_rejuvenation" },
+            { id: 48443, name: "Regrowth (Rank 12)", effect: "Cura 3404-3836 + HoT de 1274 en 21 seg", type: "Heal", icon: "spell_nature_resistnature" },
+            { id: 48438, name: "Wild Growth (Rank 4)", effect: "Cura hasta 5 aliados durante 7 seg", type: "AoE Heal", icon: "ability_druid_flourish" },
+            { id: 25771, name: "Forbearance", effect: "Debuff que impide usar Burbuja y DS durante 2 min", type: "Debuff", icon: "spell_holy_removecurse" },
+            { id: 642, name: "Divine Shield", effect: "Invulnerable total durante 12 seg", type: "Immunity", icon: "spell_holy_divineshield" },
+            { id: 53563, name: "Beacon of Light", effect: "Cura por el 100% de sanación a otro objetivo", type: "Buff", icon: "ability_paladin_beaconoflight" },
+            { id: 31884, name: "Avenging Wrath", effect: "+20% daño y sanación durante 20 seg", type: "Buff", icon: "spell_holy_avenginewrath" },
+            { id: 55694, name: "Enrage (Warrior)", effect: "+Generación de ira, pero recibe 5% más daño", type: "Buff", icon: "spell_shadow_unholyfrenzy" },
+            { id: 23920, name: "Spell Reflection", effect: "Refleja el próximo hechizo lanzado sobre ti", type: "Buff", icon: "ability_warrior_shieldreflection" },
+            { id: 47476, name: "Strangulate", effect: "Silencia al objetivo durante 5 seg", type: "CC", icon: "spell_shadow_soulleech_3" },
+            { id: 51271, name: "Unbreakable Armor", effect: "+25% Fuerza y +25% Armadura durante 20 seg", type: "Buff", icon: "inv_armor_helm_plate_naxxramas_04" },
+            { id: 49016, name: "Hysteria", effect: "+20% daño físico pero pierde 1% vida/seg durante 30 seg", type: "Buff", icon: "spell_deathknight_bladedarmor" },
+            { id: 2825, name: "Bloodlust (Heroism)", effect: "+30% velocidad de ataque y lanzamiento durante 40 seg", type: "Buff", icon: "spell_nature_bloodlust" },
+            { id: 29166, name: "Innervate", effect: "Regenera el 450% de maná base durante 20 seg", type: "Buff", icon: "spell_nature_lightning" },
+        ],
+
+        quests: [
+            { id: 24545, name: "The Sacred and the Corrupt", level: 80, zone: "ICC", desc: "Primera quest de Shadowmourne" },
+            { id: 24743, name: "A Feast of Souls", level: 80, zone: "ICC", desc: "Segunda quest de Shadowmourne" },
+            { id: 24547, name: "Unholy Infusion", level: 80, zone: "ICC", desc: "Quest de Shadowmourne - Prof. Putricide" },
+            { id: 24749, name: "The Lich King's Last Stand", level: 80, zone: "ICC", desc: "Quest final de Shadowmourne" },
+            { id: 13188, name: "The Kalu'ak Fishing Derby", level: 1, zone: "Dalaran", desc: "Torneo de pesca semanal" },
+            { id: 12372, name: "Preparing for the Worst", level: 73, zone: "Dragonblight", desc: "Quest de cadena Wrathgate" },
+            { id: 13149, name: "Aces High!", level: 80, zone: "Coldarra", desc: "Quest diaria de vehículo" },
+            { id: 24510, name: "Deprogramming", level: 80, zone: "ICC 5-man", desc: "Cadena de misiones de ICC Dungeons" },
+        ],
+
+        sets: [
+            { id: 870, name: "Sanctified Frost Witch's Garb", class: "Chamán Restauración", tier: "T10 HC", pieces: 5, icon: "inv_helmet_151" },
+            { id: 871, name: "Sanctified Frost Witch's Battlegear", class: "Chamán Mejora", tier: "T10 HC", pieces: 5, icon: "inv_helmet_151" },
+            { id: 872, name: "Sanctified Frost Witch's Regalia", class: "Chamán Elemental", tier: "T10 HC", pieces: 5, icon: "inv_helmet_151" },
+            { id: 845, name: "Sanctified Lightsworn Plate", class: "Paladín Sagrado", tier: "T10 HC", pieces: 5, icon: "inv_helmet_96" },
+            { id: 846, name: "Sanctified Lightsworn Battlegear", class: "Paladín Reprensión", tier: "T10 HC", pieces: 5, icon: "inv_helmet_96" },
+            { id: 847, name: "Sanctified Lightsworn Garb", class: "Paladín Protección", tier: "T10 HC", pieces: 5, icon: "inv_helmet_96" },
+            { id: 866, name: "Sanctified Shadowblade's Battlegear", class: "Pícaro", tier: "T10 HC", pieces: 5, icon: "inv_helmet_150" },
+            { id: 868, name: "Sanctified Ymirjar Lord's Battlegear", class: "Guerrero DPS", tier: "T10 HC", pieces: 5, icon: "inv_helmet_96" },
+            { id: 842, name: "Sanctified Dark Coven's Regalia", class: "Brujo", tier: "T10 HC", pieces: 5, icon: "inv_helmet_150" },
+            { id: 844, name: "Sanctified Bloodmage's Regalia", class: "Mago", tier: "T10 HC", pieces: 5, icon: "inv_helmet_150" },
+            { id: 838, name: "Sanctified Crimson Acolyte's Raiment", class: "Sacerdote Sagrado", tier: "T10 HC", pieces: 5, icon: "inv_helmet_150" },
+            { id: 863, name: "Sanctified Lasherweave Garb", class: "Druida Restauración", tier: "T10 HC", pieces: 5, icon: "inv_helmet_138" },
+            { id: 860, name: "Sanctified Ahn'Kahar Blood Hunter's Battlegear", class: "Cazador", tier: "T10 HC", pieces: 5, icon: "inv_helmet_138" },
+            { id: 856, name: "Sanctified Scourgelord's Battlegear", class: "DK DPS", tier: "T10 HC", pieces: 5, icon: "inv_helmet_96" },
+        ],
+
+        zones: [
+            { name: "Dalaran", continent: "Rasganorte", level: "80", type: "Ciudad", tele: ".tele Dalaran" },
+            { name: "Stormwind", continent: "Reinos del Este", level: "1-80", type: "Capital", tele: ".tele Stormwind" },
+            { name: "Orgrimmar", continent: "Kalimdor", level: "1-80", type: "Capital", tele: ".tele Orgrimmar" },
+            { name: "Ironforge", continent: "Reinos del Este", level: "1-80", type: "Capital", tele: ".tele Ironforge" },
+            { name: "Undercity", continent: "Reinos del Este", level: "1-80", type: "Capital", tele: ".tele Undercity" },
+            { name: "Icecrown Citadel", continent: "Rasganorte", level: "80", type: "Raid", tele: ".tele IcecrownCitadel" },
+            { name: "Ulduar", continent: "Rasganorte", level: "80", type: "Raid", tele: ".tele Ulduar" },
+            { name: "Naxxramas", continent: "Rasganorte", level: "80", type: "Raid", tele: ".tele Naxxramas" },
+            { name: "Trial of the Crusader", continent: "Rasganorte", level: "80", type: "Raid", tele: ".tele TrialOfTheCrusader" },
+            { name: "Obsidian Sanctum", continent: "Rasganorte", level: "80", type: "Raid", tele: ".tele ObsidianSanctum" },
+            { name: "Eye of Eternity", continent: "Rasganorte", level: "80", type: "Raid", tele: ".tele EyeOfEternity" },
+            { name: "Vault of Archavon", continent: "Rasganorte", level: "80", type: "Raid", tele: ".tele VaultOfArchavon" },
+            { name: "Onyxia's Lair", continent: "Kalimdor", level: "80", type: "Raid", tele: ".tele OnyxiasLair" },
+            { name: "Karazhan", continent: "Reinos del Este", level: "70", type: "Raid", tele: ".tele Karazhan" },
+            { name: "Black Temple", continent: "Terrallende", level: "70", type: "Raid", tele: ".tele BlackTemple" },
+            { name: "Sunwell Plateau", continent: "Reinos del Este", level: "70", type: "Raid", tele: ".tele SunwellPlateau" },
+            { name: "Wintergrasp", continent: "Rasganorte", level: "80", type: "PvP", tele: ".tele Wintergrasp" },
+            { name: "Gurubashi Arena", continent: "Reinos del Este", level: "30+", type: "PvP", tele: ".tele GurubashiArena" },
+            { name: "Shattrath", continent: "Terrallende", level: "60-70", type: "Ciudad", tele: ".tele Shattrath" },
+            { name: "Argent Tournament", continent: "Rasganorte", level: "80", type: "Evento", tele: ".tele ArgentTournament" },
+        ]
+    };
+
+    // ================================================================
+    // RENDERIZADO
+    // ================================================================
+    const ITEMS_PER_PAGE = 25;
+    let currentPage = 1;
+    let filteredItems = [...DATABASE.items];
+    let currentSection = 'items';
+
+    function renderItems(items, page = 1) {
+        const tbody = document.getElementById('itemsBody');
+        const start = (page - 1) * ITEMS_PER_PAGE;
+        const end = start + ITEMS_PER_PAGE;
+        const pageItems = items.slice(start, end);
+
+        tbody.innerHTML = pageItems.map(item => {
+            const rarityClass = `q${item.rarity}`;
+            return `
+            <tr onmouseenter="showTooltip(event, ${item.id})" onmouseleave="hideTooltip()" onmousemove="moveTooltip(event)">
+                <td class="col-id">${item.id}</td>
+                <td>
+                    <div class="item-cell">
+                        <img class="db-icon ${rarityClass}" src="https://wow.zamimg.com/images/wow/icons/medium/${item.icon}.jpg" alt="${item.name}" onerror="this.src='https://wow.zamimg.com/images/wow/icons/medium/inv_misc_questionmark.jpg'">
+                        <span class="db-name ${rarityClass}-text">${item.name}</span>
+                    </div>
+                </td>
+                <td class="col-type">${item.type}</td>
+                <td class="col-type">${item.slot}</td>
+                <td class="col-level">${item.ilvl > 1 ? item.ilvl : '-'}</td>
+                <td class="col-source">${item.source}</td>
+                <td class="col-cmd"><button class="cmd-copy" onclick="event.stopPropagation(); copyCmd('.additem ${item.id}', this)">.additem ${item.id}</button></td>
+            </tr>`;
+        }).join('');
+
+        renderPagination(items.length, page);
+    }
+
+    function renderNpcs(npcs) {
+        const tbody = document.getElementById('npcsBody');
+        tbody.innerHTML = npcs.map(npc => `
+            <tr>
+                <td class="col-id">${npc.id}</td>
+                <td>
+                    <div class="item-cell">
+                        <img class="db-icon q4" src="https://wow.zamimg.com/images/wow/icons/medium/${npc.icon}.jpg" alt="${npc.name}" onerror="this.src='https://wow.zamimg.com/images/wow/icons/medium/inv_misc_questionmark.jpg'">
+                        <span class="db-name q5-text">${npc.name}</span>
+                    </div>
+                </td>
+                <td class="col-type">${npc.type}</td>
+                <td class="col-level">${npc.level}</td>
+                <td class="col-source">${npc.location}</td>
+                <td class="col-cmd"><button class="cmd-copy" onclick="copyCmd('.npc add ${npc.id}', this)">.npc add ${npc.id}</button></td>
+            </tr>
+        `).join('');
+    }
+
+    function renderSpells(spells) {
+        const tbody = document.getElementById('spellsBody');
+        tbody.innerHTML = spells.map(spell => `
+            <tr>
+                <td class="col-id">${spell.id}</td>
+                <td>
+                    <div class="item-cell">
+                        <img class="db-icon q3" src="https://wow.zamimg.com/images/wow/icons/medium/${spell.icon}.jpg" alt="${spell.name}" onerror="this.src='https://wow.zamimg.com/images/wow/icons/medium/inv_misc_questionmark.jpg'">
+                        <span class="db-name q3-text">${spell.name}</span>
+                    </div>
+                </td>
+                <td>${spell.effect}</td>
+                <td class="col-type">${spell.type}</td>
+                <td class="col-cmd"><button class="cmd-copy" onclick="copyCmd('.cast ${spell.id}', this)">.cast ${spell.id}</button></td>
+            </tr>
+        `).join('');
+    }
+
+    function renderQuests(quests) {
+        const tbody = document.getElementById('questsBody');
+        tbody.innerHTML = quests.map(q => `
+            <tr>
+                <td class="col-id">${q.id}</td>
+                <td><span class="q3-text">${q.name}</span><br><small style="color:#666">${q.desc}</small></td>
+                <td class="col-level">${q.level}</td>
+                <td class="col-source">${q.zone}</td>
+                <td class="col-cmd"><button class="cmd-copy" onclick="copyCmd('.quest add ${q.id}', this)">.quest add ${q.id}</button></td>
+            </tr>
+        `).join('');
+    }
+
+    function renderSets(sets) {
+        const tbody = document.getElementById('setsBody');
+        tbody.innerHTML = sets.map(s => `
+            <tr>
+                <td class="col-id">${s.id}</td>
+                <td><span class="q4-text">${s.name}</span></td>
+                <td class="col-type">${s.class}</td>
+                <td class="col-level">${s.tier}</td>
+                <td class="col-level">${s.pieces}</td>
+                <td class="col-cmd"><button class="cmd-copy" onclick="copyCmd('.additemset ${s.id}', this)">.additemset ${s.id}</button></td>
+            </tr>
+        `).join('');
+    }
+
+    function renderZones(zones) {
+        const tbody = document.getElementById('zonesBody');
+        tbody.innerHTML = zones.map(z => `
+            <tr>
+                <td><span class="q3-text">${z.name}</span></td>
+                <td class="col-type">${z.continent}</td>
+                <td class="col-level">${z.level}</td>
+                <td class="col-type">${z.type}</td>
+                <td class="col-cmd"><button class="cmd-copy" onclick="copyCmd('${z.tele}', this)">${z.tele}</button></td>
+            </tr>
+        `).join('');
+    }
+
+    // ================================================================
+    // PAGINACIÓN
+    // ================================================================
+    function renderPagination(totalItems, currentPage) {
+        const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+        const container = document.getElementById('itemsPagination');
+
+        if (totalPages <= 1) { container.innerHTML = ''; return; }
+
+        let html = `<button onclick="goToPage(1)" ${currentPage === 1 ? 'disabled' : ''}>«</button>`;
+        html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
+
+        const start = Math.max(1, currentPage - 2);
+        const end = Math.min(totalPages, currentPage + 2);
+
+        for (let i = start; i <= end; i++) {
+            html += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+        }
+
+        html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>›</button>`;
+        html += `<button onclick="goToPage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>»</button>`;
+        html += `<span class="page-info">${totalItems} items | Página ${currentPage}/${totalPages}</span>`;
+
+        container.innerHTML = html;
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        renderItems(filteredItems, currentPage);
+        window.scrollTo({ top: 300, behavior: 'smooth' });
+    }
+
+    // ================================================================
+    // TOOLTIPS
+    // ================================================================
+    function showTooltip(event, itemId) {
+        const item = DATABASE.items.find(i => i.id === itemId);
+        if (!item) return;
+
+        const tooltip = document.getElementById('tooltip');
+        const rarityClass = `q${item.rarity}-text`;
+        const rarityNames = { 0: 'Pobre', 1: 'Común', 2: 'Poco común', 3: 'Raro', 4: 'Épico', 5: 'Legendario' };
+
+        tooltip.innerHTML = `
+            <div class="tt-name ${rarityClass}">${item.name}</div>
+            <div class="tt-type">${item.type} - ${item.slot} | iLvl ${item.ilvl} | ${rarityNames[item.rarity]}</div>
+            <div class="tt-stats">${(item.stats || '').replace(/\n/g, '<br>')}</div>
+            ${item.desc ? `<div class="tt-desc">"${item.desc}"</div>` : ''}
+            <div class="tt-id">Item ID: ${item.id}</div>
+            <div class="tt-cmd">.additem ${item.id}</div>
+        `;
+
+        tooltip.classList.add('visible');
+        moveTooltip(event);
+    }
+
+    function moveTooltip(event) {
+        const tooltip = document.getElementById('tooltip');
+        let x = event.clientX + 15;
+        let y = event.clientY + 15;
+        if (x + 350 > window.innerWidth) x = event.clientX - 365;
+        if (y + 300 > window.innerHeight) y = event.clientY - 300;
+        tooltip.style.left = x + 'px';
+        tooltip.style.top = y + 'px';
+    }
+
+    function hideTooltip() {
+        document.getElementById('tooltip').classList.remove('visible');
+    }
+
+    // ================================================================
+    // BÚSQUEDA Y FILTROS
+    // ================================================================
+    document.getElementById('dbSearch').addEventListener('input', function() {
+        applyFilters();
+    });
+
+    function applyFilters() {
+        const term = document.getElementById('dbSearch').value.toLowerCase().trim();
+        const rarity = document.getElementById('filterRarity').value;
+        const type = document.getElementById('filterType').value;
+        const slot = document.getElementById('filterSlot').value;
+
+        if (currentSection === 'items') {
+            filteredItems = DATABASE.items.filter(item => {
+                const matchSearch = !term || item.name.toLowerCase().includes(term) ||
+                    item.id.toString().includes(term) || (item.tags || '').toLowerCase().includes(term);
+                const matchRarity = !rarity || item.rarity === parseInt(rarity);
+                const matchType = !type || item.type === type;
+                const matchSlot = !slot || item.slot === slot;
+                return matchSearch && matchRarity && matchType && matchSlot;
+            });
+            currentPage = 1;
+            renderItems(filteredItems, 1);
+            document.getElementById('searchResultsInfo').textContent =
+                term || rarity || type || slot ? `${filteredItems.length} resultado(s)` : '';
+        } else if (currentSection === 'npcs') {
+            const filtered = DATABASE.npcs.filter(n =>
+                !term || n.name.toLowerCase().includes(term) || n.id.toString().includes(term)
+            );
+            renderNpcs(filtered);
+        } else if (currentSection === 'spells') {
+            const filtered = DATABASE.spells.filter(s =>
+                !term || s.name.toLowerCase().includes(term) || s.id.toString().includes(term) || s.effect.toLowerCase().includes(term)
+            );
+            renderSpells(filtered);
+        } else if (currentSection === 'quests') {
+            const filtered = DATABASE.quests.filter(q =>
+                !term || q.name.toLowerCase().includes(term) || q.id.toString().includes(term)
+            );
+            renderQuests(filtered);
+        } else if (currentSection === 'sets') {
+            const filtered = DATABASE.sets.filter(s =>
+                !term || s.name.toLowerCase().includes(term) || s.class.toLowerCase().includes(term)
+            );
+            renderSets(filtered);
+        } else if (currentSection === 'zones') {
+            const filtered = DATABASE.zones.filter(z =>
+                !term || z.name.toLowerCase().includes(term) || z.continent.toLowerCase().includes(term)
+            );
+            renderZones(filtered);
+        } else if (currentSection === 'mounts') {
+            const mounts = DATABASE.items.filter(i => i.type === 'Montura');
+            const filtered = mounts.filter(m =>
+                !term || m.name.toLowerCase().includes(term) || m.id.toString().includes(term)
+            );
+            renderItems(filtered, 1);
+        }
+    }
+
+    function filterByCategory(category, el) {
+        document.querySelectorAll('#itemCategories li').forEach(l => l.classList.remove('active'));
+        if (el) el.classList.add('active');
+
+        document.getElementById('dbSearch').value = '';
+        document.getElementById('filterRarity').value = '';
+        document.getElementById('filterType').value = category === 'all' ? '' : category;
+        document.getElementById('filterSlot').value = '';
+        applyFilters();
+    }
+
+    function filterByRarity(rarity, el) {
+        document.getElementById('filterRarity').value = rarity;
+        applyFilters();
+    }
+
+    function filterNpcCategory(category, el) {
+        document.querySelectorAll('#db-npcs .sidebar-list li').forEach(l => l.classList.remove('active'));
+        if (el) el.classList.add('active');
+
+        if (category === 'all') {
+            renderNpcs(DATABASE.npcs);
+        } else {
+            renderNpcs(DATABASE.npcs.filter(n => n.type === category));
+        }
+    }
+
+    function quickFilter(tag, btn) {
+        document.querySelectorAll('.quick-action').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        if (tag === 'all') {
+            filteredItems = [...DATABASE.items];
+        } else if (tag === 'Legendario') {
+            filteredItems = DATABASE.items.filter(i => i.rarity === 5);
+        } else {
+            filteredItems = DATABASE.items.filter(i => (i.tags || '').includes(tag) || (i.source || '').includes(tag));
+        }
+        currentPage = 1;
+        renderItems(filteredItems, 1);
+    }
+
+    // ================================================================
+    // NAVEGACIÓN
+    // ================================================================
+    function switchDB(section, btn) {
+        currentSection = section;
+        document.querySelectorAll('.db-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.db-nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById('db-' + section).classList.add('active');
+        btn.classList.add('active');
+        document.getElementById('dbSearch').value = '';
+
+        const filtersDiv = document.getElementById('searchFilters');
+        filtersDiv.style.display = section === 'items' ? 'flex' : 'none';
+
+        if (section === 'items') {
+            filteredItems = [...DATABASE.items];
+            renderItems(filteredItems, 1);
+        } else if (section === 'npcs') renderNpcs(DATABASE.npcs);
+        else if (section === 'spells') renderSpells(DATABASE.spells);
+        else if (section === 'quests') renderQuests(DATABASE.quests);
+        else if (section === 'sets') renderSets(DATABASE.sets);
+        else if (section === 'zones') renderZones(DATABASE.zones);
+        else if (section === 'mounts') {
+            filteredItems = DATABASE.items.filter(i => i.type === 'Montura');
+            renderItems(filteredItems, 1);
+        }
+
+        document.getElementById('searchResultsInfo').textContent = '';
+    }
+
+    // ================================================================
+    // SORT
+    // ================================================================
+    let sortDirection = {};
+    function sortTable(column) {
+        const dir = sortDirection[column] = !sortDirection[column];
+        filteredItems.sort((a, b) => {
+            let va = a[column] || '';
+            let vb = b[column] || '';
+            if (typeof va === 'number') return dir ? va - vb : vb - va;
+            return dir ? String(va).localeCompare(String(vb)) : String(vb).localeCompare(String(va));
+        });
+        currentPage = 1;
+        renderItems(filteredItems, 1);
+    }
+
+    // ================================================================
+    // UTILIDADES
+    // ================================================================
+    function copyCmd(cmd, btn) {
+        navigator.clipboard.writeText(cmd).then(() => {
+            const orig = btn.textContent;
+            btn.textContent = '✅ Copiado!';
+            btn.classList.add('copied');
+            setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
+        });
+    }
+
+    function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+    window.addEventListener('scroll', () => {
+        document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 500);
+    });
+
+    // ================================================================
+    // INICIALIZACIÓN
+    // ================================================================
+    window.addEventListener('load', function() {
+        // Stats
+        document.getElementById('totalItems').textContent = DATABASE.items.length;
+        document.getElementById('totalNpcs').textContent = DATABASE.npcs.length;
+        document.getElementById('totalSpells').textContent = DATABASE.spells.length;
+        document.getElementById('totalQuests').textContent = DATABASE.quests.length;
+        document.getElementById('totalSets').textContent = DATABASE.sets.length;
+
+        // Category counts
+        const types = ['Arma', 'Armadura', 'Consumible', 'Gema', 'Montura', 'Token', 'Bolsa', 'Tabardo', 'Misceláneo'];
+        types.forEach(t => {
+            const el = document.getElementById('count' + t);
+            if (el) el.textContent = DATABASE.items.filter(i => i.type === t).length;
+        });
+        const allEl = document.getElementById('countAll');
+        if (allEl) allEl.textContent = DATABASE.items.length;
+
+        // Render items
+        renderItems(DATABASE.items, 1);
+    });
+    </script>
+
+</body>
+</html>
