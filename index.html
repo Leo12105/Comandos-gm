@@ -1,438 +1,1537 @@
-<!-- ================================================================== -->
-<!-- SECCIÓN: IDs ÚTILES (CORREGIDA Y VERIFICADA) -->
-<!-- ================================================================== -->
-<div class="section" id="section-ids">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AfterWoW - Panel de Comandos GM 3.3.5a</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <div class="ids-section-title">
-        <h2>📦 Base de Datos de IDs Útiles - AfterWoW</h2>
-        <p>IDs verificados para WoW 3.3.5a - TrinityCore / AzerothCore</p>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            color: #c4c4c4;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            border-bottom: 3px solid #e94560;
+            padding: 30px 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(233, 69, 96, 0.3);
+        }
+
+        .logo {
+            font-size: 3em;
+            font-weight: 900;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+        }
+
+        .logo .after { color: #e94560; text-shadow: 0 0 30px rgba(233, 69, 96, 0.6); }
+        .logo .wow { color: #00d2ff; text-shadow: 0 0 30px rgba(0, 210, 255, 0.6); }
+
+        header .subtitle { color: #888; font-size: 1.1em; margin-top: 5px; }
+
+        header .version-badge {
+            display: inline-block;
+            background: rgba(233, 69, 96, 0.2);
+            border: 1px solid #e94560;
+            color: #e94560;
+            padding: 4px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 10px;
+        }
+
+        .main-nav {
+            background: #111;
+            border-bottom: 1px solid #222;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .main-nav button {
+            padding: 10px 25px;
+            border: 2px solid #333;
+            border-radius: 8px;
+            background: #1a1a1a;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .main-nav button:hover, .main-nav button.active {
+            background: linear-gradient(135deg, #e94560, #c23152);
+            color: #fff;
+            border-color: #e94560;
+            box-shadow: 0 0 15px rgba(233, 69, 96, 0.4);
+        }
+
+        .main-nav button.ids-btn:hover, .main-nav button.ids-btn.active {
+            background: linear-gradient(135deg, #00d2ff, #0098b3);
+            border-color: #00d2ff;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+        }
+
+        .section { display: none; }
+        .section.active { display: block; }
+
+        .search-container {
+            text-align: center;
+            padding: 25px 20px;
+            background: #111;
+            border-bottom: 1px solid #222;
+        }
+
+        .search-container input, .ids-search input {
+            width: 90%;
+            max-width: 600px;
+            padding: 15px 25px;
+            font-size: 1.1em;
+            border: 2px solid #333;
+            border-radius: 50px;
+            background: #1a1a1a;
+            color: #fff;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-container input:focus { border-color: #e94560; box-shadow: 0 0 15px rgba(233, 69, 96, 0.3); }
+        .ids-search input:focus { border-color: #00d2ff; box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); }
+        .search-container input::placeholder, .ids-search input::placeholder { color: #555; }
+
+        .search-stats { color: #666; margin-top: 10px; font-size: 0.9em; }
+
+        .category-nav {
+            background: #0d0d0d;
+            padding: 15px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            border-bottom: 1px solid #222;
+        }
+
+        .category-nav button {
+            padding: 8px 16px;
+            border: 1px solid #333;
+            border-radius: 20px;
+            background: #1a1a1a;
+            color: #888;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+        }
+
+        .category-nav button:hover, .category-nav button.active {
+            background: #e94560;
+            color: #fff;
+            border-color: #e94560;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+        .category {
+            margin-bottom: 20px;
+            border: 1px solid #222;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #121212;
+        }
+
+        .category-header {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 18px 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .category-header:hover { background: linear-gradient(135deg, #1f1f3a, #1b2849); }
+
+        .category-header h2 {
+            font-size: 1.3em;
+            color: #00d2ff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .category-header .toggle {
+            font-size: 1.5em;
+            color: #e94560;
+            transition: transform 0.3s ease;
+        }
+
+        .category-header .toggle.open { transform: rotate(180deg); }
+
+        .category-header .cmd-count {
+            background: #e94560;
+            color: #fff;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            margin-left: 10px;
+        }
+
+        .category-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease; }
+        .category-content.open { max-height: 50000px; }
+
+        /* ============ TABLAS COMANDOS ============ */
+        .cmd-table { width: 100%; border-collapse: collapse; }
+        .cmd-table thead th {
+            background: #1a1a1a; padding: 12px 20px; text-align: left;
+            color: #e94560; font-size: 0.9em; text-transform: uppercase;
+            letter-spacing: 1px; border-bottom: 2px solid #e94560;
+        }
+        .cmd-table tbody tr { border-bottom: 1px solid #1a1a1a; transition: all 0.2s; }
+        .cmd-table tbody tr:hover { background: #1a1a2e; }
+        .cmd-table tbody tr.hidden { display: none; }
+        .cmd-table td { padding: 12px 20px; vertical-align: top; }
+        .cmd-table td:first-child {
+            font-family: 'Courier New', monospace; color: #4ade80;
+            font-weight: bold; white-space: nowrap; font-size: 0.95em;
+        }
+        .cmd-table td:nth-child(2) { color: #aaa; line-height: 1.5; }
+
+        .gm-level { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.8em; }
+        .gm-level.gm1 { background: #1b4332; color: #4ade80; }
+        .gm-level.gm2 { background: #1e3a5f; color: #60a5fa; }
+        .gm-level.gm3 { background: #5c1a1a; color: #f87171; }
+
+        .gm-levels-info {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 1px solid #333; border-radius: 12px;
+            padding: 25px; margin-bottom: 30px;
+        }
+        .gm-levels-info h2 { color: #e94560; margin-bottom: 20px; font-size: 1.5em; text-align: center; }
+        .levels-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .level-card {
+            background: #111; border: 1px solid #333; border-radius: 10px;
+            padding: 20px; text-align: center; transition: all 0.3s;
+        }
+        .level-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .level-card .level-number { font-size: 2.5em; font-weight: bold; margin-bottom: 10px; }
+        .level-card .level-title { font-size: 1.2em; margin-bottom: 8px; color: #fff; }
+        .level-card .level-desc { color: #888; font-size: 0.9em; }
+        .level-0 .level-number { color: #888; }
+        .level-1 .level-number { color: #4ade80; }
+        .level-2 .level-number { color: #60a5fa; }
+        .level-3 .level-number { color: #f87171; }
+
+        /* ============ IDs SECTION ============ */
+        .ids-section-title { text-align: center; padding: 30px 20px 10px; }
+        .ids-section-title h2 { font-size: 2em; color: #00d2ff; text-shadow: 0 0 20px rgba(0,210,255,0.4); }
+        .ids-section-title p { color: #666; margin-top: 8px; }
+        .ids-search { text-align: center; padding: 20px; }
+
+        .ids-category .category-header h2 { color: #00d2ff; }
+        .ids-category .category-header .cmd-count { background: #00d2ff; color: #000; }
+        .ids-category .category-header .toggle { color: #00d2ff; }
+
+        /* ============ TARJETAS DE ITEMS CON IMAGEN ============ */
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .item-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.3s;
+        }
+
+        .item-card:hover {
+            border-color: #555;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .item-card.hidden { display: none; }
+
+        .item-card .item-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            border: 2px solid #555;
+            flex-shrink: 0;
+            background: #111;
+            object-fit: cover;
+        }
+
+        .item-card .item-icon.legendary-border { border-color: #ff8000; box-shadow: 0 0 10px rgba(255, 128, 0, 0.4); }
+        .item-card .item-icon.epic-border { border-color: #a335ee; box-shadow: 0 0 10px rgba(163, 53, 238, 0.3); }
+        .item-card .item-icon.rare-border { border-color: #0070dd; box-shadow: 0 0 10px rgba(0, 112, 221, 0.3); }
+        .item-card .item-icon.uncommon-border { border-color: #1eff00; }
+
+        .item-card .item-info { flex: 1; min-width: 0; }
+
+        .item-card .item-name {
+            font-weight: bold;
+            font-size: 1em;
+            margin-bottom: 4px;
+        }
+
+        .item-card .item-id {
+            font-family: 'Courier New', monospace;
+            color: #fbbf24;
+            font-size: 0.85em;
+            background: #111;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 4px;
+        }
+
+        .item-card .item-desc {
+            color: #888;
+            font-size: 0.85em;
+            line-height: 1.3;
+        }
+
+        .item-card .copy-id-btn {
+            background: none;
+            border: 1px solid #444;
+            color: #666;
+            padding: 4px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.75em;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .item-card .copy-id-btn:hover { border-color: #fbbf24; color: #fbbf24; }
+        .item-card .copy-id-btn.copied { border-color: #4ade80; color: #4ade80; }
+
+        .rarity-legendary { color: #ff8000 !important; }
+        .rarity-epic { color: #a335ee !important; }
+        .rarity-rare { color: #0070dd !important; }
+        .rarity-uncommon { color: #1eff00 !important; }
+        .rarity-common { color: #ffffff !important; }
+
+        /* ============ NPC CARDS ============ */
+        .npc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .npc-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .npc-card:hover {
+            border-color: #555;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .npc-card.hidden { display: none; }
+
+        .npc-card .npc-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .npc-card .npc-portrait {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 3px solid #a335ee;
+            flex-shrink: 0;
+            object-fit: cover;
+            background: #111;
+        }
+
+        .npc-card .npc-portrait.boss-border { border-color: #ff8000; box-shadow: 0 0 15px rgba(255, 128, 0, 0.3); }
+
+        .npc-card .npc-info { flex: 1; }
+        .npc-card .npc-name { font-weight: bold; font-size: 1.1em; color: #ff8000; }
+        .npc-card .npc-id {
+            font-family: 'Courier New', monospace; color: #fbbf24;
+            font-size: 0.85em; background: #111; padding: 2px 8px;
+            border-radius: 4px; display: inline-block; margin-top: 4px;
+        }
+        .npc-card .npc-location { color: #888; font-size: 0.85em; margin-top: 4px; }
+
+        .npc-card .npc-cmd {
+            background: #111;
+            padding: 10px 15px;
+            font-family: 'Courier New', monospace;
+            color: #4ade80;
+            font-size: 0.85em;
+            border-top: 1px solid #222;
+        }
+
+        /* ============ TELE CARDS ============ */
+        .tele-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+            padding: 20px;
+        }
+
+        .tele-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+        }
+
+        .tele-card:hover { border-color: #00d2ff; transform: translateY(-2px); }
+        .tele-card.hidden { display: none; }
+
+        .tele-card .tele-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: #111;
+            border: 2px solid #0070dd;
+        }
+
+        .tele-card .tele-info { flex: 1; }
+        .tele-card .tele-name { color: #fff; font-weight: bold; font-size: 0.95em; }
+        .tele-card .tele-cmd {
+            font-family: 'Courier New', monospace; color: #4ade80;
+            font-size: 0.8em; margin-top: 4px;
+        }
+        .tele-card .tele-type { color: #888; font-size: 0.8em; margin-top: 2px; }
+
+        /* ============ FOOTER ============ */
+        footer {
+            text-align: center; padding: 30px; background: #0a0a0a;
+            border-top: 1px solid #222; color: #444; margin-top: 50px;
+        }
+        footer .footer-logo { font-size: 1.5em; font-weight: 900; margin-bottom: 10px; }
+        footer .footer-logo .after { color: #e94560; }
+        footer .footer-logo .wow { color: #00d2ff; }
+
+        .scroll-top {
+            position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
+            background: #e94560; color: #fff; border: none; border-radius: 50%;
+            font-size: 1.5em; cursor: pointer; display: none; z-index: 1000;
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4); transition: all 0.3s;
+        }
+        .scroll-top:hover { transform: scale(1.1); }
+        .scroll-top.visible { display: block; }
+
+        .no-results {
+            text-align: center; padding: 60px 20px; color: #555;
+            font-size: 1.3em; display: none;
+        }
+        .no-results.visible { display: block; }
+        .no-results span { font-size: 3em; display: block; margin-bottom: 15px; }
+
+        @media (max-width: 768px) {
+            .logo { font-size: 2em; }
+            .category-header h2 { font-size: 1em; }
+            .item-grid { grid-template-columns: 1fr; }
+            .npc-grid { grid-template-columns: 1fr; }
+            .tele-grid { grid-template-columns: 1fr; }
+            .cmd-table thead { display: none; }
+            .cmd-table tbody tr { display: block; padding: 12px; border-bottom: 1px solid #222; }
+            .cmd-table td { display: block; padding: 4px 12px; }
+            .cmd-table td:first-child { white-space: normal; }
+            .main-nav button { padding: 8px 15px; font-size: 0.9em; }
+            .item-card .item-icon { width: 44px; height: 44px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo"><span class="after">After</span><span class="wow">WoW</span></div>
+        <p class="subtitle">Panel de Comandos GM - Game Master Tools</p>
+        <div class="version-badge">⚔️ Wrath of the Lich King 3.3.5a</div>
+    </header>
+
+    <div class="main-nav">
+        <button class="active" onclick="switchSection('commands', this)">⚔️ Comandos GM</button>
+        <button class="ids-btn" onclick="switchSection('ids', this)">📦 IDs Útiles</button>
     </div>
 
-    <div class="ids-search">
-        <input type="text" id="idsSearchInput" placeholder="🔍 Buscar ID, nombre de item, NPC, montura...">
+    <!-- ================================================================ -->
+    <!-- SECCIÓN COMANDOS GM -->
+    <!-- ================================================================ -->
+    <div class="section active" id="section-commands">
+
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="🔍 Buscar comando... (ej: teleport, ban, item, npc...)">
+            <div class="search-stats" id="searchStats"></div>
+        </div>
+
+        <div class="category-nav" id="categoryNav">
+            <button class="active" onclick="filterCategory('all', this)">📋 Todos</button>
+            <button onclick="filterCategory('cuenta', this)">👤 Cuenta</button>
+            <button onclick="filterCategory('teleport', this)">🌀 Teleport</button>
+            <button onclick="filterCategory('modificar', this)">⚡ Modificar</button>
+            <button onclick="filterCategory('items', this)">🎒 Items</button>
+            <button onclick="filterCategory('npc', this)">👾 NPCs</button>
+            <button onclick="filterCategory('gobject', this)">🏗️ Objetos</button>
+            <button onclick="filterCategory('auras', this)">✨ Auras</button>
+            <button onclick="filterCategory('server', this)">🖥️ Server</button>
+            <button onclick="filterCategory('gm', this)">🛡️ Modo GM</button>
+            <button onclick="filterCategory('lookup', this)">🔎 Lookup</button>
+            <button onclick="filterCategory('quest', this)">📜 Quests</button>
+            <button onclick="filterCategory('learn', this)">📚 Learn</button>
+            <button onclick="filterCategory('reset', this)">🔄 Reset</button>
+            <button onclick="filterCategory('ticket', this)">🎫 Tickets</button>
+            <button onclick="filterCategory('guild', this)">🏰 Guild</button>
+            <button onclick="filterCategory('character', this)">🧙 Character</button>
+            <button onclick="filterCategory('misc', this)">🔧 Misc</button>
+        </div>
+
+        <div class="container">
+            <div class="gm-levels-info">
+                <h2>🔐 Niveles de Acceso GM - AfterWoW</h2>
+                <div class="levels-grid">
+                    <div class="level-card level-0"><div class="level-number">0</div><div class="level-title">Jugador</div><div class="level-desc">Sin privilegios especiales</div></div>
+                    <div class="level-card level-1"><div class="level-number">1</div><div class="level-title">Moderador</div><div class="level-desc">Kick, mute, tickets, announce</div></div>
+                    <div class="level-card level-2"><div class="level-number">2</div><div class="level-title">Game Master</div><div class="level-desc">Teleport, spawn, items, NPCs</div></div>
+                    <div class="level-card level-3"><div class="level-number">3</div><div class="level-title">Administrador</div><div class="level-desc">Acceso total al servidor</div></div>
+                </div>
+            </div>
+
+            <!-- CUENTA -->
+            <div class="category" data-category="cuenta">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">👤</span> Cuenta y Jugador <span class="cmd-count">15</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Nivel</th></tr></thead><tbody>
+                    <tr><td>.account set gmlevel [cuenta] [nivel] [realm]</td><td>Asigna nivel GM (0-3)</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.account set password [cuenta] [pass] [pass]</td><td>Cambia contraseña</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.account create [cuenta] [password]</td><td>Crea nueva cuenta</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.account delete [cuenta]</td><td>Elimina cuenta</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.ban account [nombre] [tiempo] [razón]</td><td>Banea cuenta (1d, 1h, 0=permanente)</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.ban character [nombre] [tiempo] [razón]</td><td>Banea personaje</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.ban ip [IP] [tiempo] [razón]</td><td>Banea dirección IP</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.unban account [nombre]</td><td>Quita ban de cuenta</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.unban character [nombre]</td><td>Quita ban de personaje</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.unban ip [IP]</td><td>Quita ban de IP</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.baninfo account [nombre]</td><td>Info de ban</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.banlist account [patrón]</td><td>Lista cuentas baneadas</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.kick [nombre] [razón]</td><td>Expulsa jugador</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.mute [nombre] [minutos] [razón]</td><td>Silencia jugador</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.unmute [nombre]</td><td>Quita silencio</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                </tbody></table></div>
+            </div>
+
+            <!-- TELEPORT -->
+            <div class="category" data-category="teleport">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">🌀</span> Teletransporte <span class="cmd-count">12</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Nivel</th></tr></thead><tbody>
+                    <tr><td>.tele [ubicación]</td><td>TP a ubicación guardada</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.tele add [nombre]</td><td>Guarda ubicación actual</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.tele del [nombre]</td><td>Elimina punto de TP</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.tele name [jugador] [ubicación]</td><td>TP a un jugador</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.tele group [ubicación]</td><td>TP a todo tu grupo</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.appear [nombre]</td><td>Ir hacia un jugador</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.summon [nombre]</td><td>Invocar jugador</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.go xyz [x] [y] [z] [mapID]</td><td>TP a coordenadas</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.go creature [GUID]</td><td>TP a una criatura</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.go object [GUID]</td><td>TP a un game object</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.gps</td><td>Ver coordenadas actuales</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.go trigger [triggerID]</td><td>TP a area trigger</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                </tbody></table></div>
+            </div>
+
+            <!-- MODIFICAR -->
+            <div class="category" data-category="modificar">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">⚡</span> Modificar Personaje <span class="cmd-count">18</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Nivel</th></tr></thead><tbody>
+                    <tr><td>.modify hp [cantidad]</td><td>Modifica vida máxima</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.modify mana [cantidad]</td><td>Modifica maná máximo</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.modify energy [cantidad]</td><td>Modifica energía</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.modify rage [cantidad]</td><td>Modifica ira</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.modify runicpower [cantidad]</td><td>Modifica poder rúnico</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.modify speed [mult]</td><td>Velocidad general (2=doble)</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.modify aspeed [mult]</td><td>Todas las velocidades</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.modify swim [mult]</td><td>Velocidad de nado</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.modify fly [mult]</td><td>Velocidad de vuelo</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.modify bwalk [mult]</td><td>Velocidad hacia atrás</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.modify scale [valor]</td><td>Tamaño (1=normal, 5=gigante)</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.modify money [cobres]</td><td>Dinero (10000=1 oro)</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.modify honor [cant]</td><td>Puntos de honor</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.modify arena [cant]</td><td>Puntos de arena</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.modify level [nivel]</td><td>Nivel del personaje (1-80)</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.modify faction [facID]</td><td>Facción de la criatura</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.modify rep [facID] [cant]</td><td>Reputación con facción</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.levelup [cantidad]</td><td>Sube X niveles</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                </tbody></table></div>
+            </div>
+
+            <!-- ITEMS -->
+            <div class="category" data-category="items">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">🎒</span> Items <span class="cmd-count">8</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Nivel</th></tr></thead><tbody>
+                    <tr><td>.additem [itemID] [cantidad]</td><td>Da un objeto</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.additemset [setID]</td><td>Da set completo</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.bank</td><td>Abre banco</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.mailbox</td><td>Abre buzón</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.repairitems</td><td>Repara items</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.send items [jugador] "asunto" "texto" [id:cant]</td><td>Envía items por correo</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.send money [jugador] "asunto" "texto" [cant]</td><td>Envía oro por correo</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.send message [jugador] "asunto" "texto"</td><td>Envía mensaje</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                </tbody></table></div>
+            </div>
+
+            <!-- NPC -->
+            <div class="category" data-category="npc">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">👾</span> NPCs / Criaturas <span class="cmd-count">16</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Nivel</th></tr></thead><tbody>
+                    <tr><td>.npc add [creatureID]</td><td>Crea criatura</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.npc add temp [creatureID]</td><td>Crea criatura temporal</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.npc delete [GUID]</td><td>Elimina criatura</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.npc move [GUID]</td><td>Mueve criatura a tu posición</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.npc set level [nivel]</td><td>Cambia nivel</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.npc set model [modelID]</td><td>Cambia modelo visual</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.npc set faction [factionID]</td><td>Cambia facción</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.npc set movetype [tipo]</td><td>0=idle, 1=random, 2=waypoint</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.npc set spawntime [seg]</td><td>Tiempo de respawn</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.npc say [texto]</td><td>NPC habla</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.npc yell [texto]</td><td>NPC grita</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.npc info</td><td>Info del NPC</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.npc near [distancia]</td><td>Lista NPCs cercanos</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.npc follow</td><td>NPC te sigue</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.npc follow stop</td><td>Detiene seguimiento</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.npc set spawndist [dist]</td><td>Distancia de movimiento</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                </tbody></table></div>
+            </div>
+
+            <!-- GOBJECT -->
+            <div class="category" data-category="gobject">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">🏗️</span> Game Objects <span class="cmd-count">8</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Nivel</th></tr></thead><tbody>
+                    <tr><td>.gobject add [objectID]</td><td>Crea game object</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.gobject delete [GUID]</td><td>Elimina game object</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.gobject move [GUID]</td><td>Mueve a tu posición</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.gobject turn [GUID] [orient]</td><td>Rota objeto</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.gobject near [distancia]</td><td>Lista objetos cercanos</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.gobject info [GUID]</td><td>Info del objeto</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.gobject activate [GUID]</td><td>Activa objeto</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.gobject add temp [objectID]</td><td>Crea objeto temporal</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                </tbody></table></div>
+            </div>
+
+            <!-- AURAS -->
+            <div class="category" data-category="auras">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">✨</span> Auras y Hechizos <span class="cmd-count">7</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Nivel</th></tr></thead><tbody>
+                    <tr><td>.aura [spellID]</td><td>Aplica aura permanente</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.unaura [spellID]</td><td>Quita aura</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.unaura all</td><td>Quita todas las auras</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.cast [spellID]</td><td>Lanza hechizo</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.cast back [spellID]</td><td>Objetivo te lanza el hechizo</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.cast self [spellID]</td><td>Objetivo se lanza a sí mismo</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.cooldown</td><td>Resetea cooldowns</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                </tbody></table></div>
+            </div>
+
+            <!-- SERVER -->
+            <div class="category" data-category="server">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">🖥️</span> Servidor <span class="cmd-count">10</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Nivel</th></tr></thead><tbody>
+                    <tr><td>.server info</td><td>Info del servidor</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.server restart [seg]</td><td>Reinicia servidor</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.server shutdown [seg]</td><td>Apaga servidor</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.server shutdown cancel</td><td>Cancela apagado</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.announce [mensaje]</td><td>Anuncio global</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.gmannounce [mensaje]</td><td>Anuncio solo GMs</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.notify [mensaje]</td><td>Notificación en pantalla</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.reload all</td><td>Recarga todas las tablas</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.saveall</td><td>Guarda todos los personajes</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.server set motd [msg]</td><td>Mensaje del día</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                </tbody></table></div>
+            </div>
+
+            <!-- MODO GM -->
+            <div class="category" data-category="gm">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">🛡️</span> Modo GM <span class="cmd-count">14</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Nivel</th></tr></thead><tbody>
+                    <tr><td>.gm on</td><td>Activa modo GM</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.gm off</td><td>Desactiva modo GM</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.gm visible on/off</td><td>Visible/invisible</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.gm fly on/off</td><td>Vuelo libre</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.gm chat on/off</td><td>Tag [GM] en chat</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.die</td><td>Mata al objetivo</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.revive</td><td>Revive al objetivo</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.combatstop [nombre]</td><td>Detiene combate</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.freeze [nombre]</td><td>Congela jugador</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.unfreeze [nombre]</td><td>Descongela jugador</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.god on/off</td><td>Modo dios</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.damage [cantidad]</td><td>Causa daño al objetivo</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.repairitems</td><td>Repara equipo</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.dismount</td><td>Desmonta al objetivo</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                </tbody></table></div>
+            </div>
+
+            <!-- LOOKUP -->
+            <div class="category" data-category="lookup">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">🔎</span> Búsqueda (Lookup) <span class="cmd-count">10</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Nivel</th></tr></thead><tbody>
+                    <tr><td>.lookup item [nombre]</td><td>Busca item</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.lookup spell [nombre]</td><td>Busca hechizo</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.lookup creature [nombre]</td><td>Busca criatura</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.lookup object [nombre]</td><td>Busca game object</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.lookup quest [nombre]</td><td>Busca misión</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.lookup area [nombre]</td><td>Busca zona</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.lookup tele [nombre]</td><td>Busca teleport</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.lookup skill [nombre]</td><td>Busca habilidad</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.lookup faction [nombre]</td><td>Busca facción</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.lookup title [nombre]</td><td>Busca título</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                </tbody></table></div>
+            </div>
+
+            <!-- QUEST -->
+            <div class="category" data-category="quest">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">📜</span> Quests <span class="cmd-count">5</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Nivel</th></tr></thead><tbody>
+                    <tr><td>.quest add [questID]</td><td>Añade misión</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.quest remove [questID]</td><td>Quita misión</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.quest complete [questID]</td><td>Completa misión</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.quest reward [questID]</td><td>Da recompensa</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.quest status [questID]</td><td>Estado de la misión</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                </tbody></table></div>
+            </div>
+
+            <!-- LEARN -->
+            <div class="category" data-category="learn">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">📚</span> Learn <span class="cmd-count">8</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Nivel</th></tr></thead><tbody>
+                    <tr><td>.learn [spellID]</td><td>Enseña hechizo</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.learn all_myclass</td><td>Todo de tu clase</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.learn all_myspells</td><td>Todos tus hechizos</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.learn all_mytalents</td><td>Todos tus talentos</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.learn all_crafts</td><td>Todas las profesiones</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.learn all_lang</td><td>Todos los idiomas</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.learn all</td><td>Aprende todo</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.unlearn [spellID]</td><td>Olvida hechizo</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                </tbody></table></div>
+            </div>
+
+            <!-- RESET -->
+            <div class="category" data-category="reset">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">🔄</span> Reset <span class="cmd-count">7</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Nivel</th></tr></thead><tbody>
+                    <tr><td>.reset talents [nombre]</td><td>Resetea talentos</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.reset spells [nombre]</td><td>Resetea hechizos</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.reset stats [nombre]</td><td>Resetea stats</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.reset level [nombre]</td><td>Nivel a 1</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.reset honor [nombre]</td><td>Resetea honor</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.reset all</td><td>Resetea todo</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.instance unbind all</td><td>Resetea instancias</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                </tbody></table></div>
+            </div>
+
+            <!-- TICKET -->
+            <div class="category" data-category="ticket">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">🎫</span> Tickets <span class="cmd-count">5</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Nivel</th></tr></thead><tbody>
+                    <tr><td>.ticket list</td><td>Lista tickets abiertos</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.ticket viewid [id]</td><td>Ver ticket</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.ticket close [id]</td><td>Cierra ticket</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.ticket delete [id]</td><td>Elimina ticket</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.ticket assign [id] [GM]</td><td>Asigna ticket</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                </tbody></table></div>
+            </div>
+
+            <!-- GUILD -->
+            <div class="category" data-category="guild">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">🏰</span> Guild <span class="cmd-count">5</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Nivel</th></tr></thead><tbody>
+                    <tr><td>.guild create [líder] [nombre]</td><td>Crea hermandad</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.guild delete [nombre]</td><td>Elimina hermandad</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.guild invite [jugador] [guild]</td><td>Invita jugador</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.guild uninvite [jugador]</td><td>Expulsa jugador</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.guild rank [jugador] [rango]</td><td>Cambia rango</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                </tbody></table></div>
+            </div>
+
+            <!-- CHARACTER -->
+            <div class="category" data-category="character">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">🧙</span> Character <span class="cmd-count">10</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Nivel</th></tr></thead><tbody>
+                    <tr><td>.character rename [nombre]</td><td>Fuerza cambio de nombre</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.character customize [nombre]</td><td>Permite personalización</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.character changefaction [nombre]</td><td>Cambio de facción</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.character changerace [nombre]</td><td>Cambio de raza</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.character level [nombre] [nivel]</td><td>Nivel (incluso offline)</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.character deleted list</td><td>Lista eliminados</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.character deleted restore [GUID]</td><td>Restaura eliminado</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.character erase [nombre]</td><td>Elimina permanente</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                    <tr><td>.pinfo [nombre]</td><td>Info detallada</td><td><span class="gm-level gm1">Nivel 1</span></td></tr>
+                    <tr><td>.maxskill</td><td>Skills al máximo</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                </tbody></table></div>
+            </div>
+
+            <!-- MISC -->
+            <div class="category" data-category="misc">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">🔧</span> Misc <span class="cmd-count">8</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content"><table class="cmd-table"><thead><tr><th>Comando</th><th>Descripción</th><th>Nivel</th></tr></thead><tbody>
+                    <tr><td>.morph [displayID]</td><td>Cambia apariencia</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.demorph</td><td>Restaura apariencia</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.explorecheat 1/0</td><td>Revela/oculta mapa</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.taxicheat on/off</td><td>Desbloquea puntos de vuelo</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.waterwalk on/off</td><td>Caminar sobre agua</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.titles add [titleID]</td><td>Añade título</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.achievement add [id]</td><td>Otorga logro</td><td><span class="gm-level gm2">Nivel 2</span></td></tr>
+                    <tr><td>.dev on/off</td><td>Modo desarrollador</td><td><span class="gm-level gm3">Nivel 3</span></td></tr>
+                </tbody></table></div>
+            </div>
+
+            <div class="no-results" id="noResults"><span>🔍</span>No se encontraron comandos.<br><small>Intenta otra palabra.</small></div>
+        </div>
     </div>
 
-    <div class="container">
+    <!-- ================================================================ -->
+    <!-- SECCIÓN IDs ÚTILES CON IMÁGENES -->
+    <!-- ================================================================ -->
+    <div class="section" id="section-ids">
 
-        <!-- ==================== ARMAS LEGENDARIAS ==================== -->
-        <div class="category ids-category" data-ids-category="legendarias">
-            <div class="category-header" onclick="toggleCategory(this)">
-                <h2><span class="icon">⚔️</span> Armas Legendarias <span class="cmd-count">7</span></h2>
-                <span class="toggle">▼</span>
-            </div>
-            <div class="category-content">
-                <table class="ids-table">
-                    <thead><tr><th>Item ID</th><th>Nombre</th><th>Descripción</th></tr></thead>
-                    <tbody>
-                        <tr><td>49623</td><td class="rarity-legendary">Shadowmourne</td><td>Hacha 2M - Questline ICC</td></tr>
-                        <tr><td>46017</td><td class="rarity-legendary">Val'anyr, Hammer of Ancient Kings</td><td>Maza 1M sanación - Ulduar</td></tr>
-                        <tr><td>19019</td><td class="rarity-legendary">Thunderfury, Blessed Blade of the Windseeker</td><td>Espada 1M - Molten Core (Garr + Geddon)</td></tr>
-                        <tr><td>17182</td><td class="rarity-legendary">Sulfuras, Hand of Ragnaros</td><td>Maza 2M - Molten Core (Ragnaros)</td></tr>
-                        <tr><td>32837</td><td class="rarity-legendary">Warglaive of Azzinoth (MH)</td><td>Espada 1M - Black Temple (Illidan)</td></tr>
-                        <tr><td>32838</td><td class="rarity-legendary">Warglaive of Azzinoth (OH)</td><td>Espada 1M off-hand - Black Temple (Illidan)</td></tr>
-                        <tr><td>34334</td><td class="rarity-legendary">Thori'dal, the Stars' Fury</td><td>Arco - Sunwell Plateau (Kil'jaeden)</td></tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="ids-section-title">
+            <h2>📦 Base de Datos de IDs - AfterWoW</h2>
+            <p>IDs verificados con imágenes - WoW 3.3.5a</p>
         </div>
 
-        <!-- ==================== MONTURAS POPULARES ==================== -->
-        <div class="category ids-category" data-ids-category="monturas">
-            <div class="category-header" onclick="toggleCategory(this)">
-                <h2><span class="icon">🐉</span> Monturas Populares <span class="cmd-count">25</span></h2>
-                <span class="toggle">▼</span>
-            </div>
-            <div class="category-content">
-                <table class="ids-table">
-                    <thead><tr><th>Item ID</th><th>Nombre</th><th>Origen</th></tr></thead>
-                    <tbody>
-                        <tr><td>50818</td><td class="rarity-legendary">Invincible's Reins</td><td>The Lich King HC 25</td></tr>
-                        <tr><td>45693</td><td class="rarity-epic">Mimiron's Head</td><td>Yogg-Saron+0 - Ulduar 25</td></tr>
-                        <tr><td>32458</td><td class="rarity-epic">Ashes of Al'ar</td><td>Kael'thas - Tempest Keep</td></tr>
-                        <tr><td>30480</td><td class="rarity-epic">Fiery Warhorse's Reins</td><td>Attumen - Karazhan</td></tr>
-                        <tr><td>43986</td><td class="rarity-epic">Reins of the Black Drake</td><td>Sartharion 3D - OS 10</td></tr>
-                        <tr><td>43954</td><td class="rarity-epic">Reins of the Twilight Drake</td><td>Sartharion 3D - OS 25</td></tr>
-                        <tr><td>43951</td><td class="rarity-epic">Reins of the Bronze Drake</td><td>Culling of Stratholme (timed)</td></tr>
-                        <tr><td>43952</td><td class="rarity-epic">Reins of the Azure Drake</td><td>Malygos 10/25</td></tr>
-                        <tr><td>43953</td><td class="rarity-epic">Reins of the Blue Drake</td><td>Malygos 10/25</td></tr>
-                        <tr><td>44151</td><td class="rarity-epic">Reins of the Blue Proto-Drake</td><td>Skadi - Utgarde Pinnacle HC</td></tr>
-                        <tr><td>44168</td><td class="rarity-epic">Reins of the Time-Lost Proto-Drake</td><td>Time-Lost Proto-Drake (rare spawn)</td></tr>
-                        <tr><td>44707</td><td class="rarity-epic">Reins of the Green Proto-Drake</td><td>Mysterious Egg - The Oracles</td></tr>
-                        <tr><td>44160</td><td class="rarity-epic">Reins of the Red Proto-Drake</td><td>Glory of the Hero (Achievement)</td></tr>
-                        <tr><td>44164</td><td class="rarity-epic">Reins of the Black Proto-Drake</td><td>Glory of the Raider 10 (Achievement)</td></tr>
-                        <tr><td>44083</td><td class="rarity-epic">Reins of the Grand Black War Mammoth (A)</td><td>VoA - Archavon/Emalon/Koralon/Toravon</td></tr>
-                        <tr><td>44086</td><td class="rarity-epic">Reins of the Grand Black War Mammoth (H)</td><td>VoA - Archavon/Emalon/Koralon/Toravon</td></tr>
-                        <tr><td>44235</td><td class="rarity-epic">Reins of the Traveler's Tundra Mammoth (A)</td><td>Vendedor Dalaran - 20,000 oro</td></tr>
-                        <tr><td>44234</td><td class="rarity-epic">Reins of the Traveler's Tundra Mammoth (H)</td><td>Vendedor Dalaran - 20,000 oro</td></tr>
-                        <tr><td>43959</td><td class="rarity-epic">Reins of the Grand Ice Mammoth (A)</td><td>Sons of Hodir - Exaltado</td></tr>
-                        <tr><td>43961</td><td class="rarity-epic">Reins of the Grand Ice Mammoth (H)</td><td>Sons of Hodir - Exaltado</td></tr>
-                        <tr><td>49096</td><td class="rarity-epic">Crusader's White Warhorse</td><td>Trial of the Grand Crusader (Alianza)</td></tr>
-                        <tr><td>49098</td><td class="rarity-epic">Crusader's Black Warhorse</td><td>Trial of the Grand Crusader (Horda)</td></tr>
-                        <tr><td>49636</td><td class="rarity-epic">Reins of the Onyxian Drake</td><td>Onyxia 25</td></tr>
-                        <tr><td>35513</td><td class="rarity-epic">Swift White Hawkstrider</td><td>Kael'thas - Magisters' Terrace HC</td></tr>
-                        <tr><td>13335</td><td class="rarity-epic">Deathcharger's Reins</td><td>Baron Rivendare - Stratholme</td></tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="ids-search">
+            <input type="text" id="idsSearchInput" placeholder="🔍 Buscar por nombre, ID, tipo...">
         </div>
 
-        <!-- ==================== GEMAS ÉPICAS ==================== -->
-        <div class="category ids-category" data-ids-category="gemas">
-            <div class="category-header" onclick="toggleCategory(this)">
-                <h2><span class="icon">💎</span> Gemas Épicas (Cardinal Ruby, etc.) <span class="cmd-count">18</span></h2>
-                <span class="toggle">▼</span>
-            </div>
-            <div class="category-content">
-                <table class="ids-table">
-                    <thead><tr><th>Item ID</th><th>Nombre</th><th>Estadísticas</th></tr></thead>
-                    <tbody>
-                        <tr><td>40111</td><td class="rarity-epic">Bold Cardinal Ruby</td><td>+20 Fuerza (Roja)</td></tr>
-                        <tr><td>40112</td><td class="rarity-epic">Delicate Cardinal Ruby</td><td>+20 Agilidad (Roja)</td></tr>
-                        <tr><td>40113</td><td class="rarity-epic">Runed Cardinal Ruby</td><td>+23 Poder con Hechizos (Roja)</td></tr>
-                        <tr><td>40114</td><td class="rarity-epic">Bright Cardinal Ruby</td><td>+40 Poder de Ataque (Roja)</td></tr>
-                        <tr><td>40115</td><td class="rarity-epic">Subtle Cardinal Ruby</td><td>+20 Esquivar (Roja)</td></tr>
-                        <tr><td>40116</td><td class="rarity-epic">Flashing Cardinal Ruby</td><td>+20 Parada (Roja)</td></tr>
-                        <tr><td>40117</td><td class="rarity-epic">Precise Cardinal Ruby</td><td>+20 Pericia (Roja)</td></tr>
-                        <tr><td>40118</td><td class="rarity-epic">Solid Majestic Zircon</td><td>+30 Aguante (Azul)</td></tr>
-                        <tr><td>40119</td><td class="rarity-epic">Sparkling Majestic Zircon</td><td>+20 Espíritu (Azul)</td></tr>
-                        <tr><td>40120</td><td class="rarity-epic">Lustrous Majestic Zircon</td><td>+10 MP5 (Azul)</td></tr>
-                        <tr><td>40122</td><td class="rarity-epic">Brilliant King's Amber</td><td>+20 Intelecto (Amarilla)</td></tr>
-                        <tr><td>40123</td><td class="rarity-epic">Smooth King's Amber</td><td>+20 Índice de Crítico (Amarilla)</td></tr>
-                        <tr><td>40124</td><td class="rarity-epic">Rigid King's Amber</td><td>+20 Índice de Golpe (Amarilla)</td></tr>
-                        <tr><td>40125</td><td class="rarity-epic">Thick King's Amber</td><td>+20 Defensa (Amarilla)</td></tr>
-                        <tr><td>40126</td><td class="rarity-epic">Quick King's Amber</td><td>+20 Celeridad (Amarilla)</td></tr>
-                        <tr><td>40127</td><td class="rarity-epic">Mystic King's Amber</td><td>+20 Resiliencia (Amarilla)</td></tr>
-                        <tr><td>40128</td><td class="rarity-epic">Sovereign Dreadstone</td><td>+10 Fuerza / +15 Aguante (Morada)</td></tr>
-                        <tr><td>40129</td><td class="rarity-epic">Shifting Dreadstone</td><td>+10 Agilidad / +15 Aguante (Morada)</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <div class="container">
 
-        <!-- ==================== CONSUMIBLES ==================== -->
-        <div class="category ids-category" data-ids-category="consumibles">
-            <div class="category-header" onclick="toggleCategory(this)">
-                <h2><span class="icon">🧪</span> Frascos, Pociones y Comida <span class="cmd-count">16</span></h2>
-                <span class="toggle">▼</span>
+            <!-- ARMAS LEGENDARIAS -->
+            <div class="category ids-category">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">⚔️</span> Armas Legendarias <span class="cmd-count">7</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content">
+                    <div class="item-grid">
+                        <div class="item-card" data-search="shadowmourne 49623 hacha legendaria icc">
+                            <img class="item-icon legendary-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_axe_113.jpg" alt="Shadowmourne">
+                            <div class="item-info">
+                                <div class="item-id">ID: 49623</div>
+                                <div class="item-name rarity-legendary">Shadowmourne</div>
+                                <div class="item-desc">Hacha 2M - Questline ICC</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('49623', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="val'anyr hammer ancient kings 46017 maza legendaria ulduar sanacion">
+                            <img class="item-icon legendary-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_mace_99.jpg" alt="Val'anyr">
+                            <div class="item-info">
+                                <div class="item-id">ID: 46017</div>
+                                <div class="item-name rarity-legendary">Val'anyr, Hammer of Ancient Kings</div>
+                                <div class="item-desc">Maza 1M Sanación - Ulduar</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('46017', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="thunderfury blessed blade windseeker 19019 espada legendaria molten core">
+                            <img class="item-icon legendary-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_sword_39.jpg" alt="Thunderfury">
+                            <div class="item-info">
+                                <div class="item-id">ID: 19019</div>
+                                <div class="item-name rarity-legendary">Thunderfury, Blessed Blade of the Windseeker</div>
+                                <div class="item-desc">Espada 1M - Molten Core</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('19019', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="sulfuras hand ragnaros 17182 maza legendaria molten core">
+                            <img class="item-icon legendary-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_hammer_unique_sulfuras.jpg" alt="Sulfuras">
+                            <div class="item-info">
+                                <div class="item-id">ID: 17182</div>
+                                <div class="item-name rarity-legendary">Sulfuras, Hand of Ragnaros</div>
+                                <div class="item-desc">Maza 2M - Molten Core</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('17182', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="warglaive azzinoth main hand 32837 espada legendaria black temple illidan">
+                            <img class="item-icon legendary-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_weapon_glave_01.jpg" alt="Warglaive MH">
+                            <div class="item-info">
+                                <div class="item-id">ID: 32837</div>
+                                <div class="item-name rarity-legendary">Warglaive of Azzinoth (MH)</div>
+                                <div class="item-desc">Espada 1M - Black Temple (Illidan)</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('32837', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="warglaive azzinoth off hand 32838 espada legendaria black temple illidan">
+                            <img class="item-icon legendary-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_weapon_glave_02.jpg" alt="Warglaive OH">
+                            <div class="item-info">
+                                <div class="item-id">ID: 32838</div>
+                                <div class="item-name rarity-legendary">Warglaive of Azzinoth (OH)</div>
+                                <div class="item-desc">Espada 1M Off-hand - Black Temple</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('32838', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="thori'dal stars fury 34334 arco legendaria sunwell kil'jaeden">
+                            <img class="item-icon legendary-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_bow_53.jpg" alt="Thori'dal">
+                            <div class="item-info">
+                                <div class="item-id">ID: 34334</div>
+                                <div class="item-name rarity-legendary">Thori'dal, the Stars' Fury</div>
+                                <div class="item-desc">Arco - Sunwell (Kil'jaeden)</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('34334', this)">📋 Copiar</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="category-content">
-                <table class="ids-table">
-                    <thead><tr><th>Item ID</th><th>Nombre</th><th>Efecto</th></tr></thead>
-                    <tbody>
-                        <tr><td>46377</td><td class="rarity-uncommon">Flask of Endless Rage</td><td>+180 Poder de Ataque / 1 hora</td></tr>
-                        <tr><td>46376</td><td class="rarity-uncommon">Flask of the Frost Wyrm</td><td>+125 Poder con Hechizos / 1 hora</td></tr>
-                        <tr><td>46379</td><td class="rarity-uncommon">Flask of Stoneblood</td><td>+1300 Vida / 1 hora</td></tr>
-                        <tr><td>46378</td><td class="rarity-uncommon">Flask of Pure Mojo</td><td>+45 MP5 / 1 hora</td></tr>
-                        <tr><td>40211</td><td class="rarity-uncommon">Potion of Speed</td><td>+500 Celeridad / 15 seg</td></tr>
-                        <tr><td>40212</td><td class="rarity-uncommon">Potion of Wild Magic</td><td>+200 Crítico +200 PH / 15 seg</td></tr>
-                        <tr><td>33447</td><td class="rarity-uncommon">Runic Healing Potion</td><td>Restaura 2700-4500 vida</td></tr>
-                        <tr><td>33448</td><td class="rarity-uncommon">Runic Mana Potion</td><td>Restaura 4200-4400 maná</td></tr>
-                        <tr><td>43015</td><td class="rarity-uncommon">Fish Feast</td><td>Festín: +80 PA / +46 PH / +40 Aguante</td></tr>
-                        <tr><td>34753</td><td class="rarity-uncommon">Great Feast</td><td>+60 PA / +35 PH / +30 Aguante</td></tr>
-                        <tr><td>42999</td><td class="rarity-uncommon">Firecracker Salmon</td><td>+46 Poder con Hechizos / +40 Aguante</td></tr>
-                        <tr><td>42996</td><td class="rarity-uncommon">Snapper Extreme</td><td>+40 Índice de Golpe / +40 Aguante</td></tr>
-                        <tr><td>42998</td><td class="rarity-uncommon">Rhinolicious Wormsteak</td><td>+40 Pericia / +40 Aguante</td></tr>
-                        <tr><td>34767</td><td class="rarity-uncommon">Blackened Dragonfin</td><td>+40 Agilidad / +40 Aguante</td></tr>
-                        <tr><td>34762</td><td class="rarity-uncommon">Dragonfin Filet</td><td>+40 Fuerza / +40 Aguante</td></tr>
-                        <tr><td>34769</td><td class="rarity-uncommon">Imperial Manta Steak</td><td>+40 Celeridad / +40 Aguante</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
-        <!-- ==================== TOKENS Y EMBLEMAS ==================== -->
-        <div class="category ids-category" data-ids-category="tokens">
-            <div class="category-header" onclick="toggleCategory(this)">
-                <h2><span class="icon">🪙</span> Emblemas y Tokens <span class="cmd-count">8</span></h2>
-                <span class="toggle">▼</span>
+            <!-- MONTURAS -->
+            <div class="category ids-category">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">🐉</span> Monturas Populares <span class="cmd-count">15</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content">
+                    <div class="item-grid">
+                        <div class="item-card" data-search="invincible 50818 montura lich king icc caballo">
+                            <img class="item-icon legendary-border" src="https://wow.zamimg.com/images/wow/icons/large/ability_mount_yourmagicmymine.jpg" alt="Invincible">
+                            <div class="item-info">
+                                <div class="item-id">ID: 50818</div>
+                                <div class="item-name rarity-legendary">Invincible's Reins</div>
+                                <div class="item-desc">The Lich King HC 25</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('50818', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="mimiron head 45693 montura ulduar yogg">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_enggizmo_01.jpg" alt="Mimiron's Head">
+                            <div class="item-info">
+                                <div class="item-id">ID: 45693</div>
+                                <div class="item-name rarity-epic">Mimiron's Head</div>
+                                <div class="item-desc">Yogg-Saron+0 - Ulduar 25</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('45693', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="ashes al'ar 32458 montura kael'thas tempest keep fenix">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_summerfest_brazierorange.jpg" alt="Ashes of Al'ar">
+                            <div class="item-info">
+                                <div class="item-id">ID: 32458</div>
+                                <div class="item-name rarity-epic">Ashes of Al'ar</div>
+                                <div class="item-desc">Kael'thas - Tempest Keep</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('32458', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="fiery warhorse 30480 montura attumen karazhan caballo fuego">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/ability_mount_undeadhorse.jpg" alt="Fiery Warhorse">
+                            <div class="item-info">
+                                <div class="item-id">ID: 30480</div>
+                                <div class="item-name rarity-epic">Fiery Warhorse's Reins</div>
+                                <div class="item-desc">Attumen - Karazhan</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('30480', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="twilight drake 43954 montura sartharion obsidian sanctum 3d">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/ability_mount_drake_twilight.jpg" alt="Twilight Drake">
+                            <div class="item-info">
+                                <div class="item-id">ID: 43954</div>
+                                <div class="item-name rarity-epic">Reins of the Twilight Drake</div>
+                                <div class="item-desc">Sartharion 3D - OS 25</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('43954', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="black drake 43986 montura sartharion obsidian sanctum 3d">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/ability_mount_drake_twilight.jpg" alt="Black Drake">
+                            <div class="item-info">
+                                <div class="item-id">ID: 43986</div>
+                                <div class="item-name rarity-epic">Reins of the Black Drake</div>
+                                <div class="item-desc">Sartharion 3D - OS 10</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('43986', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="azure drake 43952 montura malygos azul">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/ability_mount_drake_azure.jpg" alt="Azure Drake">
+                            <div class="item-info">
+                                <div class="item-id">ID: 43952</div>
+                                <div class="item-name rarity-epic">Reins of the Azure Drake</div>
+                                <div class="item-desc">Malygos 10/25</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('43952', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="blue proto-drake 44151 montura skadi utgarde pinnacle heroico">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/ability_mount_drake_proto.jpg" alt="Blue Proto-Drake">
+                            <div class="item-info">
+                                <div class="item-id">ID: 44151</div>
+                                <div class="item-name rarity-epic">Reins of the Blue Proto-Drake</div>
+                                <div class="item-desc">Skadi - Utgarde Pinnacle HC</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('44151', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="time-lost proto-drake 44168 montura rare spawn tormenta">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/ability_mount_drake_proto.jpg" alt="Time-Lost Proto-Drake">
+                            <div class="item-info">
+                                <div class="item-id">ID: 44168</div>
+                                <div class="item-name rarity-epic">Reins of the Time-Lost Proto-Drake</div>
+                                <div class="item-desc">Rare Spawn - Storm Peaks</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('44168', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="onyxian drake 49636 montura onyxia draco negro">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/ability_mount_drake_onyxia.jpg" alt="Onyxian Drake">
+                            <div class="item-info">
+                                <div class="item-id">ID: 49636</div>
+                                <div class="item-name rarity-epic">Reins of the Onyxian Drake</div>
+                                <div class="item-desc">Onyxia 25</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('49636', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="bronze drake 43951 montura stratholme culling timed">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/ability_mount_drake_bronze.jpg" alt="Bronze Drake">
+                            <div class="item-info">
+                                <div class="item-id">ID: 43951</div>
+                                <div class="item-name rarity-epic">Reins of the Bronze Drake</div>
+                                <div class="item-desc">Culling of Stratholme (timed)</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('43951', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="red proto-drake 44160 montura glory hero achievement">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/ability_mount_drake_proto.jpg" alt="Red Proto-Drake">
+                            <div class="item-info">
+                                <div class="item-id">ID: 44160</div>
+                                <div class="item-name rarity-epic">Reins of the Red Proto-Drake</div>
+                                <div class="item-desc">Glory of the Hero (Achievement)</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('44160', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="deathcharger 13335 montura baron rivendare stratholme caballo muerte">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/ability_mount_undeadhorse.jpg" alt="Deathcharger">
+                            <div class="item-info">
+                                <div class="item-id">ID: 13335</div>
+                                <div class="item-name rarity-epic">Deathcharger's Reins</div>
+                                <div class="item-desc">Baron Rivendare - Stratholme</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('13335', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="swift white hawkstrider 35513 montura kael magisters terrace">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/ability_mount_cockatricemountelite_white.jpg" alt="Hawkstrider">
+                            <div class="item-info">
+                                <div class="item-id">ID: 35513</div>
+                                <div class="item-name rarity-epic">Swift White Hawkstrider</div>
+                                <div class="item-desc">Kael'thas - Magisters' Terrace HC</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('35513', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="traveler tundra mammoth 44235 montura vendedor dalaran mamut alianza">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/ability_mount_mammoth_white_3seater.jpg" alt="Mammoth">
+                            <div class="item-info">
+                                <div class="item-id">ID: 44235</div>
+                                <div class="item-name rarity-epic">Traveler's Tundra Mammoth (A)</div>
+                                <div class="item-desc">Vendedor Dalaran - 20,000 oro</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('44235', this)">📋 Copiar</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="category-content">
-                <table class="ids-table">
-                    <thead><tr><th>Item ID</th><th>Nombre</th><th>Uso</th></tr></thead>
-                    <tbody>
-                        <tr><td>40752</td><td class="rarity-epic">Emblem of Heroism</td><td>Equipo T7 / accesorios - Heroics/Naxx 10</td></tr>
-                        <tr><td>40753</td><td class="rarity-epic">Emblem of Valor</td><td>Equipo T7.5 - Naxx 25 / OS / Malygos</td></tr>
-                        <tr><td>45624</td><td class="rarity-epic">Emblem of Conquest</td><td>Equipo T8.5 - Ulduar</td></tr>
-                        <tr><td>47241</td><td class="rarity-epic">Emblem of Triumph</td><td>Equipo T9 - ToC / Heroics diarias</td></tr>
-                        <tr><td>49426</td><td class="rarity-epic">Emblem of Frost</td><td>Equipo T10 / BiS - ICC / Weekly</td></tr>
-                        <tr><td>47242</td><td class="rarity-epic">Trophy of the Crusade</td><td>T9.5 - Trial of the Crusader 25</td></tr>
-                        <tr><td>52025</td><td class="rarity-epic">Primordial Saronite</td><td>Crafting ICC / Shadowmourne quest</td></tr>
-                        <tr><td>49908</td><td class="rarity-epic">Primordial Saronite</td><td>Compra con Emblemas de Escarcha</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
-        <!-- ==================== TRINKETS BiS ==================== -->
-        <div class="category ids-category" data-ids-category="trinkets">
-            <div class="category-header" onclick="toggleCategory(this)">
-                <h2><span class="icon">💍</span> Trinkets BiS ICC <span class="cmd-count">14</span></h2>
-                <span class="toggle">▼</span>
+            <!-- BOSSES ICC -->
+            <div class="category ids-category">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">👹</span> Bosses ICC / Raids <span class="cmd-count">15</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content">
+                    <div class="npc-grid">
+                        <div class="npc-card" data-search="lich king arthas 36597 icc boss final">
+                            <div class="npc-header">
+                                <img class="npc-portrait boss-border" src="https://wow.zamimg.com/images/wow/icons/large/achievement_boss_lichking.jpg" alt="Lich King">
+                                <div class="npc-info">
+                                    <div class="npc-name rarity-legendary">The Lich King</div>
+                                    <div class="npc-id">ID: 36597</div>
+                                    <div class="npc-location">ICC - Boss Final</div>
+                                </div>
+                            </div>
+                            <div class="npc-cmd">.npc add 36597</div>
+                        </div>
+                        <div class="npc-card" data-search="lord marrowgar 36612 icc primer boss">
+                            <div class="npc-header">
+                                <img class="npc-portrait boss-border" src="https://wow.zamimg.com/images/wow/icons/large/achievement_boss_lordmarrowgar.jpg" alt="Marrowgar">
+                                <div class="npc-info">
+                                    <div class="npc-name rarity-epic">Lord Marrowgar</div>
+                                    <div class="npc-id">ID: 36612</div>
+                                    <div class="npc-location">ICC - Primer Boss</div>
+                                </div>
+                            </div>
+                            <div class="npc-cmd">.npc add 36612</div>
+                        </div>
+                        <div class="npc-card" data-search="lady deathwhisper 36855 icc segundo boss">
+                            <div class="npc-header">
+                                <img class="npc-portrait boss-border" src="https://wow.zamimg.com/images/wow/icons/large/achievement_boss_ladydeathwhisper.jpg" alt="Deathwhisper">
+                                <div class="npc-info">
+                                    <div class="npc-name rarity-epic">Lady Deathwhisper</div>
+                                    <div class="npc-id">ID: 36855</div>
+                                    <div class="npc-location">ICC - Segundo Boss</div>
+                                </div>
+                            </div>
+                            <div class="npc-cmd">.npc add 36855</div>
+                        </div>
+                        <div class="npc-card" data-search="deathbringer saurfang 37813 icc tercer boss">
+                            <div class="npc-header">
+                                <img class="npc-portrait boss-border" src="https://wow.zamimg.com/images/wow/icons/large/achievement_boss_saurfang.jpg" alt="Saurfang">
+                                <div class="npc-info">
+                                    <div class="npc-name rarity-epic">Deathbringer Saurfang</div>
+                                    <div class="npc-id">ID: 37813</div>
+                                    <div class="npc-location">ICC - Tercer Boss</div>
+                                </div>
+                            </div>
+                            <div class="npc-cmd">.npc add 37813</div>
+                        </div>
+                        <div class="npc-card" data-search="festergut 36626 icc plagueworks">
+                            <div class="npc-header">
+                                <img class="npc-portrait boss-border" src="https://wow.zamimg.com/images/wow/icons/large/achievement_boss_festergut.jpg" alt="Festergut">
+                                <div class="npc-info">
+                                    <div class="npc-name rarity-epic">Festergut</div>
+                                    <div class="npc-id">ID: 36626</div>
+                                    <div class="npc-location">ICC - Plagueworks</div>
+                                </div>
+                            </div>
+                            <div class="npc-cmd">.npc add 36626</div>
+                        </div>
+                        <div class="npc-card" data-search="rotface 36627 icc plagueworks">
+                            <div class="npc-header">
+                                <img class="npc-portrait boss-border" src="https://wow.zamimg.com/images/wow/icons/large/achievement_boss_rotface.jpg" alt="Rotface">
+                                <div class="npc-info">
+                                    <div class="npc-name rarity-epic">Rotface</div>
+                                    <div class="npc-id">ID: 36627</div>
+                                    <div class="npc-location">ICC - Plagueworks</div>
+                                </div>
+                            </div>
+                            <div class="npc-cmd">.npc add 36627</div>
+                        </div>
+                        <div class="npc-card" data-search="professor putricide 36678 icc plagueworks">
+                            <div class="npc-header">
+                                <img class="npc-portrait boss-border" src="https://wow.zamimg.com/images/wow/icons/large/achievement_boss_profputricide.jpg" alt="Putricide">
+                                <div class="npc-info">
+                                    <div class="npc-name rarity-epic">Professor Putricide</div>
+                                    <div class="npc-id">ID: 36678</div>
+                                    <div class="npc-location">ICC - Plagueworks</div>
+                                </div>
+                            </div>
+                            <div class="npc-cmd">.npc add 36678</div>
+                        </div>
+                        <div class="npc-card" data-search="blood-queen lana'thel 37955 icc crimson hall vampira">
+                            <div class="npc-header">
+                                <img class="npc-portrait boss-border" src="https://wow.zamimg.com/images/wow/icons/large/achievement_boss_lanathel.jpg" alt="Lana'thel">
+                                <div class="npc-info">
+                                    <div class="npc-name rarity-epic">Blood-Queen Lana'thel</div>
+                                    <div class="npc-id">ID: 37955</div>
+                                    <div class="npc-location">ICC - Crimson Hall</div>
+                                </div>
+                            </div>
+                            <div class="npc-cmd">.npc add 37955</div>
+                        </div>
+                        <div class="npc-card" data-search="sindragosa 36853 icc frostwing dragon">
+                            <div class="npc-header">
+                                <img class="npc-portrait boss-border" src="https://wow.zamimg.com/images/wow/icons/large/achievement_boss_sindragosa.jpg" alt="Sindragosa">
+                                <div class="npc-info">
+                                    <div class="npc-name rarity-epic">Sindragosa</div>
+                                    <div class="npc-id">ID: 36853</div>
+                                    <div class="npc-location">ICC - Frostwing Halls</div>
+                                </div>
+                            </div>
+                            <div class="npc-cmd">.npc add 36853</div>
+                        </div>
+                        <div class="npc-card" data-search="yogg-saron 33288 ulduar boss final old god">
+                            <div class="npc-header">
+                                <img class="npc-portrait boss-border" src="https://wow.zamimg.com/images/wow/icons/large/achievement_boss_yoggsaron_01.jpg" alt="Yogg-Saron">
+                                <div class="npc-info">
+                                    <div class="npc-name rarity-epic">Yogg-Saron</div>
+                                    <div class="npc-id">ID: 33288</div>
+                                    <div class="npc-location">Ulduar - Boss Final</div>
+                                </div>
+                            </div>
+                            <div class="npc-cmd">.npc add 33288</div>
+                        </div>
+                        <div class="npc-card" data-search="algalon observer 32871 ulduar secreto celestial">
+                            <div class="npc-header">
+                                <img class="npc-portrait boss-border" src="https://wow.zamimg.com/images/wow/icons/large/achievement_boss_algalon_01.jpg" alt="Algalon">
+                                <div class="npc-info">
+                                    <div class="npc-name rarity-epic">Algalon the Observer</div>
+                                    <div class="npc-id">ID: 32871</div>
+                                    <div class="npc-location">Ulduar - Boss Secreto</div>
+                                </div>
+                            </div>
+                            <div class="npc-cmd">.npc add 32871</div>
+                        </div>
+                        <div class="npc-card" data-search="kel'thuzad 15990 naxxramas boss final lich">
+                            <div class="npc-header">
+                                <img class="npc-portrait boss-border" src="https://wow.zamimg.com/images/wow/icons/large/achievement_boss_kelthuzad.jpg" alt="Kel'Thuzad">
+                                <div class="npc-info">
+                                    <div class="npc-name rarity-epic">Kel'Thuzad</div>
+                                    <div class="npc-id">ID: 15990</div>
+                                    <div class="npc-location">Naxxramas - Boss Final</div>
+                                </div>
+                            </div>
+                            <div class="npc-cmd">.npc add 15990</div>
+                        </div>
+                        <div class="npc-card" data-search="sartharion 28860 obsidian sanctum dragon">
+                            <div class="npc-header">
+                                <img class="npc-portrait boss-border" src="https://wow.zamimg.com/images/wow/icons/large/achievement_boss_sartharion_01.jpg" alt="Sartharion">
+                                <div class="npc-info">
+                                    <div class="npc-name rarity-epic">Sartharion</div>
+                                    <div class="npc-id">ID: 28860</div>
+                                    <div class="npc-location">Obsidian Sanctum</div>
+                                </div>
+                            </div>
+                            <div class="npc-cmd">.npc add 28860</div>
+                        </div>
+                        <div class="npc-card" data-search="malygos 28859 eye eternity dragon azul">
+                            <div class="npc-header">
+                                <img class="npc-portrait boss-border" src="https://wow.zamimg.com/images/wow/icons/large/achievement_boss_malygos_01.jpg" alt="Malygos">
+                                <div class="npc-info">
+                                    <div class="npc-name rarity-epic">Malygos</div>
+                                    <div class="npc-id">ID: 28859</div>
+                                    <div class="npc-location">Eye of Eternity</div>
+                                </div>
+                            </div>
+                            <div class="npc-cmd">.npc add 28859</div>
+                        </div>
+                        <div class="npc-card" data-search="onyxia 10184 guarida dragon negro">
+                            <div class="npc-header">
+                                <img class="npc-portrait boss-border" src="https://wow.zamimg.com/images/wow/icons/large/achievement_boss_onyxia.jpg" alt="Onyxia">
+                                <div class="npc-info">
+                                    <div class="npc-name rarity-epic">Onyxia</div>
+                                    <div class="npc-id">ID: 10184</div>
+                                    <div class="npc-location">Onyxia's Lair</div>
+                                </div>
+                            </div>
+                            <div class="npc-cmd">.npc add 10184</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="category-content">
-                <table class="ids-table">
-                    <thead><tr><th>Item ID</th><th>Nombre</th><th>Drop / Uso</th></tr></thead>
-                    <tbody>
-                        <tr><td>50363</td><td class="rarity-epic">Deathbringer's Will (N)</td><td>Melee DPS - Saurfang 25N</td></tr>
-                        <tr><td>50706</td><td class="rarity-epic">Deathbringer's Will (HC)</td><td>Melee DPS - Saurfang 25HC</td></tr>
-                        <tr><td>50348</td><td class="rarity-epic">Dislodged Foreign Object (N)</td><td>Caster DPS - Rotface 25N</td></tr>
-                        <tr><td>50353</td><td class="rarity-epic">Dislodged Foreign Object (HC)</td><td>Caster DPS - Rotface 25HC</td></tr>
-                        <tr><td>50365</td><td class="rarity-epic">Phylactery of the Nameless Lich (N)</td><td>Caster DPS - Sindragosa 25N</td></tr>
-                        <tr><td>50360</td><td class="rarity-epic">Phylactery of the Nameless Lich (HC)</td><td>Caster DPS - Sindragosa 25HC</td></tr>
-                        <tr><td>50364</td><td class="rarity-epic">Sindragosa's Flawless Fang (N)</td><td>Healer - Sindragosa 25N</td></tr>
-                        <tr><td>50361</td><td class="rarity-epic">Sindragosa's Flawless Fang (HC)</td><td>Healer - Sindragosa 25HC</td></tr>
-                        <tr><td>50366</td><td class="rarity-epic">Althor's Abacus (N)</td><td>Healer - Gunship 25N</td></tr>
-                        <tr><td>50359</td><td class="rarity-epic">Althor's Abacus (HC)</td><td>Healer - Gunship 25HC</td></tr>
-                        <tr><td>50235</td><td class="rarity-epic">Whispering Fanged Skull (N)</td><td>Physical DPS - Lady Deathwhisper 25N</td></tr>
-                        <tr><td>50343</td><td class="rarity-epic">Whispering Fanged Skull (HC)</td><td>Physical DPS - Lady Deathwhisper 25HC</td></tr>
-                        <tr><td>50198</td><td class="rarity-epic">Needle-Encrusted Scorpion</td><td>Physical DPS - Forge of Souls HC</td></tr>
-                        <tr><td>47303</td><td class="rarity-epic">Death's Choice (HC)</td><td>Physical DPS - ToGC 25 Northrend Beasts</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
-        <!-- ==================== ARMAS BiS ICC ==================== -->
-        <div class="category ids-category" data-ids-category="armas-icc">
-            <div class="category-header" onclick="toggleCategory(this)">
-                <h2><span class="icon">🗡️</span> Armas BiS ICC 25 HC <span class="cmd-count">14</span></h2>
-                <span class="toggle">▼</span>
+            <!-- CONSUMIBLES -->
+            <div class="category ids-category">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">🧪</span> Frascos y Pociones <span class="cmd-count">8</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content">
+                    <div class="item-grid">
+                        <div class="item-card" data-search="flask endless rage 46377 frasco ataque poder">
+                            <img class="item-icon uncommon-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_alchemy_endlessflask_06.jpg" alt="Flask Rage">
+                            <div class="item-info">
+                                <div class="item-id">ID: 46377</div>
+                                <div class="item-name rarity-uncommon">Flask of Endless Rage</div>
+                                <div class="item-desc">+180 Poder de Ataque / 1h</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('46377', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="flask frost wyrm 46376 frasco hechizo caster">
+                            <img class="item-icon uncommon-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_alchemy_endlessflask_04.jpg" alt="Flask Frost Wyrm">
+                            <div class="item-info">
+                                <div class="item-id">ID: 46376</div>
+                                <div class="item-name rarity-uncommon">Flask of the Frost Wyrm</div>
+                                <div class="item-desc">+125 Poder Hechizos / 1h</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('46376', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="flask stoneblood 46379 frasco vida tanque">
+                            <img class="item-icon uncommon-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_alchemy_endlessflask_05.jpg" alt="Flask Stoneblood">
+                            <div class="item-info">
+                                <div class="item-id">ID: 46379</div>
+                                <div class="item-name rarity-uncommon">Flask of Stoneblood</div>
+                                <div class="item-desc">+1300 Vida / 1h</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('46379', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="flask pure mojo 46378 frasco mp5 mana healer">
+                            <img class="item-icon uncommon-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_alchemy_endlessflask_03.jpg" alt="Flask Pure Mojo">
+                            <div class="item-info">
+                                <div class="item-id">ID: 46378</div>
+                                <div class="item-name rarity-uncommon">Flask of Pure Mojo</div>
+                                <div class="item-desc">+45 MP5 / 1h</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('46378', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="potion speed 40211 pocion celeridad haste">
+                            <img class="item-icon uncommon-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_alchemy_elixir_04.jpg" alt="Potion Speed">
+                            <div class="item-info">
+                                <div class="item-id">ID: 40211</div>
+                                <div class="item-name rarity-uncommon">Potion of Speed</div>
+                                <div class="item-desc">+500 Celeridad / 15 seg</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('40211', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="potion wild magic 40212 pocion critico hechizo">
+                            <img class="item-icon uncommon-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_alchemy_elixir_01.jpg" alt="Wild Magic">
+                            <div class="item-info">
+                                <div class="item-id">ID: 40212</div>
+                                <div class="item-name rarity-uncommon">Potion of Wild Magic</div>
+                                <div class="item-desc">+200 Crit + 200 SP / 15 seg</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('40212', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="runic healing potion 33447 pocion vida curacion">
+                            <img class="item-icon uncommon-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_alchemy_elixir_05.jpg" alt="Healing Potion">
+                            <div class="item-info">
+                                <div class="item-id">ID: 33447</div>
+                                <div class="item-name rarity-uncommon">Runic Healing Potion</div>
+                                <div class="item-desc">Restaura 2700-4500 vida</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('33447', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="fish feast 43015 comida festin raid buff">
+                            <img class="item-icon uncommon-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_fish_52.jpg" alt="Fish Feast">
+                            <div class="item-info">
+                                <div class="item-id">ID: 43015</div>
+                                <div class="item-name rarity-uncommon">Fish Feast</div>
+                                <div class="item-desc">+80 PA / +46 SP / +40 Aguante</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('43015', this)">📋 Copiar</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="category-content">
-                <table class="ids-table">
-                    <thead><tr><th>Item ID</th><th>Nombre</th><th>Tipo / Boss</th></tr></thead>
-                    <tbody>
-                        <tr><td>50730</td><td class="rarity-epic">Glorenzelg, High-Blade of the Silver Hand</td><td>Espada 2M - Lich King 25HC</td></tr>
-                        <tr><td>50737</td><td class="rarity-epic">Havoc's Call, Blade of Lordaeron Kings</td><td>Espada 1M - Lich King 25HC</td></tr>
-                        <tr><td>50738</td><td class="rarity-epic">Heaven's Fall, Kryss of a Thousand Lies</td><td>Daga - Lich King 25HC</td></tr>
-                        <tr><td>50735</td><td class="rarity-epic">Windrunner's Heartseeker</td><td>Ballesta - Lich King 25HC</td></tr>
-                        <tr><td>50734</td><td class="rarity-epic">Royal Scepter of Terenas II</td><td>Maza 1M Healer - Lich King 25HC</td></tr>
-                        <tr><td>50727</td><td class="rarity-epic">Fal'inrush, Defender of Quel'thalas</td><td>Ballesta - Lich King 25HC</td></tr>
-                        <tr><td>51943</td><td class="rarity-epic">Bryntroll, the Bone Arbiter (HC)</td><td>Hacha 2M - Lord Marrowgar 25HC</td></tr>
-                        <tr><td>50810</td><td class="rarity-epic">Bloodsurge, Kel'Thuzad's Blade of Agony (HC)</td><td>Espada 1M - Lich King 25HC</td></tr>
-                        <tr><td>50733</td><td class="rarity-epic">Mithrios, Bronzebeard's Legacy</td><td>Espada 1M Tank - Lich King 25HC</td></tr>
-                        <tr><td>50736</td><td class="rarity-epic">Pugius, Fist of Defiance</td><td>Puño 1M - Lich King 25HC</td></tr>
-                        <tr><td>50731</td><td class="rarity-epic">Troggbane, Axe of the Unmaker</td><td>Hacha 1M Tank - Lich King 25HC</td></tr>
-                        <tr><td>50732</td><td class="rarity-epic">Valius, Gavel of the Lightbringer</td><td>Maza 1M Caster - Lich King 25HC</td></tr>
-                        <tr><td>51947</td><td class="rarity-epic">Midnight Sun (HC)</td><td>Varita - Gunship 25HC</td></tr>
-                        <tr><td>51946</td><td class="rarity-epic">Frost Needle (HC)</td><td>Varita - Marrowgar 25HC</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
-        <!-- ==================== BOLSAS ==================== -->
-        <div class="category ids-category" data-ids-category="bolsas">
-            <div class="category-header" onclick="toggleCategory(this)">
-                <h2><span class="icon">👜</span> Bolsas <span class="cmd-count">8</span></h2>
-                <span class="toggle">▼</span>
+            <!-- EMBLEMAS -->
+            <div class="category ids-category">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">🪙</span> Emblemas y Tokens <span class="cmd-count">5</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content">
+                    <div class="item-grid">
+                        <div class="item-card" data-search="emblem frost escarcha 49426 emblema t10 icc">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_frostemblem_01.jpg" alt="Emblem Frost">
+                            <div class="item-info">
+                                <div class="item-id">ID: 49426</div>
+                                <div class="item-name rarity-epic">Emblem of Frost</div>
+                                <div class="item-desc">T10 / BiS - ICC / Weekly</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('49426', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="emblem triumph triunfo 47241 emblema t9">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_emblem_triumph.jpg" alt="Emblem Triumph">
+                            <div class="item-info">
+                                <div class="item-id">ID: 47241</div>
+                                <div class="item-name rarity-epic">Emblem of Triumph</div>
+                                <div class="item-desc">T9 - ToC / Heroics diarias</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('47241', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="emblem conquest conquista 45624 emblema t8">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_summonchampion.jpg" alt="Emblem Conquest">
+                            <div class="item-info">
+                                <div class="item-id">ID: 45624</div>
+                                <div class="item-name rarity-epic">Emblem of Conquest</div>
+                                <div class="item-desc">T8.5 - Ulduar</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('45624', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="emblem valor 40753 emblema t7">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_championsbond.jpg" alt="Emblem Valor">
+                            <div class="item-info">
+                                <div class="item-id">ID: 40753</div>
+                                <div class="item-name rarity-epic">Emblem of Valor</div>
+                                <div class="item-desc">T7.5 - Naxx 25 / OS / Maly</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('40753', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="emblem heroism heroismo 40752 emblema t7">
+                            <img class="item-icon epic-border" src="https://wow.zamimg.com/images/wow/icons/large/spell_holy_proclaimchampion_02.jpg" alt="Emblem Heroism">
+                            <div class="item-info">
+                                <div class="item-id">ID: 40752</div>
+                                <div class="item-name rarity-epic">Emblem of Heroism</div>
+                                <div class="item-desc">T7 - Heroics / Naxx 10</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('40752', this)">📋 Copiar</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="category-content">
-                <table class="ids-table">
-                    <thead><tr><th>Item ID</th><th>Nombre</th><th>Espacios</th></tr></thead>
-                    <tbody>
-                        <tr><td>41599</td><td class="rarity-rare">Frostweave Bag</td><td>20 espacios - Sastrería</td></tr>
-                        <tr><td>45773</td><td class="rarity-epic">Glacial Bag</td><td>22 espacios - Sastrería (requiere rep)</td></tr>
-                        <tr><td>21843</td><td class="rarity-rare">Imbued Netherweave Bag</td><td>18 espacios - Sastrería TBC</td></tr>
-                        <tr><td>21841</td><td class="rarity-uncommon">Netherweave Bag</td><td>16 espacios - Sastrería TBC</td></tr>
-                        <tr><td>14156</td><td class="rarity-rare">Bottomless Bag</td><td>18 espacios - Drop mundo</td></tr>
-                        <tr><td>44446</td><td class="rarity-rare">Pack of Endless Pockets</td><td>32 espacios - Solo Peletería items</td></tr>
-                        <tr><td>36852</td><td class="rarity-rare">Mycah's Botanical Bag</td><td>32 espacios - Solo Herboristería</td></tr>
-                        <tr><td>43345</td><td class="rarity-rare">Dragon Hide Bag</td><td>22 espacios - Wyrmrest Accord Exaltado</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
-        <!-- ==================== NPCs / BOSSES ==================== -->
-        <div class="category ids-category" data-ids-category="npcs">
-            <div class="category-header" onclick="toggleCategory(this)">
-                <h2><span class="icon">👹</span> Bosses y NPCs Importantes <span class="cmd-count">22</span></h2>
-                <span class="toggle">▼</span>
+            <!-- ITEMS ÚTILES -->
+            <div class="category ids-category">
+                <div class="category-header" onclick="toggleCategory(this)"><h2><span class="icon">🔧</span> Items Útiles <span class="cmd-count">5</span></h2><span class="toggle">▼</span></div>
+                <div class="category-content">
+                    <div class="item-grid">
+                        <div class="item-card" data-search="hearthstone piedra hogar 6948">
+                            <img class="item-icon" src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_rune_01.jpg" alt="Hearthstone" style="border-color: #fff;">
+                            <div class="item-info">
+                                <div class="item-id">ID: 6948</div>
+                                <div class="item-name rarity-common">Hearthstone</div>
+                                <div class="item-desc">Piedra de Hogar</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('6948', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="toy train set tren juguete 44606">
+                            <img class="item-icon rare-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_toy_02.jpg" alt="Toy Train">
+                            <div class="item-info">
+                                <div class="item-id">ID: 44606</div>
+                                <div class="item-name rarity-rare">Toy Train Set</div>
+                                <div class="item-desc">Coloca un tren de juguete</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('44606', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="orb sin'dorei transformar elfo sangre 35275">
+                            <img class="item-icon rare-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_orb_05.jpg" alt="Orb Sin'dorei">
+                            <div class="item-info">
+                                <div class="item-id">ID: 35275</div>
+                                <div class="item-name rarity-rare">Orb of the Sin'dorei</div>
+                                <div class="item-desc">Te transforma en Elfo de Sangre</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('35275', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="iron boot flask enano hierro 43499 transformar">
+                            <img class="item-icon rare-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_potion_90.jpg" alt="Iron Boot Flask">
+                            <div class="item-info">
+                                <div class="item-id">ID: 43499</div>
+                                <div class="item-name rarity-rare">Iron Boot Flask</div>
+                                <div class="item-desc">Te transforma en Enano de Hierro</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('43499', this)">📋 Copiar</button>
+                        </div>
+                        <div class="item-card" data-search="titanium seal dalaran moneda 44430">
+                            <img class="item-icon rare-border" src="https://wow.zamimg.com/images/wow/icons/large/inv_misc_coin_18.jpg" alt="Titanium Seal">
+                            <div class="item-info">
+                                <div class="item-id">ID: 44430</div>
+                                <div class="item-name rarity-rare">Titanium Seal of Dalaran</div>
+                                <div class="item-desc">Lanza una moneda al aire</div>
+                            </div>
+                            <button class="copy-id-btn" onclick="copyId('44430', this)">📋 Copiar</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="category-content">
-                <table class="ids-table">
-                    <thead><tr><th>Creature ID</th><th>Nombre</th><th>Ubicación</th></tr></thead>
-                    <tbody>
-                        <tr><td>36597</td><td class="rarity-legendary">The Lich King</td><td>ICC - Boss Final</td></tr>
-                        <tr><td>36612</td><td class="rarity-epic">Lord Marrowgar</td><td>ICC - Primer Boss</td></tr>
-                        <tr><td>36855</td><td class="rarity-epic">Lady Deathwhisper</td><td>ICC - Segundo Boss</td></tr>
-                        <tr><td>37813</td><td class="rarity-epic">Deathbringer Saurfang</td><td>ICC - Tercer Boss</td></tr>
-                        <tr><td>36626</td><td class="rarity-epic">Festergut</td><td>ICC - Plagueworks</td></tr>
-                        <tr><td>36627</td><td class="rarity-epic">Rotface</td><td>ICC - Plagueworks</td></tr>
-                        <tr><td>36678</td><td class="rarity-epic">Professor Putricide</td><td>ICC - Plagueworks</td></tr>
-                        <tr><td>37955</td><td class="rarity-epic">Blood-Queen Lana'thel</td><td>ICC - Crimson Hall</td></tr>
-                        <tr><td>36853</td><td class="rarity-epic">Sindragosa</td><td>ICC - Frostwing Halls</td></tr>
-                        <tr><td>36789</td><td class="rarity-epic">Valithria Dreamwalker</td><td>ICC - Frostwing Halls (heal encounter)</td></tr>
-                        <tr><td>33288</td><td class="rarity-epic">Yogg-Saron</td><td>Ulduar - Boss Final</td></tr>
-                        <tr><td>33271</td><td class="rarity-epic">General Vezax</td><td>Ulduar</td></tr>
-                        <tr><td>33350</td><td class="rarity-epic">Mimiron</td><td>Ulduar</td></tr>
-                        <tr><td>32871</td><td class="rarity-epic">Algalon the Observer</td><td>Ulduar - Boss Secreto</td></tr>
-                        <tr><td>33113</td><td class="rarity-epic">Flame Leviathan</td><td>Ulduar - Primer Boss</td></tr>
-                        <tr><td>15990</td><td class="rarity-epic">Kel'Thuzad</td><td>Naxxramas - Boss Final</td></tr>
-                        <tr><td>28860</td><td class="rarity-epic">Sartharion</td><td>Obsidian Sanctum</td></tr>
-                        <tr><td>28859</td><td class="rarity-epic">Malygos</td><td>Eye of Eternity</td></tr>
-                        <tr><td>10184</td><td class="rarity-epic">Onyxia</td><td>Onyxia's Lair (nivel 80)</td></tr>
-                        <tr><td>34564</td><td class="rarity-epic">Anub'arak</td><td>Trial of the Crusader - Boss Final</td></tr>
-                        <tr><td>38433</td><td class="rarity-epic">Toravon the Ice Watcher</td><td>Vault of Archavon</td></tr>
-                        <tr><td>31125</td><td class="rarity-epic">Archavon the Stone Watcher</td><td>Vault of Archavon</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
-        <!-- ==================== NPCs ÚTILES / VENDORS ==================== -->
-        <div class="category ids-category" data-ids-category="vendors">
-            <div class="category-header" onclick="toggleCategory(this)">
-                <h2><span class="icon">🏪</span> NPCs Útiles para Spawn <span class="cmd-count">12</span></h2>
-                <span class="toggle">▼</span>
-            </div>
-            <div class="category-content">
-                <table class="ids-table">
-                    <thead><tr><th>Creature ID</th><th>Nombre</th><th>Función</th></tr></thead>
-                    <tbody>
-                        <tr><td>6930</td><td class="rarity-rare">Auctioneer</td><td>Subastador genérico</td></tr>
-                        <tr><td>28690</td><td class="rarity-rare">Arcanist Ivrenne</td><td>Portal Trainer - Dalaran</td></tr>
-                        <tr><td>29537</td><td class="rarity-rare">Npc Innkeeper</td><td>Posadero genérico</td></tr>
-                        <tr><td>28346</td><td class="rarity-rare">Reagent Vendor</td><td>Vendedor de componentes</td></tr>
-                        <tr><td>28776</td><td class="rarity-rare">Arcanist Firael</td><td>Vendedor Emblemas - Dalaran</td></tr>
-                        <tr><td>29716</td><td class="rarity-rare">Stablemasters</td><td>Maestro de establos</td></tr>
-                        <tr><td>32216</td><td class="rarity-uncommon">Training Dummy</td><td>Dummy nivel 80 para test DPS</td></tr>
-                        <tr><td>31146</td><td class="rarity-uncommon">Raider's Training Dummy</td><td>Dummy de raid para test DPS (boss level)</td></tr>
-                        <tr><td>30706</td><td class="rarity-rare">Lexicon of Power</td><td>Objeto para Inscription</td></tr>
-                        <tr><td>35494</td><td class="rarity-rare">Guild Vendor</td><td>Vendedor de hermandad</td></tr>
-                        <tr><td>29478</td><td class="rarity-rare">Dubin Clay</td><td>Reparador general - Dalaran</td></tr>
-                        <tr><td>28725</td><td class="rarity-rare">General Goods Vendor</td><td>Vendedor general</td></tr>
-                    </tbody>
-                </table>
-            </div>
+            <div class="no-results" id="noResultsIds"><span>🔍</span>No se encontraron IDs.<br><small>Intenta otra búsqueda.</small></div>
         </div>
-
-        <!-- ==================== ITEMS ÚTILES GENERALES ==================== -->
-        <div class="category ids-category" data-ids-category="utiles">
-            <div class="category-header" onclick="toggleCategory(this)">
-                <h2><span class="icon">🔧</span> Items Útiles Generales <span class="cmd-count">12</span></h2>
-                <span class="toggle">▼</span>
-            </div>
-            <div class="category-content">
-                <table class="ids-table">
-                    <thead><tr><th>Item ID</th><th>Nombre</th><th>Uso</th></tr></thead>
-                    <tbody>
-                        <tr><td>6948</td><td class="rarity-common">Hearthstone</td><td>Piedra de hogar - TP a posada</td></tr>
-                        <tr><td>44731</td><td class="rarity-rare">Bouquet of Ebon Roses</td><td>Ramo de rosas - cosmético</td></tr>
-                        <tr><td>37863</td><td class="rarity-uncommon">Direbrew's Remote</td><td>TP a Blackrock Depths</td></tr>
-                        <tr><td>43824</td><td class="rarity-rare">The Schools of Arcane Magic - Mastery</td><td>Libro que da achievement + pet</td></tr>
-                        <tr><td>44606</td><td class="rarity-rare">Toy Train Set</td><td>Coloca un tren de juguete</td></tr>
-                        <tr><td>45057</td><td class="rarity-rare">Wind-Up Train Wrecker</td><td>Destruye trenes de juguete</td></tr>
-                        <tr><td>35275</td><td class="rarity-rare">Orb of the Sin'dorei</td><td>Te transforma en Elfo de Sangre</td></tr>
-                        <tr><td>44430</td><td class="rarity-rare">Titanium Seal of Dalaran</td><td>Lanza una moneda al aire</td></tr>
-                        <tr><td>43499</td><td class="rarity-rare">Iron Boot Flask</td><td>Te transforma en Enano de Hierro</td></tr>
-                        <tr><td>13262</td><td class="rarity-rare">Ashbringer</td><td>Espada 2M icónica (no legendaria en 3.3.5)</td></tr>
-                        <tr><td>19979</td><td class="rarity-rare">Hook of the Master Angler</td><td>Te transforma en pez bajo el agua</td></tr>
-                        <tr><td>17712</td><td class="rarity-epic">Martin Fury</td><td>Item GM - Mata todo en 1 hit (prohibido)</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- ==================== TELEPORT LOCATIONS ==================== -->
-        <div class="category ids-category" data-ids-category="teleports">
-            <div class="category-header" onclick="toggleCategory(this)">
-                <h2><span class="icon">🗺️</span> Ubicaciones de Teleport (.tele) <span class="cmd-count">25</span></h2>
-                <span class="toggle">▼</span>
-            </div>
-            <div class="category-content">
-                <table class="ids-table">
-                    <thead><tr><th>Comando</th><th>Ubicación</th><th>Tipo</th></tr></thead>
-                    <tbody>
-                        <tr><td>.tele Dalaran</td><td>Dalaran</td><td>Ciudad Principal WotLK</td></tr>
-                        <tr><td>.tele Stormwind</td><td>Ventormenta</td><td>Capital Alianza</td></tr>
-                        <tr><td>.tele Orgrimmar</td><td>Orgrimmar</td><td>Capital Horda</td></tr>
-                        <tr><td>.tele Ironforge</td><td>Forjaz</td><td>Capital Enanos</td></tr>
-                        <tr><td>.tele ThunderBluff</td><td>Cima del Trueno</td><td>Capital Tauren</td></tr>
-                        <tr><td>.tele Undercity</td><td>Entrañas</td><td>Capital Renegados</td></tr>
-                        <tr><td>.tele Darnassus</td><td>Darnassus</td><td>Capital Elfos Noche</td></tr>
-                        <tr><td>.tele Silvermoon</td><td>Lunargenta</td><td>Capital Elfos de Sangre</td></tr>
-                        <tr><td>.tele Exodar</td><td>El Exodar</td><td>Capital Draenei</td></tr>
-                        <tr><td>.tele Shattrath</td><td>Shattrath</td><td>Ciudad Principal TBC</td></tr>
-                        <tr><td>.tele IcecrownCitadel</td><td>Ciudadela Corona de Hielo</td><td>Raid WotLK</td></tr>
-                        <tr><td>.tele Naxxramas</td><td>Naxxramas</td><td>Raid WotLK</td></tr>
-                        <tr><td>.tele Ulduar</td><td>Ulduar</td><td>Raid WotLK</td></tr>
-                        <tr><td>.tele TrialOfTheCrusader</td><td>Prueba del Cruzado</td><td>Raid WotLK</td></tr>
-                        <tr><td>.tele VaultOfArchavon</td><td>Bóveda de Archavon</td><td>Raid WotLK</td></tr>
-                        <tr><td>.tele ObsidianSanctum</td><td>Sanctum Obsidiano</td><td>Raid WotLK</td></tr>
-                        <tr><td>.tele EyeOfEternity</td><td>Ojo de la Eternidad</td><td>Raid WotLK</td></tr>
-                        <tr><td>.tele OnyxiasLair</td><td>Guarida de Onyxia</td><td>Raid</td></tr>
-                        <tr><td>.tele Karazhan</td><td>Karazhan</td><td>Raid TBC</td></tr>
-                        <tr><td>.tele BlackTemple</td><td>Templo Oscuro</td><td>Raid TBC</td></tr>
-                        <tr><td>.tele SunwellPlateau</td><td>Meseta Fuente del Sol</td><td>Raid TBC</td></tr>
-                        <tr><td>.tele Wintergrasp</td><td>Conquista del Invierno</td><td>Zona PvP</td></tr>
-                        <tr><td>.tele GurubashiArena</td><td>Arena de Gurubashi</td><td>Zona PvP</td></tr>
-                        <tr><td>.tele ArgentTournament</td><td>Torneo Argenta</td><td>Zona de Dailies</td></tr>
-                        <tr><td>.tele MoltenCore</td><td>Núcleo de Magma</td><td>Raid Classic</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- ==================== TABARDOS ==================== -->
-        <div class="category ids-category" data-ids-category="tabardos">
-            <div class="category-header" onclick="toggleCategory(this)">
-                <h2><span class="icon">🏳️</span> Tabardos <span class="cmd-count">10</span></h2>
-                <span class="toggle">▼</span>
-            </div>
-            <div class="category-content">
-                <table class="ids-table">
-                    <thead><tr><th>Item ID</th><th>Nombre</th><th>Facción / Origen</th></tr></thead>
-                    <tbody>
-                        <tr><td>43154</td><td class="rarity-rare">Tabard of the Argent Crusade</td><td>Cruzada Argenta</td></tr>
-                        <tr><td>43157</td><td class="rarity-rare">Tabard of the Kirin Tor</td><td>Kirin Tor</td></tr>
-                        <tr><td>43155</td><td class="rarity-rare">Tabard of the Wyrmrest Accord</td><td>Acuerdo del Reposo del Dragón</td></tr>
-                        <tr><td>43156</td><td class="rarity-rare">Tabard of the Ebon Blade</td><td>Caballeros de la Espada de Ébano</td></tr>
-                        <tr><td>46874</td><td class="rarity-epic">Argent Crusader's Tabard</td><td>Cruzada Argenta Exaltado + Champion</td></tr>
-                        <tr><td>45574</td><td class="rarity-epic">Tabard of the Lightbringer</td><td>Achievement Glory of the Ulduar Raider</td></tr>
-                        <tr><td>35279</td><td class="rarity-rare">Tabard of Summer Skies</td><td>Festival del Solsticio de Verano</td></tr>
-                        <tr><td>35280</td><td class="rarity-rare">Tabard of Summer Flames</td><td>Festival del Solsticio de Verano</td></tr>
-                        <tr><td>23705</td><td class="rarity-rare">Tabard of Flame</td><td>Festival del Solsticio de Verano</td></tr>
-                        <tr><td>43300</td><td class="rarity-rare">Loremaster's Colors</td><td>Achievement Loremaster</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- ==================== OBJETOS FUN ==================== -->
-        <div class="category ids-category" data-ids-category="fun">
-            <div class="category-header" onclick="toggleCategory(this)">
-                <h2><span class="icon">🎉</span> Items Fun / Eventos <span class="cmd-count">12</span></h2>
-                <span class="toggle">▼</span>
-            </div>
-            <div class="category-content">
-                <table class="ids-table">
-                    <thead><tr><th>Item ID</th><th>Nombre</th><th>Efecto</th></tr></thead>
-                    <tbody>
-                        <tr><td>44606</td><td class="rarity-rare">Toy Train Set</td><td>Coloca un tren de juguete</td></tr>
-                        <tr><td>45057</td><td class="rarity-rare">Wind-Up Train Wrecker</td><td>Destruye trenes de juguete</td></tr>
-                        <tr><td>34686</td><td class="rarity-rare">Brazier of Dancing Flames</td><td>Brasero con llamas danzantes</td></tr>
-                        <tr><td>32542</td><td class="rarity-uncommon">Picnic Basket</td><td>Despliega una manta de picnic</td></tr>
-                        <tr><td>35275</td><td class="rarity-rare">Orb of the Sin'dorei</td><td>Te transforma en Elfo de Sangre</td></tr>
-                        <tr><td>43499</td><td class="rarity-rare">Iron Boot Flask</td><td>Te transforma en Enano de Hierro</td></tr>
-                        <tr><td>37254</td><td class="rarity-rare">Super Simian Sphere</td><td>Te convierte en bola de mono</td></tr>
-                        <tr><td>44430</td><td class="rarity-rare">Titanium Seal of Dalaran</td><td>Lanza moneda al aire</td></tr>
-                        <tr><td>36862</td><td class="rarity-uncommon">Worn Troll Dice</td><td>Dados de Troll</td></tr>
-                        <tr><td>33079</td><td class="rarity-uncommon">Murloc Costume</td><td>Te disfraza de Murloc</td></tr>
-                        <tr><td>38301</td><td class="rarity-rare">D.I.S.C.O.</td><td>Crea una bola de discoteca</td></tr>
-                        <tr><td>44481</td><td class="rarity-rare">Grindstone of the Lightbringer</td><td>Efecto de luz en arma</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- NO RESULTS IDS -->
-        <div class="no-results" id="noResultsIds">
-            <span>🔍</span>
-            No se encontraron IDs con ese término.<br>
-            <small>Intenta con otro nombre o número.</small>
-        </div>
-
     </div>
-</div>
+
+    <button class="scroll-top" id="scrollTop" onclick="scrollToTop()">↑</button>
+
+    <footer>
+        <div class="footer-logo"><span class="after">After</span><span class="wow">WoW</span></div>
+        <p>Panel de Comandos GM & IDs - WoW 3.3.5a WotLK</p>
+        <p style="margin-top:10px;font-size:0.85em;">Creado para el equipo GM de AfterWoW | 2024</p>
+    </footer>
+
+    <script>
+        function switchSection(section, btn) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.main-nav button').forEach(b => b.classList.remove('active'));
+            document.getElementById('section-' + section).classList.add('active');
+            btn.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleCategory(header) {
+            const content = header.nextElementSibling;
+            const toggle = header.querySelector('.toggle');
+            content.classList.toggle('open');
+            toggle.classList.toggle('open');
+        }
+
+        function filterCategory(category, btn) {
+            document.querySelectorAll('#categoryNav button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const categories = document.querySelectorAll('#section-commands .category');
+            if (category === 'all') {
+                categories.forEach(cat => cat.style.display = 'block');
+            } else {
+                categories.forEach(cat => {
+                    if (cat.dataset.category === category) {
+                        cat.style.display = 'block';
+                        cat.querySelector('.category-content').classList.add('open');
+                        cat.querySelector('.toggle').classList.add('open');
+                    } else { cat.style.display = 'none'; }
+                });
+            }
+            document.getElementById('searchInput').value = '';
+            updateSearchStats();
+        }
+
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const term = this.value.toLowerCase().trim();
+            const categories = document.querySelectorAll('#section-commands .category');
+            let total = 0;
+            document.querySelectorAll('#categoryNav button').forEach(b => b.classList.remove('active'));
+            if (!term) document.querySelector('#categoryNav button').classList.add('active');
+            categories.forEach(cat => {
+                const rows = cat.querySelectorAll('.cmd-table tbody tr');
+                let has = false;
+                rows.forEach(row => {
+                    const match = !term || row.textContent.toLowerCase().includes(term);
+                    row.classList.toggle('hidden', !match);
+                    if (match) { has = true; total++; }
+                });
+                cat.style.display = (has || !term) ? 'block' : 'none';
+                if (term && has) {
+                    cat.querySelector('.category-content').classList.add('open');
+                    cat.querySelector('.toggle').classList.add('open');
+                }
+            });
+            document.getElementById('noResults').classList.toggle('visible', total === 0 && !!term);
+            updateSearchStats(term, total);
+        });
+
+        document.getElementById('idsSearchInput').addEventListener('input', function() {
+            const term = this.value.toLowerCase().trim();
+            const categories = document.querySelectorAll('#section-ids .ids-category');
+            let total = 0;
+            categories.forEach(cat => {
+                const cards = cat.querySelectorAll('.item-card, .npc-card, .tele-card');
+                let has = false;
+                cards.forEach(card => {
+                    const searchData = (card.dataset.search || '') + ' ' + card.textContent.toLowerCase();
+                    const match = !term || searchData.includes(term);
+                    card.classList.toggle('hidden', !match);
+                    if (match) { has = true; total++; }
+                });
+                cat.style.display = (has || !term) ? 'block' : 'none';
+                if (term && has) {
+                    cat.querySelector('.category-content').classList.add('open');
+                    cat.querySelector('.toggle').classList.add('open');
+                }
+            });
+            document.getElementById('noResultsIds').classList.toggle('visible', total === 0 && !!term);
+        });
+
+        function updateSearchStats(term, count) {
+            const stats = document.getElementById('searchStats');
+            if (!term) {
+                const total = document.querySelectorAll('.cmd-table tbody tr').length;
+                stats.textContent = `Mostrando todos los comandos (${total} disponibles)`;
+            } else {
+                stats.textContent = `${count} resultado(s) para "${term}"`;
+            }
+        }
+
+        function copyId(id, btn) {
+            navigator.clipboard.writeText('.additem ' + id).then(() => {
+                btn.textContent = '✅ Copiado';
+                btn.classList.add('copied');
+                setTimeout(() => { btn.textContent = '📋 Copiar'; btn.classList.remove('copied'); }, 2000);
+            });
+        }
+
+        window.addEventListener('scroll', function() {
+            document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 500);
+        });
+
+        function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+        window.addEventListener('load', function() { updateSearchStats(); });
+    </script>
+
+</body>
+</html>
